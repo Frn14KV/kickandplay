@@ -93,9 +93,18 @@ WSGI_APPLICATION = 'kickandplay.wsgi.application'
 #    }
 #}
 
+#DATABASES = {
+#    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+#}
+
 DATABASES = {
-    'default': dj_database_url.config(default='postgres://localhost')
+    'default': dj_database_url.config(default='postgresql://postgres:[Frn14K9542]@db.fluofgltdazuwfgpnctl.supabase.co:5432/postgres')
 }
+
+
+#DATABASES = {
+#    'default': dj_database_url.config(default='postgres://localhost')
+#}
 '''
 
 DATABASES = {

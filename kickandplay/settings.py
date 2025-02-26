@@ -26,7 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!5ww7t4*k-u__j*47-09ose4z0rbknv*c3l5g8o-5!u=f7md&r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
+DEBUG = False
 
 # ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', '192.168.12.91']
 ALLOWED_HOSTS = ['*']
@@ -92,9 +93,14 @@ WSGI_APPLICATION = 'kickandplay.wsgi.application'
 #        'NAME': BASE_DIR / 'db.sqlite3',
 #    }
 #}
-
+'''
 DATABASES = {
     'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+}
+'''
+
+DATABASES = {
+    'default': dj_database_url.config(default='postgresql://postgres:Frn14K9542@db.fluofgltdazuwfgpnctl.supabase.co:5432/postgres')
 }
 
 

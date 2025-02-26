@@ -91,9 +91,10 @@ WSGI_APPLICATION = 'kickandplay.wsgi.application'
 #    }
 #}
 
-#DATABASES = {
-#    'default': dj_database_url.config(default='postgres://localhost')
-#}
+DATABASES = {
+    'default': dj_database_url.config(default='postgres://localhost')
+}
+'''
 
 DATABASES = {
     'default': {
@@ -105,7 +106,7 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-
+'''
 
 
 # Password validation

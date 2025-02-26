@@ -30,8 +30,7 @@ SECRET_KEY = 'django-insecure-!5ww7t4*k-u__j*47-09ose4z0rbknv*c3l5g8o-5!u=f7md&r
 DEBUG = False
 
 # ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', '192.168.12.91']
-#ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = ['kickandplay.herokuapp.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -101,7 +100,10 @@ DATABASES = {
 '''
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://postgres:[YOUR-PASSWORD]@db.fluofgltdazuwfgpnctl.supabase.co:5432/postgres')
+    'default': dj_database_url.config
+    (
+        default='postgresql://postgres:Frn14K9542@db.fluofgltdazuwfgpnctl.supabase.co:5432/kickandplay'
+    )
 }
 
 

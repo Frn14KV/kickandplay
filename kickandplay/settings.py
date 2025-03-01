@@ -48,6 +48,10 @@ INSTALLED_APPS = [
     'django_filters'
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -122,6 +126,7 @@ DATABASES = {
         },
     }
 }
+
 
 
 

@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import dj_database_url
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,6 +27,7 @@ SECRET_KEY = 'django-insecure-!5ww7t4*k-u__j*47-09ose4z0rbknv*c3l5g8o-5!u=f7md&r
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+#DEBUG = False
 
 # ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', '192.168.12.91']
 ALLOWED_HOSTS = ['*']
@@ -43,6 +46,10 @@ INSTALLED_APPS = [
     'canchas', 
     'corsheaders', 
     'django_filters'
+]
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 
@@ -83,28 +90,43 @@ WSGI_APPLICATION = 'kickandplay.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-#}
+DATABASES = {
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+}
 
-#DATABASES = {
-#    'default': dj_database_url.config(default='postgres://localhost')
-#}
+
+DATABASES = {
+    'default': dj_database_url.config
+    (
+        default='postgres://postgres:Frn14K9542@db.fluofgltdazuwfgpnctl.supabase.co:5432/kickandplay'
+    )
+}
+
+'''
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'kickandplay',
-        'USER': 'kick',
-        'PASSWORD': 'Frn14K9542',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': 'postgres',
+        'USER': 'postgres.fluofgltdazuwfgpnctl',
+        'PASSWORD': 'Frn14K9542FkV',
+        'HOST': 'aws-0-us-west-1.pooler.supabase.com',
+        'PORT': '6543',
+        'OPTIONS': {
+            'sslmode': 'require',
+            #'target_session_attrs': 'read-write',  # Configura para forzar el modo activo
+        },
     }
 }
+
 
 
 
@@ -154,10 +176,37 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+#STATIC_URL = 'static/'
+#STATICFILES_DIRS = [
+#    os.path.join(BASE_DIR, 'static'),
+#]
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = ['http://localhost:3000', 'http://localhost:8080']
+'''
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
+'''

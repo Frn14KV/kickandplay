@@ -18,14 +18,17 @@ django-filter==25.1
 djangorestframework==3.15.2
 djangorestframework_simplejwt==5.4.0
 filelock==3.15.4
+gunicorn==23.0.0
 idna==3.10
 kombu==5.4.2
+packaging==24.2
 platformdirs==4.2.2
 prompt_toolkit==3.0.50
 psycopg2==2.9.10
 psycopg2-binary==2.9.10
 PyJWT==2.10.1
 python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
 requests==2.32.3
 six==1.17.0
 spark-parser==1.8.9

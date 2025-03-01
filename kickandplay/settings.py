@@ -26,8 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!5ww7t4*k-u__j*47-09ose4z0rbknv*c3l5g8o-5!u=f7md&r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
-DEBUG = False
+DEBUG = True
+#DEBUG = False
 
 # ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', '192.168.12.91']
 ALLOWED_HOSTS = ['*']
@@ -111,33 +111,18 @@ DATABASES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': 'db.fluofgltdazuwfgpnctl.supabase.co',
-        'PORT': '5432',
-        'NAME': 'kickandplay',
-        'USER': 'postgres',
-        'PASSWORD': 'Frn14K9542',
+        'NAME': 'postgres',
+        'USER': 'postgres.fluofgltdazuwfgpnctl',
+        'PASSWORD': 'Frn14K9542FkV',
+        'HOST': 'aws-0-us-west-1.pooler.supabase.com',
+        'PORT': '6543',
+        'OPTIONS': {
+            'sslmode': 'require',
+            #'target_session_attrs': 'read-write',  # Configura para forzar el modo activo
+        },
     }
 }
 
-
-
-
-#DATABASES = {
-#    'default': dj_database_url.config(default='postgres://localhost')
-#}
-'''
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'kickandplay',
-        'USER': 'kick',
-        'PASSWORD': 'Frn14K9542',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
-'''
 
 
 # Password validation
@@ -202,3 +187,21 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = ['http://localhost:3000', 'http://localhost:8080']
+'''
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
+'''

@@ -86,14 +86,14 @@ WSGI_APPLICATION = 'kickandplay.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-'''
+
 DATABASES = {
     'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
 }
@@ -105,7 +105,20 @@ DATABASES = {
         default='postgres://postgres:Frn14K9542@db.fluofgltdazuwfgpnctl.supabase.co:5432/kickandplay'
     )
 }
+
 '''
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': 'db.fluofgltdazuwfgpnctl.supabase.co',
+        'PORT': '5432',
+        'NAME': 'kickandplay',
+        'USER': 'postgres',
+        'PASSWORD': 'Frn14K9542',
+    }
+}
+
 
 
 

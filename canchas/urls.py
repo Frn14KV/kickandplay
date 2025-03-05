@@ -11,4 +11,13 @@ router.register('canchas', CanchaViewSet)
 router.register('equipos', EquipoViewSet)
 router.register('partidos', PartidoViewSet)
 router.register('comentarios', ComentarioViewSet)
-urlpatterns = [path('', include(router.urls))]
+
+urlpatterns = [
+    path('', include(router.urls))
+    # Rutas de canchas
+    path('canchas/', views.lista_canchas, name='lista_canchas'),
+
+    # Rutas de eventos
+    path('eventos/', views.lista_eventos, name='lista_eventos'),
+    path('eventos/<int:id>/', views.detalle_evento, name='detalle_evento'),
+]

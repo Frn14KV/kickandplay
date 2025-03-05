@@ -9,12 +9,14 @@ from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework import viewsets
 from .utils import enviar_correo, obtener_coordenadas
-from .models import Canchas, Equipos, Partidos, Comentarios
+from .models import Canchas, Equipos, Partidos, Comentarios, Evento
 from .serializers import CanchaSerializer, EquipoSerializer, PartidoSerializer, ComentarioSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
-from .models import Evento
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Canchas.objects.all()
@@ -66,6 +68,16 @@ class ComentarioViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+class ListaEventosView(APIView):
+    #permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
+
+
+    def get(self, request, format=None):
+        eventos = Evento.objects.all()  # Obtener los datos de los eventos
+        data = {"eventos": [evento.titulo for evento in eventos]}  # Serializar datos básicos
+        return Response(data)  # Responder con los datos en formato JSON
 
 def lista_eventos(request):
     eventos = Evento.objects.select_related('cancha').all().order_by('fecha_inicio')

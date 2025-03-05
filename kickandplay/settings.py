@@ -165,10 +165,10 @@ USE_TZ = True
 
 # email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp-mail.outlook.com'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USER_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'franklindamian95@outlook.com'
+EMAIL_HOST_USER = 'kickplay33@gmail.com'
 EMAIL_HOST_PASSWORD = 'Frn14K9542'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 

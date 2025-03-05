@@ -4,6 +4,7 @@
 # Source timestamp: 2025-02-25 21:22:20 UTC (1740518540)
 
 from django.urls import path, include
+from . import views
 from rest_framework.routers import DefaultRouter
 from .views import CanchaViewSet, EquipoViewSet, PartidoViewSet, ComentarioViewSet
 router = DefaultRouter()
@@ -13,7 +14,7 @@ router.register('partidos', PartidoViewSet)
 router.register('comentarios', ComentarioViewSet)
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
     # Rutas de canchas
     path('canchas/', views.lista_canchas, name='lista_canchas'),
 

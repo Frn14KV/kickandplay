@@ -18,6 +18,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 
+def home(request):
+    return render(request, 'index.html')
+
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Canchas.objects.all()
     serializer_class = CanchaSerializer

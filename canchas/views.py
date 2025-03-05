@@ -17,9 +17,16 @@ from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-
+#metodos de web
+#home
 def home(request):
     return render(request, 'index.html')
+
+#lista de canchas
+def lista_canchas(request):
+    canchas = Canchas.objects.all()  # Obtener todas las canchas
+    return render(request, 'canchas/lista_canchas.html', {'canchas': canchas})
+
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Canchas.objects.all()

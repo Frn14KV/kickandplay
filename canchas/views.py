@@ -3,7 +3,7 @@
 # Bytecode version: 3.12.0rc2 (3531)
 # Source timestamp: 2025-02-25 21:23:26 UTC (1740518606)
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.conf import settings
@@ -14,6 +14,7 @@ from .serializers import CanchaSerializer, EquipoSerializer, PartidoSerializer, 
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from .models import Evento
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Canchas.objects.all()
@@ -65,3 +66,11 @@ class ComentarioViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+def lista_eventos(request):
+    eventos = Evento.objects.select_related('cancha').all().order_by('fecha_inicio')
+    return render(request, 'eventos/lista_eventos.html', {'eventos': eventos})
+
+def detalle_evento(request, id):
+    evento = get_object_or_404(Evento, id=id)
+    return render(request, 'eventos/detalle_evento.html', {'evento': evento})

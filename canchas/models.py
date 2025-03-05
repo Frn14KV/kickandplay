@@ -38,3 +38,13 @@ class Comentarios(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.cancha.nombre}'
+    
+class Evento(models.Model):
+    titulo = models.CharField(max_length=200)
+    descripcion = models.TextField(blank=True, null=True)
+    fecha_inicio = models.DateTimeField()
+    fecha_fin = models.DateTimeField()
+    cancha = models.ForeignKey(Canchas, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.titulo} - {self.cancha.nombre}"

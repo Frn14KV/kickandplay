@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Canchas</title>
+</head>
+<body>
+    <h1>Lista de Canchas</h1>
+    <ul>
+        {% for cancha in canchas %}
+            <li>
+                <strong>{{ cancha.nombre }}</strong> - Dirección: {{ cancha.direccion }}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

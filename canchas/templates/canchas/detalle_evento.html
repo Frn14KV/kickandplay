@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ evento.titulo }}</title>
+</head>
+<body>
+    <h1>{{ evento.titulo }}</h1>
+    <p><strong>Cancha:</strong> {{ evento.cancha.nombre }}</p>
+    <p><strong>Descripción:</strong> {{ evento.descripcion }}</p>
+    <p><strong>Fecha de inicio:</strong> {{ evento.fecha_inicio|date:"d M Y H:i" }}</p>
+    <p><strong>Fecha de fin:</strong> {{ evento.fecha_fin|date:"d M Y H:i" }}</p>
+</body>
+</html>

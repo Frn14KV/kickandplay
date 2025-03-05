@@ -12,7 +12,6 @@ class MiAdminSite(AdminSite):
     site_title = "Panel Administrativo Kick&Play"
     index_title = "Bienvenido al Administrador de Kick&Play"
 
-
 admin_site = MiAdminSite(name='miadmin')   
 admin.site.register(Canchas)
 admin.site.register(Equipos)

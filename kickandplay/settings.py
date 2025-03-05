@@ -149,8 +149,24 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # restframework
-REST_FRAMEWORK = {'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',), 'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',)}
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
 
+'''
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': 
+    ('rest_framework_simplejwt.authentication.JWTAuthentication',), 
+    'DEFAULT_PERMISSION_CLASSES': 
+    ('rest_framework.permissions.IsAuthenticated',)}
+'''
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

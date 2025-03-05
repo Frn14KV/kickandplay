@@ -32,7 +32,7 @@ class CanchaViewSet(viewsets.ModelViewSet):
             canchas.longitud = lng
             canchas.save()
         else:
-            print(lat)
+            print("no se guardo")
 
     def perform_update(self, serializer):
         canchas = serializer.save(reservado_por=self.request.user)

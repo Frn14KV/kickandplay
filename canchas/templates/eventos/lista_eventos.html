@@ -1,18 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Lista de Eventos</title>
-</head>
-<body>
-    <h1>Lista de Eventos</h1>
-    <ul>
-        {% for evento in eventos %}
-            <li>
-                <a href="{% url 'detalle_evento' evento.id %}">
-                    {{ evento.titulo }} en {{ evento.cancha.nombre }} - {{ evento.fecha_inicio|date:"d M Y H:i" }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Lista de Eventos{% endblock %}
+
+{% block content %}
+<h1 class="text-center">Lista de Eventos</h1>
+<ul class="list-group">
+    {% for evento in eventos %}
+        <li class="list-group-item">
+            <strong>{{ evento.titulo }}</strong>
+            <br>
+            <em>Cancha:</em> {{ evento.cancha.nombre }}
+            <br>
+            <em>Fecha:</em> {{ evento.fecha_inicio|date:"d M Y H:i" }} - {{ evento.fecha_fin|date:"d M Y H:i" }}
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

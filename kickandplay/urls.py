@@ -29,7 +29,8 @@ urlpatterns = [
     #api
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), 
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), 
-    
+    path('api/', include('canchas.urls')),  # Ajusta según el nombre de tu aplicación
+
     path('admin/', admin.site.urls), 
          # Ruta para la página principal
     path('', views.home, name='home'), 

@@ -44,7 +44,7 @@ class CanchaViewSet(viewsets.ModelViewSet):
     serializer_class = CanchaSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['nombre', 'direccion', 'disponible']
+    filterset_fields = ['nombre', 'direccion']
     search_fields = ['nombre', 'direccion']
     ordering_fields = ['nombre', 'direccion']
 

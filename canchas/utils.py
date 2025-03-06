@@ -41,7 +41,10 @@ def upload_to_supabase(file, file_name):
     supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
     bucket = settings.SUPABASE_BUCKET
 
-    response = supabase.storage.from_(bucket).upload(file_name, file)
+    response = supabase.storage.from_(bucket).upload(file_name, file.read(), {"upsert": True})
+
     if response.get("error"):
-        raise Exception(f"Error al subir archivo: {response['error']['message']}")
-    return response.get("publicURL")  # URL pública del archivo
+        raise Exception(f"Error al subir el archivo: {response['error']['message']}")
+
+    public_url = f"{settings.SUPABASE_URL}/storage/v1/object/public/{bucket}/{file_name}"
+    return public_url

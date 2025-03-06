@@ -8,19 +8,19 @@ from . import views
 from rest_framework.routers import DefaultRouter
 from .views import CanchaViewSet, EquipoViewSet, PartidoViewSet, ComentarioViewSet, ListaEventosView
 router = DefaultRouter()
-router.register('canchas', CanchaViewSet)
+router.register(r'canchas', CanchaViewSet, basename='cancha')
 router.register('equipos', EquipoViewSet)
 router.register('partidos', PartidoViewSet)
 router.register('comentarios', ComentarioViewSet)
 #router.register('eventos',ListaEventosView)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('api', include(router.urls)),
     # Rutas de canchas
     #path('canchas/', views.lista_canchas, name='lista_canchas'),
 
-    path('canchas1/', views.lista_canchas, name='lista_canchas'),  # Ruta para la lista de canchas
+    path('canchas/', views.lista_canchas, name='lista_canchas'),  # Ruta para la lista de canchas
     # Rutas de eventos
     path('eventos/', views.lista_eventos, name='lista_eventos'),
     path('eventos/<int:id>/', views.detalle_evento, name='detalle_evento'),
-]
+] 

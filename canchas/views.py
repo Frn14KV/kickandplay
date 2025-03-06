@@ -30,14 +30,20 @@ def lista_canchas(request):
     reservas = Reserva.objects.filter(fecha_reserva__gte=hoy)
     return render(request, 'canchas/lista_canchas.html', {'canchas': canchas, 'reservas': reservas})
 
+#lista de eventos
 def lista_eventos(request):
     eventos = Evento.objects.select_related('cancha').all().order_by('fecha_inicio')
     return render(request, 'eventos/lista_eventos.html', {'eventos': eventos})
 
+#detalle de un evento
 def detalle_evento(request, id):
     evento = get_object_or_404(Evento, id=id)
     return render(request, 'eventos/detalle_evento.html', {'evento': evento})
 
+#mapa de las canchas
+def mapa_canchas(request):
+    canchas = Canchas.objects.values('id', 'nombre', 'direccion', 'latitud', 'longitud', 'imagen_url')
+    return render(request, 'mapa.html', {'canchas': list(canchas)})
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Canchas.objects.all()

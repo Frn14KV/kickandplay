@@ -24,11 +24,18 @@ from canchas import views
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 urlpatterns = [
+    #api
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), 
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), 
     
     path('admin/', admin.site.urls), 
-    path('', views.home, name='home'),  # Ruta para la página principal
-    path('canchas/', include('canchas.urls')),
-    path('eventos/', include('canchas.urls')), 
+         # Ruta para la página principal
+    path('', views.home, name='home'), 
+        # Ruta para la lista de canchas
+    path('canchas/', views.lista_canchas, name='canchas'),  
+    #path('canchas/', include('canchas.urls')),
+        # Ruta para la lista de Eventos
+    #path('eventos/', include('canchas.urls')), 
+    path('eventos/', views.lista_eventos, name='lista_eventos'),
+    path('eventos/<int:id>/', views.detalle_evento, name='detalle_evento'),
 ]

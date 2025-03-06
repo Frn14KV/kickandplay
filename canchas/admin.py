@@ -5,7 +5,7 @@
 
 from django.contrib import admin
 from django.contrib.admin import AdminSite
-from .models import Canchas, Equipos, Comentarios, Partidos
+from .models import Canchas, Equipos, Comentarios, Partidos, Evento
 
 class MiAdminSite(AdminSite):
     site_header = "Kick&Play Admin"
@@ -17,3 +17,4 @@ admin.site.register(Canchas)
 admin.site.register(Equipos)
 admin.site.register(Comentarios)
 admin.site.register(Partidos)
+admin.site.register(Evento)

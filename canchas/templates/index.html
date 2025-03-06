@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Kick&Play{% endblock %}
+
+{% block content %}
+<div class="container text-center my-5">
+    <h1 class="display-4">¡Bienvenido a Kick&Play! 🎉</h1>
+    <p class="lead">Descubre los mejores eventos deportivos y reserva canchas al instante.</p>
+
+    <div class="mt-4">
+        <a href="/canchas/" class="btn btn-primary btn-lg rounded-pill mx-2">Explorar Canchas</a>
+        <a href="/eventos/" class="btn btn-warning btn-lg rounded-pill mx-2">Ver Eventos</a>
+    </div>
+
+    <div id="introCarousel" class="carousel slide mt-5" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="https://via.placeholder.com/800x400" class="d-block w-100" alt="Cancha">
+                <div class="carousel-caption">
+                    <h5>Encuentra Canchas Perfectas</h5>
+                    <p>Renta y organiza tus partidos fácilmente.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://via.placeholder.com/800x400" class="d-block w-100" alt="Eventos">
+                <div class="carousel-caption">
+                    <h5>Eventos Deportivos Inolvidables</h5>
+                    <p>¡Participa y diviértete con otros jugadores!</p>
+                </div>
+            </div>
+        </div>
+        <a class="carousel-control-prev" href="#introCarousel" role="button" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#introCarousel" role="button" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -30,4 +30,8 @@ def obtener_coordenadas(direccion):
         pass
 
 def enviar_correo(usuario, asunto, mensaje):
-    send_mail(asunto, mensaje, settings.EMAIL_HOST_USER, [usuario.email], fail_silently=False)
+    send_mail(
+        asunto, mensaje, 
+        settings.EMAIL_HOST_USER, 
+        [usuario.email], 
+        fail_silently=False)

@@ -1,16 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Lista de Canchas</title>
-</head>
-<body>
-    <h1>Lista de Canchas</h1>
-    <ul>
+{% extends 'base.html' %}
+
+{% block title %}Lista de Canchas{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Lista de Canchas</h1>
+    <div class="row">
         {% for cancha in canchas %}
-            <li>
-                <strong>{{ cancha.nombre }}</strong> - Dirección: {{ cancha.direccion }}
-            </li>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    {% if cancha.imagen %}
+                        <img src="{{ cancha.imagen.url }}" class="card-img-top" alt="Imagen de {{ cancha.nombre }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ cancha.nombre }}</h5>
+                        <p><strong>Dirección:</strong> {{ cancha.direccion }}</p>
+                        {% if cancha.ubicacion %}
+                            <p><strong>Ubicación:</strong> {{ cancha.ubicacion }}</p>
+                        {% endif %}
+                        {% if cancha.latitud and cancha.longitud %}
+                            <p><strong>Coordenadas:</strong> {{ cancha.latitud }}, {{ cancha.longitud }}</p>
+                        {% endif %}
+                        <p><strong>Capacidad:</strong> {{ cancha.capacidad }}</p>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-    </ul>
-</body>
-</html>
+    </div>
+</div>
+{% endblock %}

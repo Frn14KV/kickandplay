@@ -32,4 +32,5 @@ class CanchaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Canchas
-        fields = '__all__'
+        fields = ['id', 'nombre', 'direccion', 'capacidad', 'disponible', 'latitud', 'longitud', 'fotos_url']
+        read_only_fields = ['imagen_url']  # La URL de la foto se genera automáticamente

@@ -9,7 +9,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from datetime import date
 from rest_framework import viewsets
-from .utils import enviar_correo, obtener_coordenadas
+from .utils import enviar_correo, obtener_coordenadas, upload_to_supabase
 from .models import Canchas, Equipos, Partidos, Comentarios, Evento, Reserva
 from .serializers import CanchaSerializer, EquipoSerializer, PartidoSerializer, ComentarioSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -54,9 +54,13 @@ class CanchaViewSet(viewsets.ModelViewSet):
         if lat is not None and lng is not None:
             canchas.latitud = lat
             canchas.longitud = lng
-            canchas.save()
-        else:
-            print("no se guardo")
+        # Subir archivo a Supabase si se incluye en la solicitud
+        if 'fotos' in self.request.FILES:
+            file = self.request.FILES['fotos']
+            file_name = f"canchas/{file.name}"
+            canchas.imagen_url = upload_to_supabase(file, file_name)
+        
+        canchas.save()
 
     def perform_update(self, serializer):
         canchas = serializer.save(reservado_por=self.request.user)
@@ -64,9 +68,13 @@ class CanchaViewSet(viewsets.ModelViewSet):
         if lat is not None and lng is not None:
             canchas.latitud = lat
             canchas.longitud = lng
-            canchas.save()
-        else:
-            return None
+        # Subir archivo a Supabase si se incluye en la solicitud
+        if 'fotos' in self.request.FILES:
+            file = self.request.FILES['fotos']
+            file_name = f"canchas/{file.name}"
+            canchas.imagen_url = upload_to_supabase(file, file_name)
+        
+        canchas.save()
 
 class EquipoViewSet(viewsets.ModelViewSet):
     queryset = Equipos.objects.all()

@@ -228,3 +228,7 @@ LOGGING = {
     },
 }
 '''
+
+SUPABASE_URL = "https://kickandplay.supabase.co"  # URL de tu proyecto Supabase
+SUPABASE_KEY =  os.getenv('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsdW9mZ2x0ZGF6dXdmZ3BuY3RsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MDU5OTQ5NSwiZXhwIjoyMDU2MTc1NDk1fQ.5rmBvfZ09whQ-K8FM7NhnGqAUGDpealIlL9jBjD8j24')  # Clave API de Supabase (Service Role Key)
+SUPABASE_BUCKET = "media"  # Nombre del bucket

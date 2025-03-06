@@ -6,6 +6,7 @@
 from django.core.mail import send_mail
 from django.conf import settings
 import requests
+from supabase import create_client
 
 def obtener_coordenadas(direccion):
     API_KEY = 'AIzaSyBhIssxZqO6LEianMabpvH0Fur5yVxpBxI'
@@ -35,3 +36,12 @@ def enviar_correo(usuario, asunto, mensaje):
         settings.EMAIL_HOST_USER, 
         [usuario.email], 
         fail_silently=False)
+
+def upload_to_supabase(file, file_name):
+    supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+    bucket = settings.SUPABASE_BUCKET
+
+    response = supabase.storage.from_(bucket).upload(file_name, file)
+    if response.get("error"):
+        raise Exception(f"Error al subir archivo: {response['error']['message']}")
+    return response.get("publicURL")  # URL pública del archivo

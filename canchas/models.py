@@ -5,7 +5,8 @@ class Canchas(models.Model):
     nombre = models.CharField(max_length=100)
     direccion = models.CharField(max_length=255)
     capacidad = models.PositiveIntegerField(default=50)
-    imagen = models.ImageField(upload_to='canchas/', blank=True, null=True)  # Imagen opcional
+    #imagen = models.ImageField(upload_to='canchas/', blank=True, null=True)  # Imagen opcional
+    imagen_url = models.URLField(blank=True, null=True)
     latitud = models.FloatField(null=True, blank=True)
     longitud = models.FloatField(null=True, blank=True)
 

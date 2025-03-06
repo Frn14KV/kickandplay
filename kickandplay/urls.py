@@ -29,6 +29,8 @@ urlpatterns = [
     
     path('admin/', admin.site.urls), 
     path('', views.home, name='home'),  # Ruta para la página principal
+     path('lista_canchas/', views.lista_canchas, name='canchas'),  # Ruta para la lista de canchas
+
     path('canchas/', include('canchas.urls')),
     path('eventos/', include('canchas.urls')), 
 ]

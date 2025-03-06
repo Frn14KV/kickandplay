@@ -91,7 +91,6 @@ class ListaEventosView(APIView):
     #permission_classes = [IsAuthenticated]
     permission_classes = [AllowAny]
 
-
     def get(self, request, format=None):
         eventos = Evento.objects.all()  # Obtener los datos de los eventos
         data = {"eventos": [evento.titulo for evento in eventos]}  # Serializar datos básicos

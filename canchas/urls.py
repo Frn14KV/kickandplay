@@ -12,7 +12,7 @@ router.register('canchas', CanchaViewSet)
 router.register('equipos', EquipoViewSet)
 router.register('partidos', PartidoViewSet)
 router.register('comentarios', ComentarioViewSet)
-router.register('eventos',ListaEventosView)
+#router.register('eventos',ListaEventosView)
 
 urlpatterns = [
     path('', include(router.urls)),

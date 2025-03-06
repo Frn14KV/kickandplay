@@ -4,9 +4,8 @@ from django.contrib.auth.models import User
 class Canchas(models.Model):
     nombre = models.CharField(max_length=100)
     direccion = models.CharField(max_length=255)
-    disponible = models.BooleanField(default=True)
-    reservado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    fecha_reserva = models.DateField(null=True, blank=True)
+    capacidad = models.PositiveIntegerField()
+    imagen = models.ImageField(upload_to='canchas/', blank=True, null=True)  # Imagen opcional
     latitud = models.FloatField(null=True, blank=True)
     longitud = models.FloatField(null=True, blank=True)
 
@@ -48,3 +47,13 @@ class Evento(models.Model):
 
     def __str__(self):
         return f"{self.titulo} - {self.cancha.nombre}"
+
+class Reserva(models.Model):
+    cancha = models.ForeignKey(Canchas, on_delete=models.CASCADE, related_name='reservas')
+    fecha_reserva = models.DateField()
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
+    reservado_por = models.ForeignKey(User, on_delete=models.CASCADE)  # Usuario que hizo la reserva
+
+    def __str__(self):
+        return

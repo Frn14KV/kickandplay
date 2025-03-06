@@ -7,9 +7,10 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.conf import settings
+from datetime import date
 from rest_framework import viewsets
 from .utils import enviar_correo, obtener_coordenadas
-from .models import Canchas, Equipos, Partidos, Comentarios, Evento
+from .models import Canchas, Equipos, Partidos, Comentarios, Evento, Reserva
 from .serializers import CanchaSerializer, EquipoSerializer, PartidoSerializer, ComentarioSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
@@ -24,8 +25,10 @@ def home(request):
 
 #lista de canchas
 def lista_canchas(request):
-    canchas = Canchas.objects.all()  # Obtener todas las canchas
-    return render(request, 'canchas/lista_canchas.html', {'canchas': canchas})
+    hoy = date.today()
+    canchas = Canchas.objects.all()
+    reservas = Reserva.objects.filter(fecha_reserva__gte=hoy)
+    return render(request, 'canchas/lista_canchas.html', {'canchas': canchas, 'reservas': reservas})
 
 def lista_eventos(request):
     eventos = Evento.objects.select_related('cancha').all().order_by('fecha_inicio')

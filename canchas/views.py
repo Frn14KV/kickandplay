@@ -27,6 +27,14 @@ def lista_canchas(request):
     canchas = Canchas.objects.all()  # Obtener todas las canchas
     return render(request, 'canchas/lista_canchas.html', {'canchas': canchas})
 
+def lista_eventos(request):
+    eventos = Evento.objects.select_related('cancha').all().order_by('fecha_inicio')
+    return render(request, 'eventos/lista_eventos.html', {'eventos': eventos})
+
+def detalle_evento(request, id):
+    evento = get_object_or_404(Evento, id=id)
+    return render(request, 'eventos/detalle_evento.html', {'evento': evento})
+
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Canchas.objects.all()
@@ -83,16 +91,8 @@ class ListaEventosView(APIView):
     #permission_classes = [IsAuthenticated]
     permission_classes = [AllowAny]
 
-
     def get(self, request, format=None):
         eventos = Evento.objects.all()  # Obtener los datos de los eventos
         data = {"eventos": [evento.titulo for evento in eventos]}  # Serializar datos básicos
         return Response(data)  # Responder con los datos en formato JSON
 
-def lista_eventos(request):
-    eventos = Evento.objects.select_related('cancha').all().order_by('fecha_inicio')
-    return render(request, 'eventos/lista_eventos.html', {'eventos': eventos})
-
-def detalle_evento(request, id):
-    evento = get_object_or_404(Evento, id=id)
-    return render(request, 'eventos/detalle_evento.html', {'evento': evento})

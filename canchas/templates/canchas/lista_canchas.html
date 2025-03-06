@@ -9,8 +9,8 @@
         {% for cancha in canchas %}
             <div class="col-md-4">
                 <div class="card mb-3">
-                    {% if cancha.imagen %}
-                        <img src="{{ cancha.imagen.url }}" class="card-img-top" alt="Imagen de {{ cancha.nombre }}">
+                    {% if cancha.imagen_url %}
+                        <img src="{{ cancha.imagen_url }}" class="img-fluid" style="width: 500px; height: 300px;" alt="Imagen de {{ cancha.nombre }}">
                     {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ cancha.nombre }}</h5>

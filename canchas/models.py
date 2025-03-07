@@ -12,6 +12,25 @@ class Canchas(models.Model):
 
     def __str__(self):
         return self.nombre
+    
+    def calificacion_promedio(self):
+        comentarios = self.comentarios.all()  # Relación inversa desde Comentario
+        if comentarios.exists():
+            return comentarios.aggregate(models.Avg('calificacion'))['calificacion__avg']
+        return 0
+
+    def total_comentarios(self):
+        return self.comentarios.count()
+
+class Comentarios(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comentarios")
+    cancha = models.ForeignKey(Canchas, on_delete=models.CASCADE, related_name="comentarios")
+    texto = models.TextField()
+    calificacion = models.IntegerField(default=1, choices=[(i, str(i)) for i in range(1, 6)])
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.cancha.nombre}'
 
 class Equipos(models.Model):
     nombre = models.CharField(max_length=100)
@@ -29,15 +48,7 @@ class Partidos(models.Model):
     def __str__(seft):
         return f'{seft.equipo_local} vs {seft.equipo_visitante} en {seft.cancha}'
 
-class Comentarios(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    cancha = models.ForeignKey(Canchas, related_name='comentarios', on_delete=models.CASCADE)
-    texto = models.TextField()
-    calificacion = models.IntegerField(default=1, choices=[(i, str(i)) for i in range(1, 6)])
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f'{self.user.username} - {self.cancha.nombre}'
     
 class Evento(models.Model):
     titulo = models.CharField(max_length=200)

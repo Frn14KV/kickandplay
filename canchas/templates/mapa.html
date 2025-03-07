@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Mapa de Canchas{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Mapa Interactivo de Canchas</h2>
+<div id="map" style="height: 600px; width: 100%; margin-bottom: 20px;"></div>
+
+<script>
+    // Inicializa el mapa con una ubicación predeterminada
+    var map = L.map('map').setView([40.730610, -73.935242], 12);
+
+    // Agrega un mapa base de OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // *** Aquí va el bloque de geolocalización ***
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                // Coordenadas del usuario
+                var userLat = position.coords.latitude;
+                var userLon = position.coords.longitude;
+
+                // Agregar marcador para la ubicación del usuario
+                var userMarker = L.marker([userLat, userLon]).addTo(map);
+                userMarker.bindPopup("<b>Tu ubicación actual</b>").openPopup();
+
+                // Centrar el mapa en la ubicación del usuario
+                map.setView([userLat, userLon], 15);
+            },
+            function(error) {
+                console.error("Error al obtener la ubicación:", error.message);
+            }
+        );
+    } else {
+        alert("La geolocalización no está soportada en este navegador.");
+    }
+
+    // Agrega las canchas desde el backend (ejemplo dinámico)
+    var canchas = {{ canchas|safe }};
+    canchas.forEach(function(cancha) {
+        L.marker([cancha.latitud, cancha.longitud])
+         .addTo(map)
+         .bindPopup(`
+             <div style="text-align: center;">
+                 <h6>${cancha.nombre}</h6>
+                 <p>${cancha.direccion}</p>
+                 <img src="${cancha.imagen_url}" alt="Imagen de ${cancha.nombre}" style="width: 100%; height: auto; margin-bottom: 10px; border-radius: 8px;" />
+                 <a href="/canchas/${cancha.id}" class="btn btn-primary btn-sm text-white">Ver Cancha</a>
+             </div>
+         `);
+    });
+</script>
+{% endblock %}

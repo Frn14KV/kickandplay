@@ -9,7 +9,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from datetime import date
 from rest_framework import viewsets
-from .utils import enviar_correo, obtener_coordenadas, upload_to_supabase
+from .utils import enviar_correo, obtener_coordenadas, upload_to_supabase, calcular_distancia
 from .models import Canchas, Equipos, Partidos, Comentarios, Evento, Reserva
 from .serializers import CanchaSerializer, EquipoSerializer, PartidoSerializer, ComentarioSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -17,6 +17,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.db.models import Count, Avg
 
 #metodos de web
 #home
@@ -26,18 +27,64 @@ def home(request):
 #lista de canchas
 def lista_canchas(request):
     hoy = date.today()
+    # Obtén los parámetros de búsqueda desde el formulario o la URL
+    nombre = request.GET.get('nombre', '')
+    lat_usuario = float(request.GET.get('lat', 0))
+    lon_usuario = float(request.GET.get('lon', 0))
+    distancia_max = request.GET.get('distancia', None)  # Obtén el valor del parámetro
+    calificacion_min = request.GET.get('calificacion_min', None)
+    filtrar_comentarios = request.GET.get('filtrar_comentarios', None)  # Si se selecciona por comentarios
+    
+    # Filtrar las canchas
     canchas = Canchas.objects.all()
-    reservas = Reserva.objects.filter(fecha_reserva__gte=hoy)
-    return render(request, 'canchas/lista_canchas.html', {'canchas': canchas, 'reservas': reservas})
 
+ # Filtro por nombre 
+    if nombre:
+        canchas = canchas.filter(nombre__icontains=nombre)
+
+    # Filtro por calificación mínima (si está presente)
+    if calificacion_min:
+        canchas = canchas.filter(comentarios__calificacion__gte=calificacion_min).distinct()
+
+    # Agregar lógica de filtro separado por cantidad de comentarios o calificación promedio
+    if filtrar_comentarios:
+        # Ordenar por cantidad de comentarios
+        canchas = canchas.annotate(total_comentarios=Count('comentarios')).order_by('-total_comentarios')
+
+    # Filtrar por distancia
+    if lat_usuario and lon_usuario and distancia_max:
+        lat_usuario = float(lat_usuario)
+        lon_usuario = float(lon_usuario)
+        distancia_max = float(distancia_max)
+
+        canchas = [
+            cancha for cancha in canchas
+            if calcular_distancia(lat_usuario, lon_usuario, cancha.latitud, cancha.longitud) <= distancia_max
+        ]
+
+    # Agregar la calificación promedio y ordenarlas por este criterio (por defecto)
+    canchas = canchas.annotate(
+        calificacion_avg=Avg('comentarios__calificacion')  # Calcula el promedio
+    ).order_by('-calificacion_avg')  # Ordena de mayor a menor promedio
+    
+    #reservas = Reserva.objects.filter(fecha_reserva__gte=hoy)
+    print(canchas)
+    return render(request, 'canchas/lista_canchas.html', {'canchas': canchas})
+
+#lista de eventos
 def lista_eventos(request):
     eventos = Evento.objects.select_related('cancha').all().order_by('fecha_inicio')
     return render(request, 'eventos/lista_eventos.html', {'eventos': eventos})
 
+#detalle de un evento
 def detalle_evento(request, id):
     evento = get_object_or_404(Evento, id=id)
     return render(request, 'eventos/detalle_evento.html', {'evento': evento})
 
+#mapa de las canchas
+def mapa_canchas(request):
+    canchas = Canchas.objects.values('id', 'nombre', 'direccion', 'latitud', 'longitud', 'imagen_url')
+    return render(request, 'mapa.html', {'canchas': list(canchas)})
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Canchas.objects.all()

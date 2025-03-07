@@ -41,4 +41,6 @@ urlpatterns = [
     #path('eventos/', include('canchas.urls')), 
     path('eventos/', views.lista_eventos, name='lista_eventos'),
     path('eventos/<int:id>/', views.detalle_evento, name='detalle_evento'),
+    #mapa
+    path('mapa/', views.mapa_canchas, name='mapa_canchas'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

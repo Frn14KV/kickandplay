@@ -66,7 +66,7 @@ def lista_canchas(request):
     canchas = canchas.annotate(
         calificacion_avg=Avg('comentarios__calificacion')  # Calcula el promedio
     ).order_by('-calificacion_avg')  # Ordena de mayor a menor promedio
-    
+
     #reservas = Reserva.objects.filter(fecha_reserva__gte=hoy)
     print(canchas)
     return render(request, 'canchas/lista_canchas.html', {'canchas': canchas})
@@ -85,6 +85,16 @@ def detalle_evento(request, id):
 def mapa_canchas(request):
     canchas = Canchas.objects.values('id', 'nombre', 'direccion', 'latitud', 'longitud', 'imagen_url')
     return render(request, 'mapa.html', {'canchas': list(canchas)})
+
+#lista de eventos
+def lista_eventos(request):
+    eventos = Evento.objects.all().order_by('fecha_inicio')
+    return render(request, 'eventos.html', {'eventos': eventos})
+
+#calendario evento
+def calendario_eventos(request):
+    eventos = Evento.objects.all()  # Obtén todos los eventos
+    return render(request, 'calendario.html', {'eventos': eventos})
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Canchas.objects.all()

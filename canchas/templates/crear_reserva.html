@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load form_extras %}
+
+{% block title %}
+Crear Reserva
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <!-- Tarjeta de formulario -->
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Crear Reserva</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Campo: Cancha -->
+                        <div class="mb-3">
+                            <label for="id_cancha" class="form-label">{{ form.cancha.label }}</label>
+                            {{ form.cancha|add_class:"form-select" }}
+                            {% if form.cancha.errors %}
+                            <div class="text-danger small">{{ form.cancha.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Campo: Fecha de Reserva -->
+                        <div class="mb-3">
+                            <label for="id_fecha_reserva" class="form-label">{{ form.fecha_reserva.label }}</label>
+                            {{ form.fecha_reserva|add_class:"form-control" }}
+                            {% if form.fecha_reserva.errors %}
+                            <div class="text-danger small">{{ form.fecha_reserva.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Campo: Hora de Inicio -->
+                        <div class="mb-3">
+                            <label for="id_hora_inicio" class="form-label">{{ form.hora_inicio.label }}</label>
+                            {{ form.hora_inicio|add_class:"form-control" }}
+                            {% if form.hora_inicio.errors %}
+                            <div class="text-danger small">{{ form.hora_inicio.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Campo: Hora de Fin -->
+                        <div class="mb-3">
+                            <label for="id_hora_fin" class="form-label">{{ form.hora_fin.label }}</label>
+                            {{ form.hora_fin|add_class:"form-control" }}
+                            {% if form.hora_fin.errors %}
+                            <div class="text-danger small">{{ form.hora_fin.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Botón de envío -->
+                        <button type="submit" class="btn btn-primary w-100">Reservar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

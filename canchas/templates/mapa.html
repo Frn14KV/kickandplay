@@ -1,56 +1,101 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Mapa de Canchas{% endblock %}
+{% block title %}
+Mapa de Canchas - KickandPlay
+{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Mapa Interactivo de Canchas</h2>
-<div id="map" style="height: 600px; width: 100%; margin-bottom: 20px;"></div>
+<div class="container mt-5">
+    <h1 class="text-center text-primary">Mapa de Canchas</h1>
+    <p class="text-center text-muted">Explora las canchas disponibles y tu ubicación actual.</p>
+
+    <!-- Mapa -->
+    <div id="map" style="height: 500px;"></div>
+</div>
 
 <script>
-    // Inicializa el mapa con una ubicación predeterminada
-    var map = L.map('map').setView([40.730610, -73.935242], 12);
+    document.addEventListener("DOMContentLoaded", function() {
+        // Inicializar el mapa con una ubicación predeterminada (Bernardsville, NJ)
+        var map = L.map('map').setView([40.713, -74.013], 12);
 
-    // Agrega un mapa base de OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+        // Cargar capas del mapa desde OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
 
-    // *** Aquí va el bloque de geolocalización ***
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                // Coordenadas del usuario
-                var userLat = position.coords.latitude;
-                var userLon = position.coords.longitude;
-
-                // Agregar marcador para la ubicación del usuario
-                var userMarker = L.marker([userLat, userLon]).addTo(map);
-                userMarker.bindPopup("<b>Tu ubicación actual</b>").openPopup();
-
-                // Centrar el mapa en la ubicación del usuario
-                map.setView([userLat, userLon], 15);
+        // Datos de las canchas proporcionados por el backend
+        var canchas = [
+            {% for cancha in canchas %}
+            {
+                nombre: "{{ cancha.nombre }}",
+                latitud: {{ cancha.latitud }},
+                longitud: {{ cancha.longitud }},
+                direccion: "{{ cancha.direccion }}",
+                imagen_url: "{{ cancha.imagen_url }}",  // URL completa de la imagen
+                detalle_url: "{% url 'detalle_cancha' cancha.id %}"  // URL para "Ver Cancha"
             },
-            function(error) {
-                console.error("Error al obtener la ubicación:", error.message);
-            }
-        );
-    } else {
-        alert("La geolocalización no está soportada en este navegador.");
-    }
+            {% endfor %}
+        ];
 
-    // Agrega las canchas desde el backend (ejemplo dinámico)
-    var canchas = {{ canchas|safe }};
-    canchas.forEach(function(cancha) {
-        L.marker([cancha.latitud, cancha.longitud])
-         .addTo(map)
-         .bindPopup(`
-             <div style="text-align: center;">
-                 <h6>${cancha.nombre}</h6>
-                 <p>${cancha.direccion}</p>
-                 <img src="${cancha.imagen_url}" alt="Imagen de ${cancha.nombre}" style="width: 100%; height: auto; margin-bottom: 10px; border-radius: 8px;" />
-                 <a href="/canchas/${cancha.id}" class="btn btn-primary btn-sm text-white">Ver Cancha</a>
-             </div>
-         `);
+        // Iterar sobre las canchas y agregar marcadores al mapa
+        canchas.forEach(function(cancha) {
+            if (cancha.latitud && cancha.longitud) {
+                const popupContent = `
+                    <div style="text-align: center;">
+                        <img src="${cancha.imagen_url}" alt="${cancha.nombre}" style="width: 100px; height: 75px; border-radius: 10px; margin-bottom: 5px;">
+                        <strong>${cancha.nombre}</strong><br>
+                        ${cancha.direccion}<br>
+                        <a href="${cancha.detalle_url}" class="btn btn-primary btn-sm text-white">Ver Cancha</a>
+                    </div>
+                `;
+                L.marker([cancha.latitud, cancha.longitud])
+                    .addTo(map)
+                    .bindPopup(popupContent);
+            }
+        });
+
+        // Mostrar la ubicación actual del usuario
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    var userLat = position.coords.latitude;
+                    var userLng = position.coords.longitude;
+
+                    // Agregar marcador para la ubicación del usuario
+                    L.marker([userLat, userLng], { icon: L.icon({
+                        iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34]
+                    })})
+                    .addTo(map)
+                    .bindPopup("<strong>¡Estás aquí!</strong>")
+                    .openPopup();
+
+                    // Ajustar el mapa para centrar en la ubicación del usuario
+                    map.setView([userLat, userLng], 14);
+                },
+                function(error) {
+                    console.error("Error al obtener la ubicación: ", error.message);
+                }
+            );
+        } else {
+            console.error("La geolocalización no está soportada por este navegador.");
+        }
     });
 </script>
+
+<!-- Estilos para personalizar el mapa -->
+<style>
+    #map {
+        border: 2px solid #ddd;
+        border-radius: 10px;
+    }
+    .btn-primary {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+    }
+</style>
 {% endblock %}

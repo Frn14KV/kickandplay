@@ -18,6 +18,8 @@ from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Count, Avg
+from django.shortcuts import render, redirect
+from .forms import ReservaForm
 
 #metodos de web
 #home
@@ -103,6 +105,26 @@ def detalle_evento(request, evento_id):
 #sobre nosotros
 def sobre_nosotros(request):
     return render(request, 'sobre_nosotros.html')
+
+#crear reserva
+def crear_reserva(request):
+    if request.method == 'POST':
+        form = ReservaForm(request.POST)
+        if form.is_valid():
+            reserva = form.save(commit=False)
+            reserva.usuario = request.user  # Asocia al usuario autenticado
+            reserva.save()
+            return redirect('lista_reservas')  # Redirige a una página que muestre las reservas
+    else:
+        form = ReservaForm()
+    return render(request, 'crear_reserva.html', {'form': form})
+
+#lista reservas
+def lista_reservas(request):
+    reservas = Reserva.objects.filter(usuario=request.user)
+    return render(request, 'lista_reservas.html', {'reservas': reservas})
+
+
 
 #calendario evento
 def calendario_eventos(request):

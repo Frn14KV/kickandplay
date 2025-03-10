@@ -1,4 +1,5 @@
 from django.db import models
+from .utils import obtener_coordenadas  # Importa la función desde utils
 from django.contrib.auth.models import User
 
 class Canchas(models.Model):
@@ -9,6 +10,14 @@ class Canchas(models.Model):
     imagen_url = models.URLField(blank=True, null=True)
     latitud = models.FloatField(null=True, blank=True)
     longitud = models.FloatField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        # Si no hay latitud y longitud, intenta obtenerlas automáticamente
+        if self.direccion and (self.latitud is None or self.longitud is None):
+            coordenadas = obtener_coordenadas(self.direccion)
+            if coordenadas:
+                self.latitud, self.longitud = coordenadas
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.nombre
@@ -61,11 +70,11 @@ class Evento(models.Model):
         return f"{self.titulo} - {self.cancha.nombre}"
 
 class Reserva(models.Model):
-    cancha = models.ForeignKey(Canchas, on_delete=models.CASCADE, related_name='reservas')
-    fecha_reserva = models.DateField()
-    hora_inicio = models.TimeField()
-    hora_fin = models.TimeField()
-    reservado_por = models.ForeignKey(User, on_delete=models.CASCADE)  # Usuario que hizo la reserva
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)  # Usuario que hace la reserva
+    cancha = models.ForeignKey(Canchas, on_delete=models.CASCADE)  # Cancha a reservar
+    fecha_reserva = models.DateField()  # Fecha de la reserva
+    hora_inicio = models.TimeField()  # Hora de inicio
+    hora_fin = models.TimeField()  # Hora de fin
 
     def __str__(self):
-        return
+        return f"Reserva de {self.usuario} para {self.cancha.nombre} en {self.fecha_reserva}"

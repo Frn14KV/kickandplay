@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,7 +11,12 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    
     <style>
         body {
             font-family: 'Open Sans', sans-serif;
@@ -52,8 +58,8 @@
                         <a class="nav-link" href="/eventos/">Eventos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/about/">Sobre Nosotros</a>
-                    </li>
+                        <a class="nav-link" href="/sobre-nosotros/">Sobre Nosotros</a>
+                    </li>                    
                 </ul>
             </div>
         </div>

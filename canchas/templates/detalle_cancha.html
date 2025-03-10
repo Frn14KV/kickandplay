@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Detalle de la Cancha - {{ cancha.nombre }}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h1 class="card-title">{{ cancha.nombre }}</h1>
+        </div>
+        <div class="card-body">
+            <p><i class="bi bi-geo-alt-fill"></i> <strong>Dirección:</strong> {{ cancha.direccion }}</p>
+            
+            {% if cancha.descripcion %}
+            <h3>Descripción</h3>
+            <p>{{ cancha.descripcion }}</p>
+            {% endif %}
+            
+            {% if cancha.calificacion_avg %}
+            <h3>Calificación Promedio</h3>
+            <p>
+                <span class="stars">
+                    {% for i in "12345" %}
+                        {% if i <= cancha.calificacion_avg|floatformat:0 %}
+                            <i class="bi bi-star-fill text-warning"></i>
+                        {% else %}
+                            <i class="bi bi-star text-warning"></i>
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                <strong>{{ cancha.calificacion_avg|floatformat:1 }}/5</strong>
+            </p>
+            {% else %}
+            <p><em>Esta cancha aún no tiene calificaciones.</em></p>
+            {% endif %}
+
+            {% if comentarios %}
+            <h3>Comentarios</h3>
+            <div class="comments-section">
+                {% for comentario in comentarios %}
+                <div class="comment mb-3">
+                    <div class="comment-header">
+                        <strong>{{ comentario.usuario.username }}</strong>
+                        <span class="stars">
+                            {% for i in "12345" %}
+                                {% if i <= comentario.calificacion|floatformat:0 %}
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                {% else %}
+                                    <i class="bi bi-star text-warning"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <small class="text-muted">{{ comentario.fecha_creacion|date:"d/m/Y H:i" }}</small>
+                    </div>
+                    <div class="comment-body">
+                        <p>{{ comentario.texto }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p><em>Aún no hay comentarios para esta cancha.</em></p>
+            {% endif %}
+
+            
+            <!-- Mapa Interactivo -->
+            {% if cancha.latitud and cancha.longitud %}
+            <h3>Ubicación en el Mapa</h3>
+            <div id="map" style="height: 300px;"></div>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    var map = L.map('map').setView([{{ cancha.latitud }}, {{ cancha.longitud }}], 15);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                    }).addTo(map);
+                    L.marker([{{ cancha.latitud }}, {{ cancha.longitud }}]).addTo(map)
+                        .bindPopup("{{ cancha.nombre }} - {{ cancha.direccion }}")
+                        .openPopup();
+                });
+            </script>
+            {% endif %}
+
+            <!-- Galería de Fotos -->
+            {% if cancha.fotos.all %}
+            <h3>Galería de Fotos</h3>
+            <div class="gallery">
+                {% for foto in cancha.fotos.all %}
+                <img src="{{ foto.url }}" alt="Foto de {{ cancha.nombre }}" class="img-thumbnail">
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Lista de Eventos -->
+            {% if eventos %}
+            <h3>Próximos Eventos</h3>
+            <ul class="list-group">
+                {% for evento in eventos %}
+                <li class="list-group-item">
+                    <strong>{{ evento.titulo }}</strong>
+                    <p><i class="bi bi-calendar-event"></i> {{ evento.fecha_inicio|date:"d/m/Y H:i" }} - {{ evento.fecha_fin|date:"d/m/Y H:i" }}</p>
+                    <a href="{% url 'detalle_evento' evento.id %}" class="btn btn-sm btn-primary">Ver Detalle</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p><em>No hay eventos próximos para esta cancha.</em></p>
+            {% endif %}
+        </div>
+        <div class="card-footer text-end">
+            <a href="{% url 'lista_canchas' %}" class="btn btn-secondary">Regresar</a>
+            <a href="#" class="btn btn-primary">Reservar Cancha</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,152 @@
+/* Títulos */
+h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Tarjetas de eventos */
+.card {
+    border-radius: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Botón de más información */
+.btn-outline-primary {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+
+/*estiolos de detalles de canchas*/
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.card-header {
+    background-color: #007bff;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.card-title {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-footer {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #ddd;
+}
+
+.stars i {
+    font-size: 1.5rem;
+}
+
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.gallery img {
+    width: 100px;
+    height: auto;
+    border-radius: 5px;
+}
+
+
+/*estilos de comentarios*/
+.comments-section {
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    padding-top: 15px;
+}
+
+.comment {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.comment-header strong {
+    font-size: 1.1rem;
+}
+
+.comment-body p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.stars i {
+    font-size: 1.2rem;
+    color: #ffc107;
+}
+
+/* estilos de hmtl sobre nosotros */
+.img-fluid {
+    border-radius: 10px;
+}
+.rounded-circle {
+    border: 3px solid #ddd;
+}
+h1, h2 {
+    font-weight: bold;
+}
+
+/* estilos de el index */
+.jumbotron {
+    border-radius: 15px;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.card-header {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.card-footer .btn {
+    font-size: 0.9rem;
+}
+
+h1, h2, h3 {
+    font-weight: bold;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: #6c757d;
+}
+
+

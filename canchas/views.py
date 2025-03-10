@@ -3,7 +3,7 @@
 # Bytecode version: 3.12.0rc2 (3531)
 # Source timestamp: 2025-02-25 21:23:26 UTC (1740518606)
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.conf import settings
@@ -18,13 +18,14 @@ from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Count, Avg
-from django.shortcuts import render, redirect
-from .forms import ReservaForm
+from .forms import ReservaForm, EventoForm
+from django.contrib.auth.decorators import login_required
 
 #metodos de web
 #home
 def home(request):
-    eventos_destacados = Evento.objects.order_by('-fecha_inicio')[:6]
+    eventos_destacados = Evento.objects.order_by('-fecha')[:6]
+    print(eventos_destacados)
     return render(request, 'index.html', {
         'eventos_destacados': eventos_destacados,
     })
@@ -71,9 +72,7 @@ def lista_canchas(request):
     canchas = canchas.annotate(
         calificacion_avg=Avg('comentarios__calificacion')  # Calcula el promedio
     ).order_by('-calificacion_avg')  # Ordena de mayor a menor promedio
-
     #reservas = Reserva.objects.filter(fecha_reserva__gte=hoy)
-    print(canchas)
     return render(request, 'canchas/lista_canchas.html', {'canchas': canchas})
 
 #detalle de canchas
@@ -94,7 +93,7 @@ def mapa_canchas(request):
 
 #lista de eventos
 def lista_eventos(request):
-    eventos = Evento.objects.all().order_by('fecha_inicio')
+    eventos = Evento.objects.all().order_by('fecha')
     return render(request, 'eventos.html', {'eventos': eventos})
 
 #detalle evento
@@ -121,15 +120,51 @@ def crear_reserva(request):
 
 #lista reservas
 def lista_reservas(request):
-    reservas = Reserva.objects.filter(usuario=request.user)
+    # Recuperar todas las reservas del usuario autenticado
+    reservas = Reserva.objects.filter(usuario=request.user).order_by('-fecha_reserva', '-hora_inicio')
     return render(request, 'lista_reservas.html', {'reservas': reservas})
 
+#eliminar reservas
+@login_required
+def eliminar_reserva(request, reserva_id):
+    reserva = get_object_or_404(Reserva, id=reserva_id, usuario=request.user)
+    reserva.delete()
+    return redirect('lista_reservas')
 
+#buscar reserva
+def lista_reservas(request):
+    query = request.GET.get('q')  # Obtener el término de búsqueda
+    if query:
+        reservas = Reserva.objects.filter(
+            usuario=request.user,
+            cancha__nombre__icontains=query  # Buscar por nombre de la cancha
+        ).order_by('-fecha_reserva', '-hora_inicio')
+    else:
+        reservas = Reserva.objects.filter(usuario=request.user).order_by('-fecha_reserva', '-hora_inicio')
+
+    return render(request, 'lista_reservas.html', {'reservas': reservas, 'query': query})
+
+#detalle reserva
+def detalle_reserva(request, reserva_id):
+    reserva = get_object_or_404(Reserva, id=reserva_id, usuario=request.user)
+    return render(request, 'detalle_reserva.html', {'reserva': reserva})
 
 #calendario evento
+@login_required
 def calendario_eventos(request):
-    eventos = Evento.objects.all()  # Obtén todos los eventos
-    return render(request, 'calendario.html', {'eventos': eventos})
+    eventos = Evento.objects.filter(usuario=request.user).order_by('fecha', 'hora_inicio')
+    
+    if request.method == 'POST':
+        form = EventoForm(request.POST)
+        if form.is_valid():
+            evento = form.save(commit=False)
+            evento.usuario = request.user
+            evento.save()
+            return redirect('calendario_eventos')
+    else:
+        form = EventoForm()
+
+    return render(request, 'calendario_eventos.html', {'eventos': eventos, 'form': form})
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Canchas.objects.all()

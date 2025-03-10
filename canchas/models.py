@@ -56,18 +56,18 @@ class Partidos(models.Model):
 
     def __str__(seft):
         return f'{seft.equipo_local} vs {seft.equipo_visitante} en {seft.cancha}'
-
-
     
 class Evento(models.Model):
-    titulo = models.CharField(max_length=200)
-    descripcion = models.TextField(blank=True, null=True)
-    fecha_inicio = models.DateTimeField()
-    fecha_fin = models.DateTimeField()
-    cancha = models.ForeignKey(Canchas, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)  # Relación con el usuario
+    cancha = models.ForeignKey(Canchas, on_delete=models.CASCADE, blank=True, null=True)  # Relación con la cancha
+    titulo = models.CharField(max_length=100)  # Título del evento
+    descripcion = models.TextField(blank=True, null=True)  # Descripción opcional
+    fecha = models.DateField()  # Fecha del evento
+    hora_inicio = models.TimeField()  # Hora de inicio
+    hora_fin = models.TimeField()  # Hora de fin
 
     def __str__(self):
-        return f"{self.titulo} - {self.cancha.nombre}"
+        return f"{self.titulo} ({self.fecha})"
 
 class Reserva(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)  # Usuario que hace la reserva

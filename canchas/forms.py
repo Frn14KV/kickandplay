@@ -4,10 +4,11 @@ from .models import Evento, Reserva
 class EventoForm(forms.ModelForm):
     class Meta:
         model = Evento
-        fields = ['titulo', 'descripcion', 'fecha_inicio', 'fecha_fin', 'cancha']
+        fields = ['titulo', 'descripcion', 'fecha', 'hora_inicio', 'hora_fin']
         widgets = {
-            'fecha_inicio': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-            'fecha_fin': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'fecha': forms.DateInput(attrs={'type': 'date'}),
+            'hora_inicio': forms.TimeInput(attrs={'type': 'time'}),
+            'hora_fin': forms.TimeInput(attrs={'type': 'time'}),
         }
 
 class ReservaForm(forms.ModelForm):

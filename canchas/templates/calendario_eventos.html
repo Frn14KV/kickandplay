@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Calendario de Eventos
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center text-primary">Calendario de Eventos</h1>
+
+    <!-- Formulario para agregar eventos -->
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary w-100">Agregar Evento</button>
+    </form>
+
+    <!-- Lista de eventos -->
+    {% if eventos %}
+    <table class="table table-striped mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Título</th>
+                <th>Fecha</th>
+                <th>Hora de Inicio</th>
+                <th>Hora de Fin</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for evento in eventos %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ evento.titulo }}</td>
+                <td>{{ evento.fecha }}</td>
+                <td>{{ evento.hora_inicio }}</td>
+                <td>{{ evento.hora_fin }}</td>
+                <td>
+                    <a href="{% url 'eliminar_evento' evento.id %}" class="btn btn-danger btn-sm"
+                       onclick="return confirm('¿Estás seguro de que deseas eliminar este evento?');">
+                        Eliminar
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-warning text-center" role="alert">
+        No tienes eventos registrados.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

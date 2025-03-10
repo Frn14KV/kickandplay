@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Mis Reservas
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Mis Reservas</h1>
+    <ul class="list-group">
+        {% for reserva in reservas %}
+        <li class="list-group-item">
+            Cancha: {{ reserva.cancha.nombre }}<br>
+            Fecha: {{ reserva.fecha_reserva }}<br>
+            De {{ reserva.hora_inicio }} a {{ reserva.hora_fin }}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

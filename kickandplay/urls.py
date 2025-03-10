@@ -29,21 +29,26 @@ urlpatterns = [
     #api
     path('api/token/',                  TokenObtainPairView.as_view(), name='token_obtain_pair'), 
     path('api/token/refresh/',          TokenRefreshView.as_view(), name='token_refresh'), 
-    path('api/', include('canchas.urls')),  # Ajusta según el nombre de tu aplicación
-
+    # Ajusta según el nombre de tu aplicación
+    path('api/', include('canchas.urls')), 
+    #api
     path('admin/',                      admin.site.urls), 
-         # Ruta para la página principal
+    # Ruta para la página principal
     path('',                            views.home, name='home'), 
-        # Ruta para la lista de canchas
+    # Ruta para la lista de canchas
     path('canchas/',                    views.lista_canchas, name='canchas'),  
     path('canchas/<int:cancha_id>/',    views.detalle_cancha, name='detalle_cancha'),
-    #path('canchas/', include('canchas.urls')),
-        # Ruta para la lista de Eventos
-    #path('eventos/', include('canchas.urls')), 
+    # Ruta para la lista de Eventos
     path('eventos/',                    views.lista_eventos, name='lista_eventos'),
     path('eventos/<int:evento_id>/',    views.detalle_evento, name='detalle_evento'),
     #mapa
     path('mapa/',                       views.mapa_canchas, name='mapa_canchas'),
+    #lista reservas
+    path('reservas/nueva/',             views.crear_reserva, name='crear_reserva'),
+    path('reservas/',                   views.lista_reservas, name='lista_reservas'),
+
     # Otras rutas
     path('sobre-nosotros/',             views.sobre_nosotros, name='sobre_nosotros'),
+    #path('eventos/', include('canchas.urls')), 
+    #path('canchas/', include('canchas.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -148,5 +148,25 @@ h1, h2, h3 {
 .text-muted {
     color: #6c757d;
 }
+/*estilos de el crear reserva*/
+.card {
+    border-radius: 10px;
+}
+
+.card-header {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: #0069d9;
+    border-color: #0069d9;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
 
 

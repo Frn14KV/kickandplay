@@ -18,18 +18,16 @@ def obtener_coordenadas(direccion):
         data = response.json()
         if data['status'] == 'OK':
             coordenadas = data['results'][0]['geometry']['location']
-            print('error')
             return (coordenadas['lat'], coordenadas['lng'])
-        print('eeroro Api')
-        return
+        else:
+            print('Error en la API:', data.get('error_message', 'Sin mensaje de error'))
+            return (None, None)
     except requests.exceptions.RequestException as e:
         print(f'error de red {e}')
         return None
     except (KeyError, IndexError):
         print('error processo')
         return (None, None)
-    else:
-        pass
 
 def enviar_correo(usuario, asunto, mensaje):
     send_mail(

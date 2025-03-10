@@ -22,7 +22,10 @@ from django.db.models import Count, Avg
 #metodos de web
 #home
 def home(request):
-    return render(request, 'index.html')
+    eventos_destacados = Evento.objects.order_by('-fecha_inicio')[:6]
+    return render(request, 'index.html', {
+        'eventos_destacados': eventos_destacados,
+    })
 
 #lista de canchas
 def lista_canchas(request):
@@ -71,15 +74,16 @@ def lista_canchas(request):
     print(canchas)
     return render(request, 'canchas/lista_canchas.html', {'canchas': canchas})
 
-#lista de eventos
-def lista_eventos(request):
-    eventos = Evento.objects.select_related('cancha').all().order_by('fecha_inicio')
-    return render(request, 'eventos/lista_eventos.html', {'eventos': eventos})
-
-#detalle de un evento
-def detalle_evento(request, id):
-    evento = get_object_or_404(Evento, id=id)
-    return render(request, 'eventos/detalle_evento.html', {'evento': evento})
+#detalle de canchas
+def detalle_cancha(request, cancha_id):
+    cancha = get_object_or_404(Canchas, id=cancha_id)
+    eventos = Evento.objects.filter(cancha=cancha, fecha_inicio__gte=date.today())
+    comentarios = Comentarios.objects.filter(cancha=cancha).order_by('-fecha_creacion')
+    return render(request, 'detalle_cancha.html', {
+        'cancha': cancha,
+        'eventos': eventos,
+        'comentarios': comentarios,
+    })
 
 #mapa de las canchas
 def mapa_canchas(request):
@@ -90,6 +94,15 @@ def mapa_canchas(request):
 def lista_eventos(request):
     eventos = Evento.objects.all().order_by('fecha_inicio')
     return render(request, 'eventos.html', {'eventos': eventos})
+
+#detalle evento
+def detalle_evento(request, evento_id):
+    evento = get_object_or_404(Evento, id=evento_id)
+    return render(request, 'detalle_evento.html', {'evento': evento})
+
+#sobre nosotros
+def sobre_nosotros(request):
+    return render(request, 'sobre_nosotros.html')
 
 #calendario evento
 def calendario_eventos(request):

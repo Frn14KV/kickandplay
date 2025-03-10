@@ -27,20 +27,23 @@ from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 urlpatterns = [
     #api
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), 
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), 
+    path('api/token/',                  TokenObtainPairView.as_view(), name='token_obtain_pair'), 
+    path('api/token/refresh/',          TokenRefreshView.as_view(), name='token_refresh'), 
     path('api/', include('canchas.urls')),  # Ajusta según el nombre de tu aplicación
 
-    path('admin/', admin.site.urls), 
+    path('admin/',                      admin.site.urls), 
          # Ruta para la página principal
-    path('', views.home, name='home'), 
+    path('',                            views.home, name='home'), 
         # Ruta para la lista de canchas
-    path('canchas/', views.lista_canchas, name='canchas'),  
+    path('canchas/',                    views.lista_canchas, name='canchas'),  
+    path('canchas/<int:cancha_id>/',    views.detalle_cancha, name='detalle_cancha'),
     #path('canchas/', include('canchas.urls')),
         # Ruta para la lista de Eventos
     #path('eventos/', include('canchas.urls')), 
-    path('eventos/', views.lista_eventos, name='lista_eventos'),
-    path('eventos/<int:id>/', views.detalle_evento, name='detalle_evento'),
+    path('eventos/',                    views.lista_eventos, name='lista_eventos'),
+    path('eventos/<int:evento_id>/',    views.detalle_evento, name='detalle_evento'),
     #mapa
-    path('mapa/', views.mapa_canchas, name='mapa_canchas'),
+    path('mapa/',                       views.mapa_canchas, name='mapa_canchas'),
+    # Otras rutas
+    path('sobre-nosotros/',             views.sobre_nosotros, name='sobre_nosotros'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -41,7 +41,8 @@ urlpatterns = [
     # Ruta para la lista de Eventos
     path('eventos/',                                views.lista_eventos, name='lista_eventos'),
     path('eventos/<int:evento_id>/',                views.detalle_evento, name='detalle_evento'),
-    path('calendario/',                             views.calendario_eventos, name='calendario_eventos'),
+    #path('calendario/',                             views.calendario_eventos, name='calendario_eventos'),
+    path('calendario/cancha/<int:cancha_id>/',      views.calendario_cp, name='calendario_cancha'),
     #path('calendario/eliminar/<int:evento_id>/',    views.eliminar_evento, name='eliminar_evento'),
     #mapa
     path('mapa/',                                   views.mapa_canchas, name='mapa_canchas'),

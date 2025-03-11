@@ -25,7 +25,6 @@ from django.contrib.auth.decorators import login_required
 #home
 def home(request):
     eventos_destacados = Evento.objects.order_by('-fecha')[:6]
-    print(eventos_destacados)
     return render(request, 'index.html', {
         'eventos_destacados': eventos_destacados,
     })
@@ -78,7 +77,7 @@ def lista_canchas(request):
 #detalle de canchas
 def detalle_cancha(request, cancha_id):
     cancha = get_object_or_404(Canchas, id=cancha_id)
-    eventos = Evento.objects.filter(cancha=cancha, fecha_inicio__gte=date.today())
+    eventos = Evento.objects.filter(cancha=cancha, fecha__gte=date.today())
     comentarios = Comentarios.objects.filter(cancha=cancha).order_by('-fecha_creacion')
     return render(request, 'detalle_cancha.html', {
         'cancha': cancha,
@@ -93,7 +92,7 @@ def mapa_canchas(request):
 
 #lista de eventos
 def lista_eventos(request):
-    eventos = Evento.objects.all().order_by('fecha')
+    eventos = Evento.objects.all().order_by('-fecha')
     return render(request, 'eventos.html', {'eventos': eventos})
 
 #detalle evento
@@ -149,22 +148,47 @@ def detalle_reserva(request, reserva_id):
     reserva = get_object_or_404(Reserva, id=reserva_id, usuario=request.user)
     return render(request, 'detalle_reserva.html', {'reserva': reserva})
 
-#calendario evento
-@login_required
-def calendario_eventos(request):
-    eventos = Evento.objects.filter(usuario=request.user).order_by('fecha', 'hora_inicio')
-    
+
+#calendario
+def calendario_cp(request, cancha_id):
+    cancha = get_object_or_404(Canchas, id=cancha_id)
+    eventos = Evento.objects.filter(cancha=cancha).order_by('fecha', 'hora_inicio')
+
     if request.method == 'POST':
         form = EventoForm(request.POST)
         if form.is_valid():
             evento = form.save(commit=False)
-            evento.usuario = request.user
+            evento.cancha = cancha  # Asocia el evento a la cancha específica
             evento.save()
-            return redirect('calendario_eventos')
+            # Redirige al calendario de la misma cancha
+            return redirect('calendario_cancha', cancha_id=cancha_id)
     else:
-        form = EventoForm()
+        form = EventoForm(cancha=cancha)
 
-    return render(request, 'calendario_eventos.html', {'eventos': eventos, 'form': form})
+    return render(request, 'calendario_eventos.html', {'form': form, 'eventos': eventos, 'cancha': cancha})
+
+#editar evento desde el calendario
+def editar_evento(request, evento_id):
+    evento = get_object_or_404(Evento, id=evento_id)
+    if request.method == 'POST':
+        form = EventoForm(request.POST, instance=evento)
+        if form.is_valid():
+            form.save()
+            # Redirige al calendario de la cancha correspondiente
+            return redirect('calendario_cancha', cancha_id=evento.cancha.id)
+    else:
+        form = EventoForm(instance=evento)
+    
+    return render(request, 'editar_evento.html', {'form': form, 'evento': evento})
+
+#eliminar evento desde la cancha
+def eliminar_evento(request, evento_id):
+    evento = get_object_or_404(Evento, id=evento_id)
+    cancha_id = evento.cancha.id
+    evento.delete()
+    # Redirige al calendario de la cancha correspondiente
+    return redirect('calendario_cancha', cancha_id=cancha_id)
+
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Canchas.objects.all()

@@ -168,5 +168,11 @@ h1, h2, h3 {
     background-color: #0056b3;
     border-color: #004085;
 }
+/*estilos modal de agregar evento en la pg calenadrio*/
+/* Personaliza el modal */
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
 
 

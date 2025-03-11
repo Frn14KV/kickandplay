@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if cancha %}Calendario de {{ cancha.nombre }}{% else %}Calendario General{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center text-primary">
+        {% if cancha %}
+        Calendario de {{ cancha.nombre }}
+        {% else %}
+        Calendario General
+        {% endif %}
+    </h1>
+
+    <!-- Botón para agregar un nuevo evento -->
+    <div class="text-center mb-4">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarEventoModal">
+            Agregar Evento
+        </button>
+    </div>
+
+    <!-- Lista de eventos -->
+    {% if eventos %}
+    <table class="table table-striped mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Título</th>
+                <th>Fecha</th>
+                <th>Hora de Inicio</th>
+                <th>Hora de Fin</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for evento in eventos %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ evento.titulo }}</td>
+                <td>{{ evento.fecha }}</td>
+                <td>{{ evento.hora_inicio }}</td>
+                <td>{{ evento.hora_fin }}</td>
+                <td>
+                    <!-- Botón Editar -->
+                    <button 
+                        type="button" 
+                        class="btn btn-sm btn-outline-primary" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#editarEventoModal{{ evento.id }}">
+                        Editar
+                    </button>
+
+                    <!-- Botón Eliminar -->
+                    <a href="#" class="btn btn-sm btn-outline-danger"
+                       onclick="return confirm('¿Estás seguro de que deseas eliminar este evento?');">
+                        Eliminar
+                    </a>
+                </td>
+            </tr>
+
+            <!-- Modal para Editar Evento -->
+            <div class="modal fade" id="editarEventoModal{{ evento.id }}" tabindex="-1" aria-labelledby="editarEventoModalLabel{{ evento.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title" id="editarEventoModalLabel{{ evento.id }}">Editar Evento</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="post" action="{% url 'calendario_cancha' cancha.id %}">
+                            {% csrf_token %}
+                            <!-- Personaliza los campos del formulario -->
+                            <div class="modal-body">
+                                {{ form.as_p }}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-warning text-center" role="alert">
+        No hay eventos registrados.
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal para Agregar Evento -->
+<div class="modal fade" id="agregarEventoModal" tabindex="-1" aria-labelledby="agregarEventoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="agregarEventoModalLabel">Agregar Nuevo Evento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% if cancha %}{% url 'calendario_cancha' cancha.id %}{% else %}{% url 'calendario' %}{% endif %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    {{ form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Evento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

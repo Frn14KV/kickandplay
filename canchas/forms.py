@@ -4,11 +4,49 @@ from .models import Evento, Reserva
 class EventoForm(forms.ModelForm):
     class Meta:
         model = Evento
-        fields = ['titulo', 'descripcion', 'fecha_inicio', 'fecha_fin', 'cancha']
+        fields = ['titulo', 'descripcion', 'fecha', 'hora_inicio', 'hora_fin', 'cancha']
         widgets = {
-            'fecha_inicio': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-            'fecha_fin': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'titulo': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Título del Evento',
+            }),
+            'descripcion': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Descripción del Evento',
+                'rows': 3,
+            }),
+            'fecha': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control',
+            }),
+            'hora_inicio': forms.TimeInput(attrs={
+                'type': 'time',
+                'class': 'form-control',
+            }),
+            'hora_fin': forms.TimeInput(attrs={
+                'type': 'time',
+                'class': 'form-control',
+            }),
+            'cancha': forms.Select(attrs={
+                'class': 'form-select',
+            }),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        hora_inicio = cleaned_data.get('hora_inicio')
+        hora_fin = cleaned_data.get('hora_fin')
+        if hora_inicio and hora_fin and hora_inicio >= hora_fin:
+            raise forms.ValidationError("La hora de inicio debe ser antes que la hora de fin.")
+        return cleaned_data
+    
+    def __init__(self, *args, **kwargs):
+        cancha = kwargs.pop('cancha', None)  # Recupera la cancha del contexto
+        super().__init__(*args, **kwargs)
+        if cancha:
+            self.fields['cancha'].initial = cancha
+            self.fields['cancha'].widget.attrs['readonly'] = True
+
 
 class ReservaForm(forms.ModelForm):
     class Meta:

@@ -62,6 +62,8 @@
                             {{ cancha.total_comentarios|default:0 }}
                         </p>
                         <a href="/canchas/{{ cancha.id }}" class="btn btn-primary btn-sm">Ver Detalles</a>
+                        <!-- Nuevo Botón Ver Calendario -->
+                        <a href="{% url 'calendario_cancha' cancha_id=cancha.id %}" class="btn btn-sm btn-outline-success">Ver Calendario</a>
                     </div>
                 </div>
             </div>

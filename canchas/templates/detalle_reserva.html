@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Detalle de Reserva
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Tarjeta de detalles de la reserva -->
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Detalle de Reserva</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Información de la cancha -->
+                    <div class="mb-4 text-center">
+                        <h4 class="text-secondary">{{ reserva.cancha.nombre }}</h4>
+                        <img src="{{ reserva.cancha.imagen_url }}" alt="Imagen de la Cancha" class="img-fluid rounded" style="max-height: 200px;" loading="lazy">
+                    </div>
+                    
+                    <!-- Detalles de la reserva -->
+                    <dl class="row">
+                        <dt class="col-sm-4">Fecha de la Reserva:</dt>
+                        <dd class="col-sm-8">{{ reserva.fecha_reserva }}</dd>
+
+                        <dt class="col-sm-4">Hora de Inicio:</dt>
+                        <dd class="col-sm-8">{{ reserva.hora_inicio }}</dd>
+
+                        <dt class="col-sm-4">Hora de Fin:</dt>
+                        <dd class="col-sm-8">{{ reserva.hora_fin }}</dd>
+
+                        <dt class="col-sm-4">Usuario:</dt>
+                        <dd class="col-sm-8">{{ reserva.usuario.username }}</dd>
+                    </dl>
+
+                    <!-- Botones de acción -->
+                    <div class="text-center mt-4">
+                        <a href="{% url 'lista_reservas' %}" class="btn btn-secondary">
+                            Volver al Listado
+                        </a>
+                        <a href="{% url 'eliminar_reserva' reserva.id %}" class="btn btn-danger"
+                           onclick="return confirm('¿Estás seguro de que deseas eliminar esta reserva?');">
+                            Eliminar Reserva
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

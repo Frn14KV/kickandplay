@@ -9,13 +9,13 @@ Mapa de Canchas - KickandPlay
 <div class="container mt-5">
     <h1 class="text-center text-primary">Mapa de Canchas</h1>
     <p class="text-center text-muted">Explora las canchas disponibles y tu ubicación actual.</p>
-
     <!-- Mapa -->
     <div id="map" style="height: 500px;"></div>
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function() 
+    {
         // Inicializar el mapa con una ubicación predeterminada (Bernardsville, NJ)
         var map = L.map('map').setView([40.713, -74.013], 12);
 
@@ -29,32 +29,37 @@ Mapa de Canchas - KickandPlay
         var canchas = [
             {% for cancha in canchas %}
             {
-                nombre: "{{ cancha.nombre }}",
+                nombre: "{{ cancha.nombre|escapejs }}",
                 latitud: {{ cancha.latitud }},
                 longitud: {{ cancha.longitud }},
-                direccion: "{{ cancha.direccion }}",
-                imagen_url: "{{ cancha.imagen_url }}",  // URL completa de la imagen
-                detalle_url: "{% url 'detalle_cancha' cancha.id %}"  // URL para "Ver Cancha"
+                direccion: "{{ cancha.direccion|escapejs }}",
+                imagen_url: "{{ cancha.imagen_url|default:'https://fluofgltdazuwfgpnctl.supabase.co/storage/v1/object/public/media//k&plogo.jpg'|escapejs }}",  // Imagen predeterminada si no hay URL
+                detalle_url: "{% url 'detalle_cancha' cancha.id %}"
             },
             {% endfor %}
         ];
 
-        // Iterar sobre las canchas y agregar marcadores al mapa
-        canchas.forEach(function(cancha) {
-            if (cancha.latitud && cancha.longitud) {
-                const popupContent = `
-                    <div style="text-align: center;">
-                        <img src="${cancha.imagen_url}" alt="${cancha.nombre}" style="width: 100px; height: 75px; border-radius: 10px; margin-bottom: 5px;">
-                        <strong>${cancha.nombre}</strong><br>
-                        ${cancha.direccion}<br>
-                        <a href="${cancha.detalle_url}" class="btn btn-primary btn-sm text-white">Ver Cancha</a>
-                    </div>
-                `;
-                L.marker([cancha.latitud, cancha.longitud])
-                    .addTo(map)
-                    .bindPopup(popupContent);
-            }
-        });
+       // Iterar sobre las canchas y agregar marcadores al mapa
+       canchas.forEach(function(cancha) {
+        if (cancha.latitud && cancha.longitud) {
+            // Validar y usar imagen predeterminada si es necesario
+            const imagenUrl = cancha.imagen_url && cancha.imagen_url.trim() !== "" 
+                ? cancha.imagen_url 
+                : "https://fluofgltdazuwfgpnctl.supabase.co/storage/v1/object/public/media//k&plogo.jpg";
+
+            const popupContent = `
+                <div style="text-align: center;">
+                    <img src="${imagenUrl}" alt="${cancha.nombre}" style="width: 100px; height: 75px; border-radius: 10px; margin-bottom: 5px;">
+                    <strong>${cancha.nombre}</strong><br>
+                    ${cancha.direccion}<br>
+                    <a href="${cancha.detalle_url}" class="btn btn-primary btn-sm text-white">Ver Cancha</a>
+                </div>
+            `;
+            L.marker([cancha.latitud, cancha.longitud])
+                .addTo(map)
+                .bindPopup(popupContent);
+        }
+    });
 
         // Mostrar la ubicación actual del usuario
         if (navigator.geolocation) {
@@ -84,7 +89,8 @@ Mapa de Canchas - KickandPlay
         } else {
             console.error("La geolocalización no está soportada por este navegador.");
         }
-    });
+    }
+    );
 </script>
 
 <!-- Estilos para personalizar el mapa -->

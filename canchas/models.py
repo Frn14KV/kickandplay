@@ -6,7 +6,6 @@ class Canchas(models.Model):
     nombre = models.CharField(max_length=100)
     direccion = models.CharField(max_length=255)
     capacidad = models.PositiveIntegerField(default=50)
-    #imagen = models.ImageField(upload_to='canchas/', blank=True, null=True)  # Imagen opcional
     imagen_url = models.URLField(blank=True, null=True)
     latitud = models.FloatField(null=True, blank=True)
     longitud = models.FloatField(null=True, blank=True)
@@ -18,6 +17,10 @@ class Canchas(models.Model):
             if coordenadas:
                 self.latitud, self.longitud = coordenadas
         super().save(*args, **kwargs)
+
+    def get_imagen_url(self):
+        """Retorna la URL de la imagen o una predeterminada."""
+        return self.imagen_url or "https://fluofgltdazuwfgpnctl.supabase.co/storage/v1/object/public/media//k&plogo.jpg"
 
     def __str__(self):
         return self.nombre

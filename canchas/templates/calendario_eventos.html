@@ -21,7 +21,7 @@
         </button>
     </div>
 
-    <!-- Lista de eventos -->
+    <!-- Tabla de eventos -->
     {% if eventos %}
     <table class="table table-striped mt-4">
         <thead class="table-dark">
@@ -43,45 +43,23 @@
                 <td>{{ evento.hora_inicio }}</td>
                 <td>{{ evento.hora_fin }}</td>
                 <td>
-                    <!-- Botón Editar -->
+                    <!-- Botón para Editar -->
                     <button 
                         type="button" 
                         class="btn btn-sm btn-outline-primary" 
                         data-bs-toggle="modal" 
-                        data-bs-target="#editarEventoModal{{ evento.id }}">
+                        data-bs-target="#editarEventoModal"
+                        onclick="cargarDatosEvento('{{ evento.id }}')">
                         Editar
                     </button>
 
-                    <!-- Botón Eliminar -->
-                    <a href="#" class="btn btn-sm btn-outline-danger"
+                    <!-- Botón para Eliminar -->
+                    <a href="{% url 'eliminar_evento' evento.id %}" class="btn btn-sm btn-outline-danger"
                        onclick="return confirm('¿Estás seguro de que deseas eliminar este evento?');">
                         Eliminar
                     </a>
                 </td>
             </tr>
-
-            <!-- Modal para Editar Evento -->
-            <div class="modal fade" id="editarEventoModal{{ evento.id }}" tabindex="-1" aria-labelledby="editarEventoModalLabel{{ evento.id }}" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header bg-primary text-white">
-                            <h5 class="modal-title" id="editarEventoModalLabel{{ evento.id }}">Editar Evento</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <form method="post" action="{% url 'calendario_cancha' cancha.id %}">
-                            {% csrf_token %}
-                            <!-- Personaliza los campos del formulario -->
-                            <div class="modal-body">
-                                {{ form.as_p }}
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
             {% endfor %}
         </tbody>
     </table>
@@ -90,6 +68,58 @@
         No hay eventos registrados.
     </div>
     {% endif %}
+</div>
+
+<!-- Modal único para Editar Evento -->
+<div class="modal fade" id="editarEventoModal" tabindex="-1" aria-labelledby="editarEventoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="editarEventoModalLabel">Editar Evento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formEditarEvento" method="post" action="">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <!-- Campos dinámicos -->
+                    <input type="hidden" id="evento_id" name="evento_id">
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="titulo" name="titulo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha" class="form-label">Fecha</label>
+                        <input type="date" class="form-control" id="fecha" name="fecha" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="hora_inicio" class="form-label">Hora de Inicio</label>
+                        <input type="time" class="form-control" id="hora_inicio" name="hora_inicio" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="hora_fin" class="form-label">Hora de Fin</label>
+                        <input type="time" class="form-control" id="hora_fin" name="hora_fin" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cancha" class="form-label">Cancha</label>
+                        <select id="cancha" name="cancha" class="form-select">
+                            <option value="">Seleccione una cancha</option>
+                            {% for cancha in canchas %}
+                            <option value="{{ cancha.id }}">{{ cancha.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <!-- Modal para Agregar Evento -->
@@ -113,4 +143,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}

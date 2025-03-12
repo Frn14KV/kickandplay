@@ -3,6 +3,7 @@
 # Bytecode version: 3.12.0rc2 (3531)
 # Source timestamp: 2025-02-25 21:23:26 UTC (1740518606)
 
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
@@ -148,7 +149,6 @@ def detalle_reserva(request, reserva_id):
     reserva = get_object_or_404(Reserva, id=reserva_id, usuario=request.user)
     return render(request, 'detalle_reserva.html', {'reserva': reserva})
 
-
 #calendario
 def calendario_cp(request, cancha_id):
     cancha = get_object_or_404(Canchas, id=cancha_id)
@@ -167,19 +167,33 @@ def calendario_cp(request, cancha_id):
 
     return render(request, 'calendario_eventos.html', {'form': form, 'eventos': eventos, 'cancha': cancha})
 
+#obtener evento
+def obtener_evento(request, evento_id):
+    evento = get_object_or_404(Evento, id=evento_id)
+    data = {
+        "titulo": evento.titulo,
+        "descripcion": evento.descripcion,
+        "fecha": evento.fecha,
+        "hora_inicio": evento.hora_inicio,
+        "hora_fin": evento.hora_fin,
+        "cancha": evento.cancha.id,  
+    }
+    return JsonResponse(data)
+
 #editar evento desde el calendario
 def editar_evento(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
     if request.method == 'POST':
-        form = EventoForm(request.POST, instance=evento)
+        form = EventoForm(request.POST, instance=evento, cancha=evento.cancha)
         if form.is_valid():
-            form.save()
-            # Redirige al calendario de la cancha correspondiente
-            return redirect('calendario_cancha', cancha_id=evento.cancha.id)
+            evento = form.save(commit=False)
+            evento.usuario = request.user  # Asegura que el usuario esté asignado
+            evento.save()
+            return JsonResponse({"success": True})  # Respuesta para AJAX
     else:
-        form = EventoForm(instance=evento)
-    
-    return render(request, 'editar_evento.html', {'form': form, 'evento': evento})
+        form = EventoForm(instance=evento, cancha=evento.cancha)
+        
+    return JsonResponse({"success": False, "errors": form.errors}, status=400)
 
 #eliminar evento desde la cancha
 def eliminar_evento(request, evento_id):
@@ -188,7 +202,6 @@ def eliminar_evento(request, evento_id):
     evento.delete()
     # Redirige al calendario de la cancha correspondiente
     return redirect('calendario_cancha', cancha_id=cancha_id)
-
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Canchas.objects.all()

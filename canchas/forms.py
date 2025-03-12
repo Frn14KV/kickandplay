@@ -39,13 +39,14 @@ class EventoForm(forms.ModelForm):
         if hora_inicio and hora_fin and hora_inicio >= hora_fin:
             raise forms.ValidationError("La hora de inicio debe ser antes que la hora de fin.")
         return cleaned_data
-    
+
     def __init__(self, *args, **kwargs):
         cancha = kwargs.pop('cancha', None)  # Recupera la cancha del contexto
         super().__init__(*args, **kwargs)
+
         if cancha:
             self.fields['cancha'].initial = cancha
-            self.fields['cancha'].widget.attrs['readonly'] = True
+            self.fields['cancha'].widget.attrs['readonly'] = True  # Alternativamente: disabled
 
 
 class ReservaForm(forms.ModelForm):

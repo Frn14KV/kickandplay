@@ -36,12 +36,12 @@
         </thead>
         <tbody>
             {% for evento in eventos %}
-            <tr>
+            <tr id="evento-{{ evento.id }}">
                 <td>{{ forloop.counter }}</td>
-                <td>{{ evento.titulo }}</td>
-                <td>{{ evento.fecha }}</td>
-                <td>{{ evento.hora_inicio }}</td>
-                <td>{{ evento.hora_fin }}</td>
+                <td class="evento-titulo">{{ evento.titulo }}</td> <!-- Agregado: clase 'evento-titulo' -->
+                <td class="evento-fecha">{{ evento.fecha }}</td> <!-- Agregado: clase 'evento-fecha' -->
+                <td class="evento-hora-inicio">{{ evento.hora_inicio }}</td> <!-- Agregado: clase 'evento-hora-inicio' -->
+                <td class="evento-hora-fin">{{ evento.hora_fin }}</td> <!-- Agregado: clase 'evento-hora-fin' -->
                 <td>
                     <!-- Botón para Editar -->
                     <button 
@@ -55,7 +55,7 @@
 
                     <!-- Botón para Eliminar -->
                     <a href="{% url 'eliminar_evento' evento.id %}" class="btn btn-sm btn-outline-danger"
-                       onclick="return confirm('¿Estás seguro de que deseas eliminar este evento?');">
+                    onclick="return confirm('¿Estás seguro de que deseas eliminar este evento?');">
                         Eliminar
                     </a>
                 </td>
@@ -78,7 +78,7 @@
                 <h5 class="modal-title" id="editarEventoModalLabel">Editar Evento</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="formEditarEvento" method="post" action="">
+            <form id="formEditarEvento" method="post" action="/evento/editar/{evento_id}/">
                 {% csrf_token %}
                 <div class="modal-body">
                     <!-- Campos dinámicos -->
@@ -144,4 +144,6 @@
     </div>
 </div>
 
+<!-- Incluir el archivo JavaScript -->
+<script src="/static/js/editar_evento.js"></script>
 {% endblock %}

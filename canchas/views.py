@@ -153,6 +153,7 @@ def detalle_reserva(request, reserva_id):
 def calendario_cp(request, cancha_id):
     cancha = get_object_or_404(Canchas, id=cancha_id)
     eventos = Evento.objects.filter(cancha=cancha).order_by('fecha', 'hora_inicio')
+    canchas = Canchas.objects.all()  # Aquí se envían todas las canchas
 
     if request.method == 'POST':
         form = EventoForm(request.POST)
@@ -165,8 +166,12 @@ def calendario_cp(request, cancha_id):
     else:
         form = EventoForm(cancha=cancha)
 
-    return render(request, 'calendario_eventos.html', {'form': form, 'eventos': eventos, 'cancha': cancha})
-
+    return render(request, 'calendario_eventos.html', {
+        'form': form,
+        'eventos': eventos,
+        'cancha': cancha,
+        'canchas': canchas,  # Asegúrate de incluir todas las canchas aquí
+    })
 #obtener evento
 def obtener_evento(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
@@ -189,12 +194,20 @@ def editar_evento(request, evento_id):
             evento = form.save(commit=False)
             evento.usuario = request.user  # Asegura que el usuario esté asignado
             evento.save()
-            return JsonResponse({"success": True})  # Respuesta para AJAX
-    else:
-        form = EventoForm(instance=evento, cancha=evento.cancha)
-        
-    return JsonResponse({"success": False, "errors": form.errors}, status=400)
-
+            return JsonResponse({
+                "success": True,
+                "evento": {
+                    "titulo": evento.titulo,
+                    "fecha": str(evento.fecha),
+                    "hora_inicio": str(evento.hora_inicio),
+                    "hora_fin": str(evento.hora_fin),
+                    "descripcion": evento.descripcion
+                }
+            }) # Respuesta para AJAX
+        else:
+            form = EventoForm(instance=evento, cancha=evento.cancha)
+            return JsonResponse({"success": False, "errors": form.errors}, status=400)
+    return JsonResponse({"success": False, "message": "Método no permitido"}, status=405)
 #eliminar evento desde la cancha
 def eliminar_evento(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)

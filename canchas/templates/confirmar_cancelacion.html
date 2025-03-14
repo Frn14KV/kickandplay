@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Confirmar Cancelación
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center text-danger">Cancelar Reserva</h1>
+    <p class="text-center">¿Estás seguro de que deseas cancelar la reserva de la cancha <strong>{{ reserva.cancha.nombre }}</strong>?</p>
+    <p class="text-center"><strong>Fecha:</strong> {{ reserva.fecha_reserva }}</p>
+    <p class="text-center"><strong>Hora:</strong> {{ reserva.hora_inicio }} - {{ reserva.hora_fin }}</p>
+    <div class="text-center mt-4">
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sí, Cancelar</button>
+            <a href="{% url 'lista_reservas' %}" class="btn btn-secondary">No, Volver</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

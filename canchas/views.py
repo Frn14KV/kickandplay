@@ -1,8 +1,3 @@
-# Decompiled with PyLingual (https://pylingual.io)
-# Internal filename: C:\Users\villa\Django\kicknplay\canchas\views.py
-# Bytecode version: 3.12.0rc2 (3531)
-# Source timestamp: 2025-02-25 21:23:26 UTC (1740518606)
-
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -19,7 +14,7 @@ from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Count, Avg
-from .forms import ReservaForm, EventoForm
+from .forms import ReservaForm, EventoForm, ComentarioForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
@@ -158,29 +153,54 @@ def confirmacion_reserva(request, reserva_id):
 
 #lista reservas
 def lista_reservas(request):
-    # Recuperar todas las reservas del usuario autenticado
-    reservas = Reserva.objects.filter(usuario=request.user).order_by('-fecha_reserva', '-hora_inicio')
-    return render(request, 'lista_reservas.html', {'reservas': reservas})
+     # Filtrar reservas por usuario
+    reservas_futuras = Reserva.objects.filter(usuario=request.user, fecha_reserva__gte=date.today()).order_by('fecha_reserva', 'hora_inicio')
+    reservas_pasadas = Reserva.objects.filter(usuario=request.user, fecha_reserva__lt=date.today()).order_by('-fecha_reserva', '-hora_inicio')
 
+    return render(request, 'lista_reservas.html', {
+        'reservas_futuras': reservas_futuras,
+        'reservas_pasadas': reservas_pasadas,
+    })
 #eliminar reservas
 @login_required
-def eliminar_reserva(request, reserva_id):
+def cancelar_reserva(request, reserva_id):
+    # Obtener la reserva correspondiente o mostrar un error 404 si no existe
     reserva = get_object_or_404(Reserva, id=reserva_id, usuario=request.user)
-    reserva.delete()
-    return redirect('lista_reservas')
 
-#buscar reserva
-def lista_reservas(request):
-    query = request.GET.get('q')  # Obtener el término de búsqueda
-    if query:
-        reservas = Reserva.objects.filter(
-            usuario=request.user,
-            cancha__nombre__icontains=query  # Buscar por nombre de la cancha
-        ).order_by('-fecha_reserva', '-hora_inicio')
-    else:
-        reservas = Reserva.objects.filter(usuario=request.user).order_by('-fecha_reserva', '-hora_inicio')
+    if request.method == 'POST':
+        # Eliminar la reserva y mostrar un mensaje de éxito
+        reserva.delete()
+        messages.success(request, "La reserva ha sido cancelada correctamente.")
+        return redirect('lista_reservas')  # Redirigir a la lista de reservas
 
-    return render(request, 'lista_reservas.html', {'reservas': reservas, 'query': query})
+    # Renderizar la página de confirmación de cancelación
+    return render(request, 'confirmar_cancelacion.html', {'reserva': reserva})
+
+#dejar comentario
+@login_required
+def dejar_comentario(request, cancha_id):
+    cancha = get_object_or_404(Canchas, id=cancha_id)
+
+    if request.method == 'POST':
+        texto = request.POST.get('texto')
+        calificacion = request.POST.get('calificacion')
+
+        # Validar que ambos campos estén completos
+        if not texto or not calificacion:
+            messages.error(request, "Por favor, completa todos los campos.")
+            return redirect('detalle_cancha', cancha_id=cancha.id)
+
+        # Crear el comentario
+        Comentarios.objects.create(
+            user=request.user,
+            cancha=cancha,
+            texto=texto,
+            calificacion=int(calificacion)
+        )
+        messages.success(request, "¡Comentario agregado con éxito!")
+        return redirect('detalle_cancha', cancha_id=cancha.id)
+
+    return redirect('detalle_cancha', cancha_id=cancha.id)
 
 #detalle reserva
 def detalle_reserva(request, reserva_id):

@@ -12,7 +12,32 @@ Detalle de la Cancha - {{ cancha.nombre }}
         </div>
         <div class="card-body">
             <p><i class="bi bi-geo-alt-fill"></i> <strong>Dirección:</strong> {{ cancha.direccion }}</p>
+                        <!-- Mapa Interactivo -->
+                        {% if cancha.latitud and cancha.longitud %}
+                        <h3>Ubicación en el Mapa</h3>
+                        <div id="map" style="height: 300px;"></div>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                var map = L.map('map').setView([{{ cancha.latitud }}, {{ cancha.longitud }}], 15);
+                                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                    maxZoom: 19,
+                                }).addTo(map);
+                                L.marker([{{ cancha.latitud }}, {{ cancha.longitud }}]).addTo(map)
+                                    .bindPopup("{{ cancha.nombre }} - {{ cancha.direccion }}")
+                                    .openPopup();
+                            });
+                        </script>
+                        {% endif %}
             
+                        <!-- Galería de Fotos -->
+                        {% if cancha.fotos.all %}
+                        <h3>Galería de Fotos</h3>
+                        <div class="gallery">
+                            {% for foto in cancha.fotos.all %}
+                            <img src="{{ foto.url }}" alt="Foto de {{ cancha.nombre }}" class="img-thumbnail">
+                            {% endfor %}
+                        </div>
+                        {% endif %}
             {% if cancha.descripcion %}
             <h3>Descripción</h3>
             <p>{{ cancha.descripcion }}</p>
@@ -64,33 +89,24 @@ Detalle de la Cancha - {{ cancha.nombre }}
             <p><em>Aún no hay comentarios para esta cancha.</em></p>
             {% endif %}
 
-            
-            <!-- Mapa Interactivo -->
-            {% if cancha.latitud and cancha.longitud %}
-            <h3>Ubicación en el Mapa</h3>
-            <div id="map" style="height: 300px;"></div>
-            <script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    var map = L.map('map').setView([{{ cancha.latitud }}, {{ cancha.longitud }}], 15);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 19,
-                    }).addTo(map);
-                    L.marker([{{ cancha.latitud }}, {{ cancha.longitud }}]).addTo(map)
-                        .bindPopup("{{ cancha.nombre }} - {{ cancha.direccion }}")
-                        .openPopup();
-                });
-            </script>
-            {% endif %}
+            <h3>Dejar un Comentario</h3>
+            <form method="post" action="{% url 'dejar_comentario' cancha.id %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <textarea name="texto" class="form-control" rows="3" placeholder="Escribe tu comentario aquí..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <select name="calificacion" class="form-select">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Enviar</button>
+            </form>
 
-            <!-- Galería de Fotos -->
-            {% if cancha.fotos.all %}
-            <h3>Galería de Fotos</h3>
-            <div class="gallery">
-                {% for foto in cancha.fotos.all %}
-                <img src="{{ foto.url }}" alt="Foto de {{ cancha.nombre }}" class="img-thumbnail">
-                {% endfor %}
-            </div>
-            {% endif %}
 
             <!-- Lista de Eventos -->
             {% if eventos %}

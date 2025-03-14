@@ -27,37 +27,38 @@ from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 urlpatterns = [
     #api
-    path('api/token/',                              TokenObtainPairView.as_view(), name='token_obtain_pair'), 
-    path('api/token/refresh/',                      TokenRefreshView.as_view(), name='token_refresh'), 
+    path('api/token/',                                  TokenObtainPairView.as_view(), name='token_obtain_pair'), 
+    path('api/token/refresh/',                          TokenRefreshView.as_view(), name='token_refresh'), 
     # Ajusta según el nombre de tu aplicación
     path('api/', include('canchas.urls')), 
     #api
-    path('admin/',                                  admin.site.urls), 
+    path('admin/',                                      admin.site.urls), 
     # Ruta para la página principal
-    path('',                                        views.home, name='home'), 
+    path('',                                            views.home, name='home'), 
     # Ruta para la lista de canchas
-    path('canchas/',                                views.lista_canchas, name='canchas'),  
-    path('canchas/<int:cancha_id>/',                views.detalle_cancha, name='detalle_cancha'),
+    path('canchas/',                                    views.lista_canchas, name='canchas'),  
+    path('canchas/<int:cancha_id>/',                    views.detalle_cancha, name='detalle_cancha'),
+    path('canchas/<int:cancha_id>/dejar_comentario/',   views.dejar_comentario, name='dejar_comentario'),
     # Ruta para la lista de Eventos
-    path('eventos/',                                views.lista_eventos, name='lista_eventos'),
-    path('eventos/<int:evento_id>/',                views.detalle_evento, name='detalle_evento'),
+    path('eventos/',                                    views.lista_eventos, name='lista_eventos'),
+    path('eventos/<int:evento_id>/',                    views.detalle_evento, name='detalle_evento'),
      # Otras rutas
-    path('evento/editar/<int:evento_id>/',          views.editar_evento, name='editar_evento'),
-    #path('calendario/',                             views.calendario_eventos, name='calendario_eventos'),
-    path('calendario/cancha/<int:cancha_id>/',      views.calendario_cp, name='calendario_cancha'),
-    path('api/eventos/<int:evento_id>/',            views.obtener_evento, name='obtener_evento'),
-    path('calendario/eliminar/<int:evento_id>/',    views.eliminar_evento, name='eliminar_evento'),
+    path('evento/editar/<int:evento_id>/',              views.editar_evento, name='editar_evento'),
+    #path('calendario/',                                    views.calendario_eventos, name='calendario_eventos'),
+    path('calendario/cancha/<int:cancha_id>/',          views.calendario_cp, name='calendario_cancha'),
+    path('api/eventos/<int:evento_id>/',                views.obtener_evento, name='obtener_evento'),
+    path('calendario/eliminar/<int:evento_id>/',        views.eliminar_evento, name='eliminar_evento'),
     #mapa
-    path('mapa/',                                   views.mapa_canchas, name='mapa_canchas'),
+    path('mapa/',                                       views.mapa_canchas, name='mapa_canchas'),
     #lista reservas
-    path('reservas/nueva/',                         views.reservar_cancha, name='crear_reserva'),
-    path('reservar_cancha/<int:cancha_id>/',        views.reservar_cancha, name='reservar_cancha'),
-    path('confirmacion_reserva/<int:reserva_id>/',  views.confirmacion_reserva, name='confirmacion_reserva'),
-    path('reservas/',                               views.lista_reservas, name='lista_reservas'),
-    path('reservas/eliminar/<int:reserva_id>/',     views.eliminar_reserva, name='eliminar_reserva'),
-    path('reservas/<int:reserva_id>/',              views.detalle_reserva, name='detalle_reserva'),
+    path('reservas/nueva/',                             views.reservar_cancha, name='crear_reserva'),
+    path('reservar_cancha/<int:cancha_id>/',            views.reservar_cancha, name='reservar_cancha'),
+    path('confirmacion_reserva/<int:reserva_id>/',      views.confirmacion_reserva, name='confirmacion_reserva'),
+    path('reservas/',                                   views.lista_reservas, name='lista_reservas'),
+    path('reservas/eliminar/<int:reserva_id>/',         views.cancelar_reserva, name='eliminar_reserva'),
+    path('reservas/<int:reserva_id>/',                  views.detalle_reserva, name='detalle_reserva'),
     # Otras rutas
-    path('sobre-nosotros/',                         views.sobre_nosotros, name='sobre_nosotros'),
+    path('sobre-nosotros/',                             views.sobre_nosotros, name='sobre_nosotros'),
     #path('eventos/', include('canchas.urls')), 
     #path('canchas/', include('canchas.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

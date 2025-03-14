@@ -43,6 +43,20 @@
                 <td class="evento-hora-inicio">{{ evento.hora_inicio }}</td> <!-- Agregado: clase 'evento-hora-inicio' -->
                 <td class="evento-hora-fin">{{ evento.hora_fin }}</td> <!-- Agregado: clase 'evento-hora-fin' -->
                 <td>
+                        <!-- Botón para Reservar -->
+                    <a href="#" class="btn btn-sm btn-outline-success">
+                        Reservar
+                    </a>
+                    <!-- Botón para Detalles -->
+                    <button 
+                        type="button" 
+                        class="btn btn-sm btn-outline-primary" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#detallesEventoModal"
+                        onclick="cargarDetallesEvento('{{ evento.id }}')">
+                        Ver Detalles
+                    </button>
+
                     <!-- Botón para Editar -->
                     <button 
                         type="button" 
@@ -121,6 +135,30 @@
         </div>
     </div>
 </div>
+
+<!-- Modal para Detalles del Evento -->
+<div class="modal fade" id="detallesEventoModal" tabindex="-1" aria-labelledby="detallesEventoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="detallesEventoModalLabel">Detalles del Evento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Título:</strong> <span id="detalleTitulo"></span></p>
+                <p><strong>Descripción:</strong> <span id="detalleDescripcion"></span></p>
+                <p><strong>Fecha:</strong> <span id="detalleFecha"></span></p>
+                <p><strong>Hora de Inicio:</strong> <span id="detalleHoraInicio"></span></p>
+                <p><strong>Hora de Fin:</strong> <span id="detalleHoraFin"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <a href="#" id="reservarBoton" class="btn btn-success">Reservar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- Modal para Agregar Evento -->
 <div class="modal fade" id="agregarEventoModal" tabindex="-1" aria-labelledby="agregarEventoModalLabel" aria-hidden="true">

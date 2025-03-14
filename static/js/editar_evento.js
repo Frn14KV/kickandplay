@@ -21,6 +21,33 @@ function cargarDatosEvento(eventoId) {
         .catch(error => console.error('Error al cargar los datos del evento:', error));
 }
 
+console.log("Archivo editar_evento.js cargado correctamente.");
+function cargarDetallesEvento(eventoId) {
+    console.log(`Cargando detalles para el evento con ID: ${eventoId}`);
+    fetch(`/api/eventos/${eventoId}/`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("No se pudo cargar el evento.");
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Actualiza los campos del modal con los datos del evento
+            document.querySelector('#detalleTitulo').textContent = data.titulo || "Sin título";
+            document.querySelector('#detalleDescripcion').textContent = data.descripcion || "Sin descripción";
+            document.querySelector('#detalleFecha').textContent = data.fecha || "Sin fecha";
+            document.querySelector('#detalleHoraInicio').textContent = data.hora_inicio || "Sin hora inicio";
+            document.querySelector('#detalleHoraFin').textContent = data.hora_fin || "Sin hora fin";
+            // Actualiza el botón de reserva con la URL correspondiente
+            const reservarBoton = document.querySelector('#reservarBoton');
+            if (reservarBoton) {
+                reservarBoton.setAttribute('href', `/reservar_evento/${eventoId}/`);
+            }
+        })
+        .catch(error => console.error("Error al cargar los detalles del evento:", error));
+}
+
+
 // Manejar el envío del formulario de edición con AJAX
 document.addEventListener('DOMContentLoaded', function() {
     console.log("El DOM está completamente cargado y listo.");

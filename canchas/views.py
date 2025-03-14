@@ -21,6 +21,7 @@ from rest_framework.response import Response
 from django.db.models import Count, Avg
 from .forms import ReservaForm, EventoForm
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 #metodos de web
 #home
@@ -106,17 +107,54 @@ def sobre_nosotros(request):
     return render(request, 'sobre_nosotros.html')
 
 #crear reserva
-def crear_reserva(request):
+@login_required
+def reservar_cancha(request, cancha_id):
+    # Obtener la cancha especificada o mostrar un error 404
+    cancha = get_object_or_404(Canchas, id=cancha_id)
+
     if request.method == 'POST':
-        form = ReservaForm(request.POST)
-        if form.is_valid():
-            reserva = form.save(commit=False)
-            reserva.usuario = request.user  # Asocia al usuario autenticado
-            reserva.save()
-            return redirect('lista_reservas')  # Redirige a una página que muestre las reservas
-    else:
-        form = ReservaForm()
-    return render(request, 'crear_reserva.html', {'form': form})
+        # Recuperar datos del formulario
+        fecha_reserva = request.POST.get('fecha_reserva')
+        hora_inicio = request.POST.get('hora_inicio')
+        hora_fin = request.POST.get('hora_fin')
+
+        # Verificar si todos los datos están presentes
+        if not (fecha_reserva and hora_inicio and hora_fin):
+            messages.error(request, "Por favor, completa todos los campos.")
+            return render(request, 'crear_reserva.html', {'cancha': cancha, 'form': request.POST})
+
+        # Validar conflictos de horarios
+        conflictos = Reserva.objects.filter(
+            cancha=cancha,
+            fecha_reserva=fecha_reserva,
+            hora_inicio__lt=hora_fin,  # Cuando termina después de que otra comienza
+            hora_fin__gt=hora_inicio   # Cuando comienza antes de que otra termina
+        )
+        if conflictos.exists():
+            messages.error(request, "El horario seleccionado ya está reservado.")
+            return render(request, 'crear_reserva.html', {'cancha': cancha, 'form': request.POST})
+
+        # Crear la nueva reserva si no hay conflictos
+        nueva_reserva = Reserva.objects.create(
+            usuario=request.user,  # Usuario autenticado
+            cancha=cancha,
+            fecha_reserva=fecha_reserva,
+            hora_inicio=hora_inicio,
+            hora_fin=hora_fin
+        )
+
+        # Mostrar mensaje de éxito y redirigir a la confirmación
+        messages.success(request, "¡Reserva creada exitosamente!")
+        return redirect('confirmacion_reserva', reserva_id=nueva_reserva.id)
+
+    # En caso de GET, renderizar el formulario vacío
+    form = ReservaForm(initial={'cancha': cancha})
+    return render(request, 'crear_reserva.html', {'cancha': cancha, 'form': form})
+
+#confirmacion de reserva
+def confirmacion_reserva(request, reserva_id):
+    reserva = get_object_or_404(Reserva, id=reserva_id)
+    return render(request, 'confirmacion_reserva.html', {'reserva': reserva})
 
 #lista reservas
 def lista_reservas(request):
@@ -208,6 +246,7 @@ def editar_evento(request, evento_id):
             form = EventoForm(instance=evento, cancha=evento.cancha)
             return JsonResponse({"success": False, "errors": form.errors}, status=400)
     return JsonResponse({"success": False, "message": "Método no permitido"}, status=405)
+
 #eliminar evento desde la cancha
 def eliminar_evento(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)

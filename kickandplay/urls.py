@@ -50,7 +50,9 @@ urlpatterns = [
     #mapa
     path('mapa/',                                   views.mapa_canchas, name='mapa_canchas'),
     #lista reservas
-    path('reservas/nueva/',                         views.crear_reserva, name='crear_reserva'),
+    path('reservas/nueva/',                         views.reservar_cancha, name='crear_reserva'),
+    path('reservar_cancha/<int:cancha_id>/',        views.reservar_cancha, name='reservar_cancha'),
+    path('confirmacion_reserva/<int:reserva_id>/',  views.confirmacion_reserva, name='confirmacion_reserva'),
     path('reservas/',                               views.lista_reservas, name='lista_reservas'),
     path('reservas/eliminar/<int:reserva_id>/',     views.eliminar_reserva, name='eliminar_reserva'),
     path('reservas/<int:reserva_id>/',              views.detalle_reserva, name='detalle_reserva'),

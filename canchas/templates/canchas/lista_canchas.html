@@ -5,71 +5,84 @@
 {% block content %}
 <div class="container my-5">
     <h1 class="text-center mb-4">Lista de Canchas</h1>
+    <!-- Contenedor de Filtros -->
+    <div class="container my-4 p-3 border rounded">
+        <h4 class="mb-3 text-center">Filtrar Canchas</h4>
+        <form method="GET" class="row g-3 align-items-center">
+            
+            <!-- Filtro: Nombre -->
+            <div class="col-md-4">
+                <label for="nombre" class="form-label">Nombre de la Cancha</label>
+                <input 
+                    type="text" 
+                    name="nombre" 
+                    id="nombre" 
+                    class="form-control" 
+                    placeholder="Ej: Cancha Central" 
+                    value="{{ request.GET.nombre }}">
+            </div>
 
-    <form method="GET" class="d-flex justify-content-between align-items-center mb-4">
-         <!-- Botones -->
-         <style>
-            .btn-rounded {
-                border-radius: 50px;
-            }
-            .btn-success:hover {
-                background-color: #218838;
-                color: #fff;
-            }
+            <!-- Filtro: Distancia Máxima -->
+            <div class="col-md-4">
+                <label for="distancia" class="form-label">Distancia Máxima (km)</label>
+                <input 
+                    type="number" 
+                    step="0.1" 
+                    name="distancia" 
+                    id="distancia" 
+                    class="form-control" 
+                    placeholder="Ej: 10.5" 
+                    value="{{ request.GET.distancia }}">
+            </div>
 
-            .btn-outline-danger:hover {
-                background-color: #f5c6cb;
-                color: #721c24;
-            }
-        </style>
-        <!-- Nombre -->
-        <div class="me-2">
-            <input type="text" name="nombre" class="form-control" placeholder="Nombre de la cancha" value="{{ request.GET.nombre }}">
-        </div>
-    
-        <!-- Distancia Máxima -->
-        <div class="me-2">
-            <input type="number" step="0.1" name="distancia" class="form-control" placeholder="Distancia máxima (km)" value="{{ request.GET.distancia }}">
-        </div>
-    
-        <!-- Calificación Mínima -->
-        <div class="me-2">
-            <input type="number" step="1" name="calificacion_min" class="form-control" placeholder="Calificación mínima (1-5)" value="{{ request.GET.calificacion_min }}">
-        </div>
-    
-        <!-- Filtros Adicionales -->
-        <div class="me-2">
-            <input class="form-check-input" type="checkbox" name="filtrar_comentarios" id="filtrarComentarios" {% if request.GET.filtrar_comentarios %}checked{% endif %}>
-            <label class="form-check-label" for="filtrarComentarios">Por comentarios</label>
-        </div>
+            <!-- Filtro: Calificación Mínima -->
+            <div class="col-md-4">
+                <label for="calificacion_min" class="form-label">Calificación Mínima (1-5)</label>
+                <input 
+                    type="number" 
+                    step="1" 
+                    name="calificacion_min" 
+                    id="calificacion_min" 
+                    class="form-control" 
+                    placeholder="Ej: 4" 
+                    value="{{ request.GET.calificacion_min }}">
+            </div>
 
-        
-        <div class="d-grid gap-2 mt-3">
-            <!-- Botón Filtrar -->
-            <div class="mb-2">
-                <button type="submit" class="btn btn-success btn-lg w-100">
+            <!-- Filtro: Por Comentarios -->
+            <div class="col-md-12 d-flex align-items-center">
+                <input 
+                    class="form-check-input me-2" 
+                    type="checkbox" 
+                    name="filtrar_comentarios" 
+                    id="filtrarComentarios" 
+                    {% if request.GET.filtrar_comentarios %}checked{% endif %}>
+                <label class="form-check-label" for="filtrarComentarios">
+                    Mostrar solo canchas con comentarios
+                </label>
+            </div>
+
+            <!-- Botones de Filtrado -->
+            <div class="col-md-6 d-grid">
+                <button type="submit" class="btn btn-success">
                     <i class="bi bi-funnel-fill"></i> Filtrar
                 </button>
             </div>
-            <!-- Botón Limpiar -->
-            <div>
-                <a href="/canchas/" class="btn btn-outline-danger btn-lg w-100">
+            <div class="col-md-6 d-grid">
+                <a href="/canchas/" class="btn btn-outline-danger">
                     <i class="bi bi-x-circle"></i> Limpiar
                 </a>
             </div>
-        </div>
-        
-        
-    </form>
+        </form>
+    </div>
     
     <div class="row">
         {% for cancha in canchas %}
             <div class="col-md-4">
                 <div class="card mb-3">
                     {% if cancha.imagen_url %}
-                        <img src="{{ cancha.imagen_url }}" class="img-fluid" style="width: 500px; height: 300px;" alt="Imagen de {{ cancha.nombre }}">
+                        <img src="{{ cancha.imagen_url }}" class="img-fluid" style="width: 500px; height: 300px;" alt="Imagen de {{ cancha.nombre }}" loading="lazy">
                     {% else %}
-                        <img src="https://fluofgltdazuwfgpnctl.supabase.co/storage/v1/object/public/media//k&plogo.jpg" class="img-fluid" style="width: 500px; height: 300px;" alt="Imagen de {{ cancha.nombre }}">
+                        <img src="https://fluofgltdazuwfgpnctl.supabase.co/storage/v1/object/public/media//k&plogo.jpg" class="img-fluid" style="width: 500px; height: 300px;" alt="Imagen de {{ cancha.nombre }}" loading="lazy">
                     {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ cancha.nombre }}</h5>

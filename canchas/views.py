@@ -74,7 +74,7 @@ def lista_canchas(request):
 #detalle de canchas
 def detalle_cancha(request, cancha_id):
     cancha = get_object_or_404(Canchas, id=cancha_id)
-    eventos = Evento.objects.filter(cancha=cancha, fecha__gte=date.today())
+    eventos = Evento.objects.filter(cancha=cancha, fecha__gte=date.today()).order_by('fecha', 'hora_inicio')
     comentarios = Comentarios.objects.filter(cancha=cancha).order_by('-fecha_creacion')
     return render(request, 'detalle_cancha.html', {
         'cancha': cancha,
@@ -230,6 +230,7 @@ def calendario_cp(request, cancha_id):
         'cancha': cancha,
         'canchas': canchas,  # Asegúrate de incluir todas las canchas aquí
     })
+
 #obtener evento
 def obtener_evento(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)

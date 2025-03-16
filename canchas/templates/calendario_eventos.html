@@ -6,7 +6,8 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center text-primary">
+    <!-- Título del Calendario -->
+    <h1 class="text-center text-primary mb-4">
         {% if cancha %}
         Calendario de {{ cancha.nombre }}
         {% else %}
@@ -14,69 +15,61 @@
         {% endif %}
     </h1>
 
-    <!-- Botón para agregar un nuevo evento -->
+    <!-- Botón para Agregar Evento -->
     <div class="text-center mb-4">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarEventoModal">
-            Agregar Evento
+        <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#agregarEventoModal">
+            <i class="bi bi-calendar-plus"></i> Agregar Evento
         </button>
     </div>
 
-    <!-- Tabla de eventos -->
+    <!-- Tabla de Eventos -->
     {% if eventos %}
-    <table class="table table-striped mt-4">
-        <thead class="table-dark">
-            <tr>
-                <th>#</th>
-                <th>Título</th>
-                <th>Fecha</th>
-                <th>Hora de Inicio</th>
-                <th>Hora de Fin</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for evento in eventos %}
-            <tr id="evento-{{ evento.id }}">
-                <td>{{ forloop.counter }}</td>
-                <td class="evento-titulo">{{ evento.titulo }}</td> <!-- Agregado: clase 'evento-titulo' -->
-                <td class="evento-fecha">{{ evento.fecha }}</td> <!-- Agregado: clase 'evento-fecha' -->
-                <td class="evento-hora-inicio">{{ evento.hora_inicio }}</td> <!-- Agregado: clase 'evento-hora-inicio' -->
-                <td class="evento-hora-fin">{{ evento.hora_fin }}</td> <!-- Agregado: clase 'evento-hora-fin' -->
-                <td>
-                        <!-- Botón para Reservar -->
-                    <a href="#" class="btn btn-sm btn-outline-success">
-                        Reservar
-                    </a>
-                    <!-- Botón para Detalles -->
-                    <button 
-                        type="button" 
-                        class="btn btn-sm btn-outline-primary" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#detallesEventoModal"
-                        onclick="cargarDetallesEvento('{{ evento.id }}')">
-                        Ver Detalles
-                    </button>
-
-                    <!-- Botón para Editar -->
-                    <button 
-                        type="button" 
-                        class="btn btn-sm btn-outline-primary" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#editarEventoModal"
-                        onclick="cargarDatosEvento('{{ evento.id }}')">
-                        Editar
-                    </button>
-
-                    <!-- Botón para Eliminar -->
-                    <a href="{% url 'eliminar_evento' evento.id %}" class="btn btn-sm btn-outline-danger"
-                    onclick="return confirm('¿Estás seguro de que deseas eliminar este evento?');">
-                        Eliminar
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>#</th>
+                    <th>Título</th>
+                    <th>Fecha</th>
+                    <th>Hora de Inicio</th>
+                    <th>Hora de Fin</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for evento in eventos %}
+                <tr id="evento-{{ evento.id }}">
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ evento.titulo }}</td>
+                    <td>{{ evento.fecha }}</td>
+                    <td>{{ evento.hora_inicio }}</td>
+                    <td>{{ evento.hora_fin }}</td>
+                    <td class="text-center">
+                        <!-- Botones de Acciones -->
+                        <a href="#" class="btn btn-outline-success btn-sm me-2">Reservar</a>
+                        <button type="button" class="btn btn-outline-primary btn-sm me-2" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#detallesEventoModal"
+                                onclick="cargarDetallesEvento('{{ evento.id }}')">
+                            Ver Detalles
+                        </button>
+                        <button type="button" class="btn btn-outline-warning btn-sm me-2" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#editarEventoModal"
+                                onclick="cargarDatosEvento('{{ evento.id }}')">
+                            Editar
+                        </button>
+                        <a href="{% url 'eliminar_evento' evento.id %}" 
+                           class="btn btn-outline-danger btn-sm" 
+                           onclick="return confirm('¿Estás seguro de eliminar este evento?');">
+                            Eliminar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
     <div class="alert alert-warning text-center" role="alert">
         No hay eventos registrados.
@@ -84,83 +77,8 @@
     {% endif %}
 </div>
 
-<!-- Modal único para Editar Evento -->
-<div class="modal fade" id="editarEventoModal" tabindex="-1" aria-labelledby="editarEventoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="editarEventoModalLabel">Editar Evento</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="formEditarEvento" method="post" action="/evento/editar/{evento_id}/">
-                {% csrf_token %}
-                <div class="modal-body">
-                    <!-- Campos dinámicos -->
-                    <input type="hidden" id="evento_id" name="evento_id">
-                    <div class="mb-3">
-                        <label for="titulo" class="form-label">Título</label>
-                        <input type="text" class="form-control" id="titulo" name="titulo" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="fecha" class="form-label">Fecha</label>
-                        <input type="date" class="form-control" id="fecha" name="fecha" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="hora_inicio" class="form-label">Hora de Inicio</label>
-                        <input type="time" class="form-control" id="hora_inicio" name="hora_inicio" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="hora_fin" class="form-label">Hora de Fin</label>
-                        <input type="time" class="form-control" id="hora_fin" name="hora_fin" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="cancha" class="form-label">Cancha</label>
-                        <select id="cancha" name="cancha" class="form-select">
-                            <option value="">Seleccione una cancha</option>
-                            {% for cancha in canchas %}
-                            <option value="{{ cancha.id }}">{{ cancha.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para Detalles del Evento -->
-<div class="modal fade" id="detallesEventoModal" tabindex="-1" aria-labelledby="detallesEventoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="detallesEventoModalLabel">Detalles del Evento</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p><strong>Título:</strong> <span id="detalleTitulo"></span></p>
-                <p><strong>Descripción:</strong> <span id="detalleDescripcion"></span></p>
-                <p><strong>Fecha:</strong> <span id="detalleFecha"></span></p>
-                <p><strong>Hora de Inicio:</strong> <span id="detalleHoraInicio"></span></p>
-                <p><strong>Hora de Fin:</strong> <span id="detalleHoraFin"></span></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <a href="#" id="reservarBoton" class="btn btn-success">Reservar</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<!-- Modal para Agregar Evento -->
+<!-- Modales -->
+<!-- Modal: Agregar Evento -->
 <div class="modal fade" id="agregarEventoModal" tabindex="-1" aria-labelledby="agregarEventoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -182,6 +100,81 @@
     </div>
 </div>
 
-<!-- Incluir el archivo JavaScript -->
+<!-- Modal: Editar Evento -->
+<div class="modal fade" id="editarEventoModal" tabindex="-1" aria-labelledby="editarEventoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title" id="editarEventoModalLabel">Editar Evento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formEditarEvento" method="post" action="/evento/editar/{evento_id}/">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" id="evento_id" name="evento_id">
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="titulo" name="titulo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="fecha" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="fecha" name="fecha" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="hora_inicio" class="form-label">Hora de Inicio</label>
+                            <input type="time" class="form-control" id="hora_inicio" name="hora_inicio" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="hora_fin" class="form-label">Hora de Fin</label>
+                            <input type="time" class="form-control" id="hora_fin" name="hora_fin" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="cancha" class="form-label">Cancha</label>
+                            <select id="cancha" name="cancha" class="form-select">
+                                <option value="">Seleccione una cancha</option>
+                                {% for cancha in canchas %}
+                                <option value="{{ cancha.id }}">{{ cancha.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Detalles del Evento -->
+<div class="modal fade" id="detallesEventoModal" tabindex="-1" aria-labelledby="detallesEventoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="detallesEventoModalLabel">Detalles del Evento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Título:</strong> <span id="detalleTitulo"></span></p>
+                <p><strong>Descripción:</strong> <span id="detalleDescripcion"></span></p>
+                <p><strong>Fecha:</strong> <span id="detalleFecha"></span></p>
+                <p><strong>Hora de Inicio:</strong> <span id="detalleHoraInicio"></span></p>
+                <p><strong>Hora de Fin:</strong> <span id="detalleHoraFin"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <a href="#" id="reservarBoton" class="btn btn-success">Reservar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="/static/js/editar_evento.js"></script>
 {% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Iniciar Sesión</h1>
+    <form method="POST" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+    </form>
+</div>
+{% endblock %}

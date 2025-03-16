@@ -1,5 +1,7 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from .models import Evento, Reserva, Comentarios
+from django.contrib.auth.models import User
 
 class EventoForm(forms.ModelForm):
     class Meta:
@@ -54,8 +56,8 @@ class ReservaForm(forms.ModelForm):
         fields = ['cancha', 'fecha_reserva', 'hora_inicio', 'hora_fin']
         widgets = {
             'fecha_reserva': forms.DateInput(attrs={'type': 'date'}),
-            'hora_inicio': forms.TimeInput(attrs={'type': 'time'}),
-            'hora_fin': forms.TimeInput(attrs={'type': 'time'}),
+            'hora_inicio': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'hora_fin': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
         }
 
     def clean(self):
@@ -93,3 +95,15 @@ class ComentarioForm(forms.ModelForm):
             'texto': 'Comentario',
             'calificacion': 'Calificación',
         }
+
+class RegistroForm(UserCreationForm):
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'

@@ -80,9 +80,9 @@
             <div class="col-md-4">
                 <div class="card mb-3">
                     {% if cancha.imagen_url %}
-                        <img src="{{ cancha.imagen_url }}" class="img-fluid" style="width: 500px; height: 300px;" alt="Imagen de {{ cancha.nombre }}" loading="lazy">
+                        <img src="{{ cancha.imagen_url }}" class="img-fluid" style="width: 500px; height: 300px;" alt="Imagen de {{ cancha.nombre }}" >
                     {% else %}
-                        <img src="https://fluofgltdazuwfgpnctl.supabase.co/storage/v1/object/public/media//k&plogo.jpg" class="img-fluid" style="width: 500px; height: 300px;" alt="Imagen de {{ cancha.nombre }}" loading="lazy">
+                        <img src="https://fluofgltdazuwfgpnctl.supabase.co/storage/v1/object/public/media//k&plogo.jpg" class="img-fluid" style="width: 500px; height: 300px;" alt="Imagen de {{ cancha.nombre }}">
                     {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ cancha.nombre }}</h5>

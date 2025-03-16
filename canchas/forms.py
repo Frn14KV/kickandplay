@@ -1,5 +1,5 @@
 from django import forms
-from .models import Evento, Reserva
+from .models import Evento, Reserva, Comentarios
 
 class EventoForm(forms.ModelForm):
     class Meta:
@@ -48,7 +48,6 @@ class EventoForm(forms.ModelForm):
             self.fields['cancha'].initial = cancha
             self.fields['cancha'].widget.attrs['readonly'] = True  # Alternativamente: disabled
 
-
 class ReservaForm(forms.ModelForm):
     class Meta:
         model = Reserva
@@ -81,3 +80,16 @@ class ReservaForm(forms.ModelForm):
             raise forms.ValidationError("La cancha ya está reservada para este horario.")
 
         return cleaned_data
+
+class ComentarioForm(forms.ModelForm):
+    class Meta:
+        model = Comentarios
+        fields = ['texto', 'calificacion']
+        widgets = {
+            'texto': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Escribe tu comentario aquí...'}),
+            'calificacion': forms.Select(attrs={'class': 'form-select'}),
+        }
+        labels = {
+            'texto': 'Comentario',
+            'calificacion': 'Calificación',
+        }

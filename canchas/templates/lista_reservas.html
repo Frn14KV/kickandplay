@@ -6,56 +6,73 @@ Mis Reservas
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center text-primary">Mis Reservas</h1>
+    <h1 class="text-center">Mis Reservas</h1>
 
-    <!-- Formulario de búsqueda -->
-    <form method="get" class="mb-4">
-        <div class="input-group">
-            <input type="text" name="q" class="form-control" placeholder="Buscar por cancha..." value="{{ query|default_if_none:'' }}">
-            <button type="submit" class="btn btn-primary">Buscar</button>
-        </div>
-    </form>
-
-    {% if reservas %}
-    <!-- Tabla de reservas -->
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>#</th>
-                <th>Cancha</th>
-                <th>Fecha</th>
-                <th>Hora de Inicio</th>
-                <th>Hora de Fin</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for reserva in reservas %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>
-                    <a href="{% url 'detalle_reserva' reserva.id %}" class="text-decoration-none">
-                        {{ reserva.cancha.nombre }}
-                    </a>
-                </td>
-                <td>{{ reserva.fecha_reserva }}</td>
-                <td>{{ reserva.hora_inicio }}</td>
-                <td>{{ reserva.hora_fin }}</td>
-                <td>
-                    <a href="{% url 'eliminar_reserva' reserva.id %}" class="btn btn-danger btn-sm"
-                       onclick="return confirm('¿Estás seguro de que deseas eliminar esta reserva?');">
-                        Eliminar
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <!-- Mensaje de alerta si no hay reservas -->
-    <div class="alert alert-warning text-center" role="alert">
-        No tienes reservas registradas.
+    <!-- Sección de reservas futuras -->
+    <h3 class="mt-4 text-primary">Reservas Futuras</h3>
+    <div class="table-responsive mt-2">
+        <table class="table table-striped">
+            <thead class="table-primary">
+                <tr>
+                    <th>Cancha</th>
+                    <th>Fecha</th>
+                    <th>Hora de Inicio</th>
+                    <th>Hora de Fin</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if reservas_futuras %}
+                    {% for reserva in reservas_futuras %}
+                    <tr>
+                        <td>{{ reserva.cancha.nombre }}</td>
+                        <td>{{ reserva.fecha_reserva }}</td>
+                        <td>{{ reserva.hora_inicio }}</td>
+                        <td>{{ reserva.hora_fin }}</td>
+                        <td>
+                            <a href="{% url 'detalle_cancha' reserva.cancha.id %}" class="btn btn-sm btn-outline-info">Ver Cancha</a>
+                            <a href="{% url 'eliminar_reserva' reserva.id %}" class="btn btn-sm btn-outline-danger">Cancelar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">No tienes reservas futuras.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
     </div>
-    {% endif %}
+
+    <!-- Sección de reservas pasadas -->
+    <h3 class="mt-5 text-secondary">Reservas Pasadas</h3>
+    <div class="table-responsive mt-2">
+        <table class="table table-striped">
+            <thead class="table-secondary">
+                <tr>
+                    <th>Cancha</th>
+                    <th>Fecha</th>
+                    <th>Hora de Inicio</th>
+                    <th>Hora de Fin</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if reservas_pasadas %}
+                    {% for reserva in reservas_pasadas %}
+                    <tr>
+                        <td>{{ reserva.cancha.nombre }}</td>
+                        <td>{{ reserva.fecha_reserva }}</td>
+                        <td>{{ reserva.hora_inicio }}</td>
+                        <td>{{ reserva.hora_fin }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">No tienes reservas pasadas.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

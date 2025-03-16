@@ -7,25 +7,29 @@ Mapa de Canchas - KickandPlay
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center text-primary">Mapa de Canchas</h1>
-    <p class="text-center text-muted">Explora las canchas disponibles y tu ubicación actual.</p>
+    <!-- Título y Descripción -->
+    <h1 class="text-center text-primary mb-3">Mapa de Canchas</h1>
+    <p class="text-center text-muted">Explora las canchas disponibles y encuentra las mejores rutas desde tu ubicación.</p>
+
     <!-- Mapa -->
-    <div id="map" style="height: 500px;"></div>
+    <div id="map" class="rounded shadow" style="height: 500px; border: 2px solid #ddd;"></div>
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() 
-    {
-        // Inicializar el mapa con una ubicación predeterminada (Bernardsville, NJ)
+    document.addEventListener("DOMContentLoaded", function () {
+        // Inicializar el mapa
         var map = L.map('map').setView([40.713, -74.013], 12);
 
-        // Cargar capas del mapa desde OpenStreetMap
+        // Agregar capa de OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Datos de las canchas proporcionados por el backend
+        // Agregar grupo de capas para rutas
+        var routeLayer = L.layerGroup().addTo(map);
+
+        // Datos de canchas proporcionados por el backend
         var canchas = [
             {% for cancha in canchas %}
             {
@@ -33,75 +37,115 @@ Mapa de Canchas - KickandPlay
                 latitud: {{ cancha.latitud }},
                 longitud: {{ cancha.longitud }},
                 direccion: "{{ cancha.direccion|escapejs }}",
-                imagen_url: "{{ cancha.imagen_url|default:'https://fluofgltdazuwfgpnctl.supabase.co/storage/v1/object/public/media//k&plogo.jpg'|escapejs }}",  // Imagen predeterminada si no hay URL
+                imagen_url: "{{ cancha.imagen_url|default:'https://fluofgltdazuwfgpnctl.supabase.co/storage/v1/object/public/media//k&plogo.jpg'|escapejs }}",
                 detalle_url: "{% url 'detalle_cancha' cancha.id %}"
             },
             {% endfor %}
         ];
 
-       // Iterar sobre las canchas y agregar marcadores al mapa
-       canchas.forEach(function(cancha) {
-        if (cancha.latitud && cancha.longitud) {
-            // Validar y usar imagen predeterminada si es necesario
-            const imagenUrl = cancha.imagen_url && cancha.imagen_url.trim() !== "" 
-                ? cancha.imagen_url 
-                : "https://fluofgltdazuwfgpnctl.supabase.co/storage/v1/object/public/media//k&plogo.jpg";
-
-            const popupContent = `
-                <div style="text-align: center;">
-                    <img src="${imagenUrl}" alt="${cancha.nombre}" style="width: 100px; height: 75px; border-radius: 10px; margin-bottom: 5px;">
-                    <strong>${cancha.nombre}</strong><br>
-                    ${cancha.direccion}<br>
-                    <a href="${cancha.detalle_url}" class="btn btn-primary btn-sm text-white">Ver Cancha</a>
-                </div>
-            `;
-            L.marker([cancha.latitud, cancha.longitud])
-                .addTo(map)
-                .bindPopup(popupContent);
-        }
-    });
-
-        // Mostrar la ubicación actual del usuario
+        // Obtener ubicación actual del usuario
+        var userLocation = null;
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    var userLat = position.coords.latitude;
-                    var userLng = position.coords.longitude;
+                function (position) {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
 
-                    // Agregar marcador para la ubicación del usuario
-                    L.marker([userLat, userLng], { icon: L.icon({
-                        iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
-                        iconSize: [25, 41],
-                        iconAnchor: [12, 41],
-                        popupAnchor: [1, -34]
-                    })})
-                    .addTo(map)
-                    .bindPopup("<strong>¡Estás aquí!</strong>")
-                    .openPopup();
+                    // Marcar ubicación actual
+                    L.marker([userLocation.lat, userLocation.lng])
+                        .addTo(map)
+                        .bindPopup("<strong>¡Estás aquí!</strong>")
+                        .openPopup();
 
-                    // Ajustar el mapa para centrar en la ubicación del usuario
-                    map.setView([userLat, userLng], 14);
+                    // Centrar el mapa en la ubicación del usuario
+                    map.setView([userLocation.lat, userLocation.lng], 14);
                 },
-                function(error) {
-                    console.error("Error al obtener la ubicación: ", error.message);
+                function (error) {
+                    console.error("Error al obtener la ubicación del usuario:", error.message);
                 }
             );
-        } else {
-            console.error("La geolocalización no está soportada por este navegador.");
         }
-    }
-    );
+
+        // Agregar marcadores de las canchas
+        canchas.forEach(function (cancha) {
+            if (cancha.latitud && cancha.longitud) {
+                // Contenido del popup del marcador
+                const popupContent = `
+                    <div style="text-align: center;">
+                        <img src="${cancha.imagen_url}" alt="${cancha.nombre}" style="width: 100px; height: 75px; border-radius: 10px; margin-bottom: 5px;" loading="lazy">
+                        <strong>${cancha.nombre}</strong><br>
+                        ${cancha.direccion}<br>
+                        <button class="btn btn-primary btn-sm mt-2" onclick="mostrarRuta(${cancha.latitud}, ${cancha.longitud})">
+                            Mostrar Rutas
+                        </button>
+                        <a href="${cancha.detalle_url}" class="btn btn-outline-secondary btn-sm mt-2">
+                            Ver Cancha
+                        </a>
+                    </div>
+                `;
+                L.marker([cancha.latitud, cancha.longitud])
+                    .addTo(map)
+                    .bindPopup(popupContent);
+            }
+        });
+
+        // Función para mostrar ruta desde la ubicación del usuario a una cancha
+        window.mostrarRuta = function (destLat, destLng) {
+            if (!userLocation) {
+                alert("No se pudo obtener tu ubicación actual.");
+                return;
+            }
+
+            // Limpiar rutas anteriores
+            routeLayer.clearLayers();
+
+            // Llamada a la API de OpenRouteService
+            var apiKey = '5b3ce3597851110001cf6248145d2a0c6ca64d269cdf8973916028f6'; // Coloca aquí tu API Key
+            var url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${apiKey}&start=${userLocation.lng},${userLocation.lat}&end=${destLng},${destLat}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    var coords = data.features[0].geometry.coordinates.map(coord => coord.reverse());
+
+                    // Dibujar ruta en el mapa
+                    var route = L.polyline(coords, { color: 'blue', weight: 5 });
+                    routeLayer.addLayer(route);
+
+                    // Ajustar la vista al área de la ruta
+                    map.fitBounds(route.getBounds());
+                })
+                .catch(error => {
+                    console.error("Error al obtener la ruta:", error);
+                    alert("No se pudo calcular la ruta.");
+                });
+        };
+    });
 </script>
 
-<!-- Estilos para personalizar el mapa -->
+<!-- Estilos personalizados -->
 <style>
     #map {
         border: 2px solid #ddd;
         border-radius: 10px;
     }
+
     .btn-primary {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         padding: 5px 10px;
+    }
+
+    .btn-outline-secondary {
+        font-size: 0.9rem;
+        padding: 5px 10px;
+    }
+
+    .leaflet-popup-content img {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        margin-bottom: 8px;
+        border-radius: 5px;
     }
 </style>
 {% endblock %}

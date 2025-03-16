@@ -1,11 +1,52 @@
-/* Títulos */
+/* ----- Estilos Globales ----- */
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: #6c757d;
+}
+
+h1, h2, h3 {
+    font-weight: bold;
+}
+
+/* ----- Navbar ----- */
+nav {
+    background-color: #007bff;
+}
+
+nav a {
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* ----- Footer ----- */
+footer {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    margin-top: 20px;
+}
+
+/* ----- Estilos de Títulos ----- */
 h1 {
     font-size: 2.5rem;
     font-weight: bold;
     color: #007bff;
 }
 
-/* Tarjetas de eventos */
+h2 {
+    font-size: 2rem;
+}
+
+/* ----- Estilos de Tarjetas ----- */
 .card {
     border-radius: 10px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -16,29 +57,20 @@ h1 {
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Botón de más información */
-.btn-outline-primary {
-    border-color: #007bff;
-    color: #007bff;
-}
-
-.btn-outline-primary:hover {
-    background-color: #007bff;
-    color: white;
-}
-
-
-/*estiolos de detalles de canchas*/
-.card {
-    border-radius: 15px;
-    overflow: hidden;
-}
-
 .card-header {
-    background-color: #007bff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background: linear-gradient(45deg, #007bff, #0056b3);
     color: white;
     padding: 20px;
     text-align: center;
+    border-bottom: 2px solid #004085;
+}
+
+.card-footer {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #ddd;
 }
 
 .card-title {
@@ -50,30 +82,61 @@ h1 {
     padding: 20px;
 }
 
-.card-footer {
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #ddd;
+/* ----- Botones ----- */
+.btn-primary {
+    background-color: #0069d9;
+    border-color: #0069d9;
+    transition: background-color 0.3s ease;
 }
 
-.stars i {
-    font-size: 1.5rem;
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
 }
 
-.gallery {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+.btn-outline-primary {
+    border-color: #007bff;
+    color: #007bff;
 }
 
-.gallery img {
-    width: 100px;
-    height: auto;
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-outline-secondary {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    color: #fff;
+}
+
+.btn-outline-danger:hover {
+    background-color: #f5c6cb;
+    color: #721c24;
+}
+
+/* Estilo botón redondeado */
+.btn-rounded {
+    border-radius: 50px;
+}
+
+/* ----- Imágenes ----- */
+.card-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
     border-radius: 5px;
 }
 
+img.img-fluid {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-/*estilos de comentarios*/
+/* ----- Estilos de Comentarios ----- */
 .comments-section {
     margin-top: 20px;
     border-top: 1px solid #ddd;
@@ -94,10 +157,6 @@ h1 {
     margin-bottom: 10px;
 }
 
-.comment-header strong {
-    font-size: 1.1rem;
-}
-
 .comment-body p {
     margin: 0;
     font-size: 1rem;
@@ -108,71 +167,81 @@ h1 {
     color: #ffc107;
 }
 
-/* estilos de hmtl sobre nosotros */
-.img-fluid {
-    border-radius: 10px;
-}
-.rounded-circle {
-    border: 3px solid #ddd;
-}
-h1, h2 {
-    font-weight: bold;
+/* ----- Estilos de Galerías ----- */
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-/* estilos de el index */
-.jumbotron {
-    border-radius: 15px;
+.gallery img {
+    width: 100px;
+    height: auto;
+    border-radius: 5px;
 }
 
-.card {
-    border-radius: 10px;
-}
-
-.card-header {
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-
-.card-footer .btn {
-    font-size: 0.9rem;
-}
-
-h1, h2, h3 {
-    font-weight: bold;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.text-muted {
-    color: #6c757d;
-}
-/*estilos de el crear reserva*/
-.card {
+/* ----- Estilos de Mapas ----- */
+#map {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid #ddd;
     border-radius: 10px;
 }
 
-.card-header {
-    font-size: 1.5rem;
+.leaflet-popup-content img {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 8px;
+    border-radius: 5px;
+}
+
+/* ----- Formulario y Búsquedas ----- */
+.form-label {
     font-weight: bold;
+    color: #495057;
 }
 
-.btn-primary {
-    background-color: #0069d9;
-    border-color: #0069d9;
-    transition: background-color 0.3s ease;
+button.btn-success:hover {
+    background-color: #218838;
+    color: #fff;
 }
 
-.btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #004085;
+a.btn-outline-danger:hover {
+    background-color: #f5c6cb;
+    color: #721c24;
 }
-/*estilos modal de agregar evento en la pg calenadrio*/
-/* Personaliza el modal */
+
+/* ----- Modales ----- */
 .modal-content {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* ----- Jumbotron (Index) ----- */
+.jumbotron {
+    border-radius: 15px;
+}
 
+/* ----- Estilos de Detalle de Reserva ----- */
+dt {
+    font-weight: bold;
+    color: #495057;
+}
+
+.alert-warning {
+    background-color: #fff4cc;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+/* ----- Estilos de imagnes con lazy ----- */
+img[loading="lazy"] {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+/* ----- Estilos d=para eliminar margenes ----- */
+html, body {
+    margin: 0;
+    padding: 0;
+}

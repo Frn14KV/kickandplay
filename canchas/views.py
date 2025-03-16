@@ -15,8 +15,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Count, Avg
 from .forms import ReservaForm, EventoForm, ComentarioForm
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth import login, authenticate
+from .forms import RegistroForm
+from django.contrib.auth.views import LoginView, LogoutView
+
 
 #metodos de web
 #home
@@ -275,6 +278,30 @@ def eliminar_evento(request, evento_id):
     evento.delete()
     # Redirige al calendario de la cancha correspondiente
     return redirect('calendario_cancha', cancha_id=cancha_id)
+
+#vista registro de usuarios
+def registro(request):
+    if request.method == 'POST':
+        form = RegistroForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # Autenticación automática tras el registro
+            messages.success(request, '¡Registro exitoso! Bienvenido/a al sistema.')
+            return redirect('home')
+        else:
+            messages.error(request, 'Corrige los errores en el formulario.')
+    else:
+        form = RegistroForm()
+    return render(request, 'registro.html', {'form': form})
+
+#vista de inicio sesion
+class CustomLoginView(LoginView):
+    template_name = 'login.html'
+    redirect_authenticated_user = True
+
+#vista de cierre de sesion
+class CustomLogoutView(LogoutView):
+    next_page = 'login'  # Redireccionar al login tras salir
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Canchas.objects.all()

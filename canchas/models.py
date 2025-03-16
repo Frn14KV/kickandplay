@@ -81,3 +81,8 @@ class Reserva(models.Model):
 
     def __str__(self):
         return f"Reserva de {self.usuario} para {self.cancha.nombre} en {self.fecha_reserva}"
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True, null=True)
+    profile_image = models.ImageField(upload_to='profiles/', blank=True, null=True)

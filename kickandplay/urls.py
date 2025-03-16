@@ -61,4 +61,10 @@ urlpatterns = [
     path('sobre-nosotros/',                             views.sobre_nosotros, name='sobre_nosotros'),
     #path('eventos/', include('canchas.urls')), 
     #path('canchas/', include('canchas.urls')),
+    # registro en inicio de session
+    path('registro/',                                   views.registro, name='registro'),
+    path('login/',                                      views.CustomLoginView.as_view(), name='login'),
+    path('logout/',                                     views.CustomLogoutView.as_view(), name='logout'),
+
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

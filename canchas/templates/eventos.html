@@ -14,9 +14,8 @@ Eventos de KickandPlay
         <button type="submit" class="btn btn-primary">Buscar</button>
     </form>
 
-    <!-- Lista de eventos -->
     <div class="row">
-        {% for evento in eventos %}
+        {% for evento in page_obj %}
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-header bg-primary text-white">
@@ -27,15 +26,54 @@ Eventos de KickandPlay
                         <p><i class="bi bi-clock"></i> <strong>Hora:</strong> {{ evento.hora_inicio|time:"H:i" }} - {{ evento.hora_fin|time:"H:i" }}</p>
                         <p><i class="bi bi-geo-alt-fill"></i> <strong>Lugar:</strong> {{ evento.cancha.nombre|default:"No asignado" }}</p>
                         <p><i class="bi bi-info-circle"></i> {{ evento.descripcion|truncatechars:100 }}</p>
-                    </div>                    
+                    </div>
                     <div class="card-footer text-end">
                         <a href="/eventos/{{ evento.id }}" class="btn btn-sm btn-outline-primary">Más Información</a>
                     </div>
                 </div>
             </div>
         {% empty %}
-        <p class="text-center text-muted">No hay eventos disponibles en este momento.</p>
+            <p class="text-center text-muted">No hay eventos disponibles en este momento.</p>
         {% endfor %}
     </div>
+    
+    <!-- Controles de Paginación -->
+    <nav aria-label="Paginación de eventos">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1" aria-label="Primera">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Anterior">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+    
+            <!-- Mostrar números de página -->
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+    
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Siguiente">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Última">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    
 </div>
 {% endblock %}

@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import Evento, Reserva, Comentarios
+from .models import Evento, Reserva, Comentarios, UserProfile
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
 
 class EventoForm(forms.ModelForm):
     class Meta:
@@ -107,3 +108,23 @@ class RegistroForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['bio', 'profile_image', 'location', 'phone_number']  # Campos que se pueden editar
+        widgets = {
+            'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'location': forms.TextInput(attrs={'class': 'form-control'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+class CustomLoginForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['placeholder'] = field.label
+             # Personalizar las etiquetas
+            field.label = f"{field.label}"
+            field.label_tag = lambda: f'<label class="form-label" for="id_{field_name}">{field.label}</label>'

@@ -127,7 +127,11 @@ DATABASES = {
     }
 }
 
+# Ruta para redirigir después de iniciar sesión exitosamente
+LOGIN_REDIRECT_URL = '/'  # Cambia '/' por la ruta que desees
 
+# Ruta para redirigir después de cerrar sesión
+LOGOUT_REDIRECT_URL = '/home/'  # Cambia '/login/' si es necesario
 
 
 # Password validation

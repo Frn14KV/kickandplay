@@ -1,6 +1,7 @@
 from django.db import models
 from .utils import obtener_coordenadas  # Importa la función desde utils
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
 
 class Canchas(models.Model):
     nombre = models.CharField(max_length=100)
@@ -86,3 +87,15 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(blank=True, null=True)
     profile_image = models.ImageField(upload_to='profiles/', blank=True, null=True)
+    location = models.CharField(max_length=100, blank=True, null=True)  # Nueva información editable
+    phone_number = models.CharField(max_length=15, blank=True, null=True)  # Nuevo campo para teléfono
+
+    def __str__(self):
+        return self.user.username
+    
+class CustomLoginForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['placeholder'] = field.label

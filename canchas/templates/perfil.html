@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Perfil - {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Título del perfil -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">Perfil de {{ user.username }}</h1>
+    </div>
+
+    <!-- Información del perfil -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h5 class="mb-0">Información del Usuario</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Nombre de Usuario:</strong> {{ user.username }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Biografía:</strong> {{ perfil.bio }}</p>
+                    <p><strong>Ubicación:</strong> {{ perfil.location }}</p>
+                    <p><strong>Teléfono:</strong> {{ perfil.phone_number }}</p>
+                    {% if perfil.profile_image %}
+                        <div class="text-center mt-3">
+                            <img src="{{ perfil.profile_image.url }}" 
+                                 alt="Imagen de Perfil" 
+                                 class="img-fluid rounded-circle shadow" 
+                                 style="max-width: 150px;">
+                        </div>
+                    {% else %}
+                        <p><strong>Imagen de Perfil:</strong> No disponible</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-center">
+                    <!-- Botón para abrir el modal -->
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editarPerfilModal">
+                        Editar Perfil
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Perfil -->
+<div class="modal fade" id="editarPerfilModal" tabindex="-1" aria-labelledby="editarPerfilModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title" id="editarPerfilModalLabel">Editar Perfil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario de edición -->
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}  <!-- Renderiza el formulario como párrafos -->
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

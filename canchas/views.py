@@ -17,9 +17,15 @@ from django.db.models import Count, Avg
 from .forms import ReservaForm, EventoForm, ComentarioForm
 from django.contrib import messages
 from django.contrib.auth import login, authenticate
-from .forms import RegistroForm
+from .forms import RegistroForm 
 from django.contrib.auth.views import LoginView, LogoutView
-
+from .models import UserProfile
+from .forms import UserProfileForm
+from django.urls import reverse_lazy
+from .forms import CustomLoginForm
+from django.core.paginator import Paginator
+from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 
 #metodos de web
 #home
@@ -71,8 +77,15 @@ def lista_canchas(request):
     canchas = canchas.annotate(
         calificacion_avg=Avg('comentarios__calificacion')  # Calcula el promedio
     ).order_by('-calificacion_avg')  # Ordena de mayor a menor promedio
+    
+    # Configura el paginador: muestra 6 canchas por página
+    paginator = Paginator(canchas, 6)  # Cambia el número a lo que prefieras
+    page_number = request.GET.get('page')  # Obtén el número de página de la URL
+    page_obj = paginator.get_page(page_number)  # Obtén los objetos de la página actual
+
+    # Pasamos la página actual (page_obj) al template
     #reservas = Reserva.objects.filter(fecha_reserva__gte=hoy)
-    return render(request, 'canchas/lista_canchas.html', {'canchas': canchas})
+    return render(request, 'canchas/lista_canchas.html', {'page_obj': page_obj})
 
 #detalle de canchas
 def detalle_cancha(request, cancha_id):
@@ -93,7 +106,13 @@ def mapa_canchas(request):
 #lista de eventos
 def lista_eventos(request):
     eventos = Evento.objects.all().order_by('-fecha')
-    return render(request, 'eventos.html', {'eventos': eventos})
+     # Configura el paginador: 6 eventos por página
+    paginator = Paginator(eventos, 6)  # Cambia "6" al número de eventos que quieres por página
+    page_number = request.GET.get('page')  # Obtén el número de página desde la URL (parámetro GET)
+    page_obj = paginator.get_page(page_number)  # Obtén los eventos para la página actual
+
+    # Envía la página actual al template
+    return render(request, 'eventos.html', {'page_obj': page_obj})
 
 #detalle evento
 def detalle_evento(request, evento_id):
@@ -294,14 +313,29 @@ def registro(request):
         form = RegistroForm()
     return render(request, 'registro.html', {'form': form})
 
+#ver perfil
+@login_required
+def ver_perfil(request):
+    perfil = request.user.userprofile  # Obtenemos el perfil del usuario
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=perfil)
+        if form.is_valid():
+            form.save()
+            return redirect('perfil')  # Redirigir a la misma página después de guardar
+    else:
+        form = UserProfileForm(instance=perfil)
+    return render(request, 'perfil.html', {'perfil': perfil, 'form': form})
+
 #vista de inicio sesion
 class CustomLoginView(LoginView):
     template_name = 'login.html'
+    form_class = CustomLoginForm
     redirect_authenticated_user = True
+    success_url = reverse_lazy('home')  # Redirige a 'home' tras iniciar sesión
 
 #vista de cierre de sesion
 class CustomLogoutView(LogoutView):
-    next_page = 'login'  # Redireccionar al login tras salir
+    next_page = 'home'  # Redireccionar al login tras salir
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset = Canchas.objects.all()

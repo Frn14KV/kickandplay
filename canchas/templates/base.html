@@ -30,6 +30,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <!-- Enlaces principales -->
                     <li class="nav-item">
                         <a class="nav-link" href="/mapa/">Mapa</a>
                     </li>
@@ -45,7 +46,33 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/sobre-nosotros/">Sobre Nosotros</a>
                     </li>
+                
+                    <!-- Dropdown dinámico basado en el estado del usuario -->
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Mi Cuenta
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{% url 'perfil' %}">Perfil</a></li>
+                                <li>
+                                    <form method="POST" action="{% url 'logout' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">Cerrar Sesión</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'registro' %}">Registrarse</a>
+                        </li>
+                    {% endif %}
                 </ul>
+                
             </div>
         </div>
     </nav>

@@ -4,11 +4,67 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center">Registrarse</h1>
-    <form method="POST" novalidate>
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary w-100">Registrarse</button>
-    </form>
+    <!-- Encabezado -->
+    <div class="text-center mb-4">
+        <h1 class="text-primary">Crea tu cuenta</h1>
+        <p class="lead text-muted">Únete a nosotros y empieza a disfrutar.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow">
+                <!-- Cabecera del formulario -->
+                <div class="card-header bg-primary text-white text-center">
+                    Registro de Usuario
+                </div>
+                <div class="card-body">
+                    <!-- Mostrar errores globales si los hay -->
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <strong>Por favor corrige los siguientes errores:</strong>
+                            <ul>
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <!-- Formulario -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        <!-- Campos del formulario -->
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Nombre de Usuario</label>
+                            {{ form.username }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Email</label>
+                            {{ form.email }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_password1" class="form-label">Contraseña</label>
+                            {{ form.password1 }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_password2" class="form-label">Confirmar Contraseña</label>
+                            {{ form.password2 }}
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="d-flex justify-content-between mt-3">
+                            <button type="submit" class="btn btn-primary">Registrarse</button>
+                            <a href="{% url 'login' %}" class="btn btn-secondary">Iniciar Sesión</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

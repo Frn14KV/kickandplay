@@ -1,57 +1,59 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}
-Sobre Nosotros - KickandPlay
-{% endblock %}
+{% block title %}Sobre Nosotros - KickandPlay{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container my-5">
     <!-- Título Principal -->
     <div class="text-center mb-5">
-        <h1 class="text-primary">Sobre Nosotros</h1>
+        <h1 class="text-primary fw-bold">Sobre Nosotros</h1>
         <p class="lead text-muted">Conecta a las personas a través de la pasión por el fútbol.</p>
     </div>
 
     <!-- Sección: Misión -->
-    <div class="row align-items-center mb-5">
-        <div class="col-md-6">
-            <img 
-                src="{% static 'images/mision.png' %}" 
-                alt="Nuestra misión" 
-                class="img-fluid rounded shadow" 
-            >
+    <section class="mb-5">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <img 
+                    src="{% static 'images/mision.png' %}" 
+                    alt="Nuestra misión" 
+                    class="img-fluid rounded shadow"
+                >
+            </div>
+            <div class="col-md-6">
+                <h2 class="text-success">Nuestra Misión</h2>
+                <p>
+                    En <strong>KickandPlay</strong>, nuestra misión es construir una comunidad unida a través del deporte.
+                    Nos esforzamos por ofrecer una plataforma en la que los jugadores puedan organizar partidos,
+                    reservar canchas y compartir su amor por el fútbol.
+                </p>
+            </div>
         </div>
-        <div class="col-md-6">
-            <h2 class="text-success">Nuestra Misión</h2>
-            <p>
-                En <strong>KickandPlay</strong>, nuestra misión es construir una comunidad unida a través del deporte.
-                Nos esforzamos por ofrecer una plataforma en la que los jugadores puedan organizar partidos,
-                reservar canchas y compartir su amor por el fútbol.
-            </p>
-        </div>
-    </div>
+    </section>
 
     <!-- Sección: Visión -->
-    <div class="row align-items-center mb-5">
-        <div class="col-md-6 order-md-2">
-            <img 
-                src="{% static 'images/vision.png' %}" 
-                alt="Nuestra visión" 
-                class="img-fluid rounded shadow" 
-            >
+    <section class="mb-5">
+        <div class="row align-items-center">
+            <div class="col-md-6 order-md-2">
+                <img 
+                    src="{% static 'images/vision.png' %}" 
+                    alt="Nuestra visión" 
+                    class="img-fluid rounded shadow"
+                >
+            </div>
+            <div class="col-md-6 order-md-1">
+                <h2 class="text-warning">Nuestra Visión</h2>
+                <p>
+                    Queremos ser el lugar favorito de los futbolistas de cualquier nivel. Un espacio donde todos
+                    puedan encontrar su cancha ideal, conectarse con otros jugadores y disfrutar del deporte rey.
+                </p>
+            </div>
         </div>
-        <div class="col-md-6 order-md-1">
-            <h2 class="text-warning">Nuestra Visión</h2>
-            <p>
-                Queremos ser el lugar favorito de los futbolistas de cualquier nivel. Un espacio donde todos
-                puedan encontrar su cancha ideal, conectarse con otros jugadores y disfrutar del deporte rey.
-            </p>
-        </div>
-    </div>
+    </section>
 
     <!-- Sección: Valores -->
-    <div class="mb-5">
+    <section class="mb-5">
         <h2 class="text-center text-info">Nuestros Valores</h2>
         <div class="row text-center">
             <!-- Valor: Pasión -->
@@ -73,47 +75,36 @@ Sobre Nosotros - KickandPlay
                 <p>Nos esforzamos por mejorar continuamente y agregar valor a nuestra plataforma.</p>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- Sección: Equipo -->
-    <div class="mb-5">
+    <section>
         <h2 class="text-center text-primary">Nuestro Equipo</h2>
         <p class="text-center text-muted">Conoce a las mentes detrás de KickandPlay.</p>
-        <div class="row">
+        <div class="row justify-content-center">
             <!-- Miembro 1 -->
-            <div class="col-md-4 text-center">
+            <div class="col-md-4 text-center mb-4">
                 <img 
                     src="{% static 'images/team1.jpeg' %}" 
-                    alt="Miembro 1" 
-                    class="img-fluid rounded-circle mb-3 shadow" 
-                    style="width: 150px; height: 150px;" 
+                    alt="Christian Flores" 
+                    class="img-fluid rounded-circle shadow mb-3" 
+                    style="width: 150px; height: 150px;"
                 >
                 <h5>Christian Flores</h5>
                 <p class="text-muted">Fundador &amp; CEO</p>
             </div>
             <!-- Miembro 2 -->
-            <div class="col-md-4 text-center">
+            <div class="col-md-4 text-center mb-4">
                 <img 
                     src="{% static 'images/team1.jpeg' %}" 
-                    alt="Miembro 2" 
-                    class="img-fluid rounded-circle mb-3 shadow" 
-                    style="width: 150px; height: 150px;" 
+                    alt="Franklin Villavicencio" 
+                    class="img-fluid rounded-circle shadow mb-3" 
+                    style="width: 150px; height: 150px;"
                 >
                 <h5>Franklin Villavicencio</h5>
                 <p class="text-muted">Fundador &amp; CEO</p>
             </div>
-            <!-- Miembro 3 -->
-            <div class="col-md-4 text-center">
-                <img 
-                    src="{% static 'images/team3.jpeg' %}" 
-                    alt="Miembro 3" 
-                    class="img-fluid rounded-circle mb-3 shadow" 
-                    style="width: 150px; height: 150px;" 
-                >
-                <h5>Carlos García</h5>
-                <p class="text-muted">Desarrollador Backend</p>
-            </div>
         </div>
-    </div>
+    </section>
 </div>
 {% endblock %}

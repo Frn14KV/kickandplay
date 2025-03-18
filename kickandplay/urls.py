@@ -9,7 +9,7 @@ urlpatterns = [
     path('api/token/',                                  TokenObtainPairView.as_view(), name='token_obtain_pair'), 
     path('api/token/refresh/',                          TokenRefreshView.as_view(), name='token_refresh'), 
     # Ajusta según el nombre de tu aplicación
-    path('api/', include('canchas.urls')), 
+    #path('api/', include('canchas.urls')), 
     #api
     path('admin/',                                      admin.site.urls), 
     # Ruta para la página principal
@@ -21,6 +21,8 @@ urlpatterns = [
     # Ruta para la lista de Eventos
     path('eventos/',                                    views.lista_eventos, name='lista_eventos'),
     path('eventos/<int:evento_id>/',                    views.detalle_evento, name='detalle_evento'),
+    path('crear_evento/<int:reserva_id>/',              views.crear_evento, name='crear_evento'),
+
      # Otras rutas
     path('evento/editar/<int:evento_id>/',              views.editar_evento, name='editar_evento'),
     #path('calendario/',                                    views.calendario_eventos, name='calendario_eventos'),

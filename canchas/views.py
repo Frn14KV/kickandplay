@@ -16,24 +16,26 @@ from rest_framework.response import Response
 from django.db.models import Count, Avg
 from .forms import ReservaForm, EventoForm, ComentarioForm
 from django.contrib import messages
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login
 from .forms import RegistroForm 
 from django.contrib.auth.views import LoginView, LogoutView
 from .models import UserProfile
-from .forms import UserProfileForm
+from .forms import UserProfileForm, EditUserForm
 from django.urls import reverse_lazy
 from .forms import CustomLoginForm
 from django.core.paginator import Paginator
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
+from django.db.models import Q
 
 #metodos de web
 #home
 def home(request):
-    eventos_destacados = Evento.objects.order_by('-fecha')[:6]
-    return render(request, 'index.html', {
-        'eventos_destacados': eventos_destacados,
-    })
+    # Filtrar eventos públicos y privados, priorizando los públicos
+    eventos_destacados = Evento.objects.filter(
+        Q(tipo_evento='publico') | Q(tipo_evento='privado')).order_by('-tipo_evento', '-fecha_creacion')[:6]
+    
+    return render(request, 'index.html', {'eventos_destacados': eventos_destacados,})
 
 #lista de canchas
 def lista_canchas(request):
@@ -85,13 +87,13 @@ def lista_canchas(request):
 
     # Pasamos la página actual (page_obj) al template
     #reservas = Reserva.objects.filter(fecha_reserva__gte=hoy)
-    return render(request, 'canchas/lista_canchas.html', {'page_obj': page_obj})
+    return render(request, 'lista_canchas.html', {'page_obj': page_obj})
 
 #detalle de canchas
 def detalle_cancha(request, cancha_id):
     cancha = get_object_or_404(Canchas, id=cancha_id)
-    eventos = Evento.objects.filter(cancha=cancha, fecha__gte=date.today()).order_by('fecha', 'hora_inicio')
     comentarios = Comentarios.objects.filter(cancha=cancha).order_by('-fecha_creacion')
+    eventos = Evento.objects.filter(reserva__cancha=cancha)
     return render(request, 'detalle_cancha.html', {
         'cancha': cancha,
         'eventos': eventos,
@@ -105,7 +107,7 @@ def mapa_canchas(request):
 
 #lista de eventos
 def lista_eventos(request):
-    eventos = Evento.objects.all().order_by('-fecha')
+    eventos = Evento.objects.all().order_by('-fecha_creacion')
      # Configura el paginador: 6 eventos por página
     paginator = Paginator(eventos, 6)  # Cambia "6" al número de eventos que quieres por página
     page_number = request.GET.get('page')  # Obtén el número de página desde la URL (parámetro GET)
@@ -175,14 +177,28 @@ def confirmacion_reserva(request, reserva_id):
 
 #lista reservas
 def lista_reservas(request):
-     # Filtrar reservas por usuario
-    reservas_futuras = Reserva.objects.filter(usuario=request.user, fecha_reserva__gte=date.today()).order_by('fecha_reserva', 'hora_inicio')
-    reservas_pasadas = Reserva.objects.filter(usuario=request.user, fecha_reserva__lt=date.today()).order_by('-fecha_reserva', '-hora_inicio')
+    # Obtener las reservas futuras (fecha de reserva mayor o igual a hoy)
+    reservas_futuras = Reserva.objects.filter(fecha_reserva__gte=date.today()).order_by('fecha_reserva')
 
+    # Obtener las reservas pasadas (fecha de reserva menor a hoy)
+    reservas_pasadas = Reserva.objects.filter(fecha_reserva__lt=date.today()).order_by('-fecha_reserva')
+
+    # Paginación para reservas futuras
+    paginator_futuras = Paginator(reservas_futuras, 6)  # 6 reservas por página
+    page_futuras = request.GET.get('page_futuras')  # Clave para identificar la paginación de futuras
+    reservas_futuras = paginator_futuras.get_page(page_futuras)
+
+    # Paginación para reservas pasadas
+    paginator_pasadas = Paginator(reservas_pasadas, 6)  # 6 reservas por página
+    page_pasadas = request.GET.get('page_pasadas')  # Clave para identificar la paginación de pasadas
+    reservas_pasadas = paginator_pasadas.get_page(page_pasadas)
+
+    # Renderizar la plantilla con los datos paginados
     return render(request, 'lista_reservas.html', {
         'reservas_futuras': reservas_futuras,
         'reservas_pasadas': reservas_pasadas,
     })
+
 #eliminar reservas
 @login_required
 def cancelar_reserva(request, reserva_id):
@@ -232,19 +248,31 @@ def detalle_reserva(request, reserva_id):
 #calendario
 def calendario_cp(request, cancha_id):
     cancha = get_object_or_404(Canchas, id=cancha_id)
-    eventos = Evento.objects.filter(cancha=cancha).order_by('fecha', 'hora_inicio')
+    # Filtra los eventos relacionados con esta cancha a través de la reserva
+    eventos = Evento.objects.filter(reserva__cancha=cancha).order_by('reserva__fecha_reserva', 'reserva__hora_inicio')
+    #eventos = Evento.objects.filter(cancha=cancha).order_by('fecha_creacion')
     canchas = Canchas.objects.all()  # Aquí se envían todas las canchas
 
     if request.method == 'POST':
         form = EventoForm(request.POST)
         if form.is_valid():
+            print("aqui")
             evento = form.save(commit=False)
-            evento.cancha = cancha  # Asocia el evento a la cancha específica
-            evento.save()
-            # Redirige al calendario de la misma cancha
-            return redirect('calendario_cancha', cancha_id=cancha_id)
+            # Encuentra o valida la reserva asociada a la cancha
+            # Aquí puedes ajustar la lógica según cómo gestionas las reservas
+            try:
+                print("aqui_1")
+                reserva = Reserva.objects.get(cancha=cancha, fecha_reserva=request.POST.get('fecha_reserva'))
+                print(reserva.fecha_reserva)
+                evento.reserva = reserva  # Asocia la reserva al evento
+                evento.save()  # Guarda el evento
+                # Redirige al calendario después de guardar
+                return redirect('calendario_cancha', cancha_id=cancha_id)
+            except Reserva.DoesNotExist:
+                # Si no hay una reserva asociada, maneja el error (podrías mostrar un mensaje)
+                form.add_error(None, "No se encontró una reserva válida para la cancha seleccionada.")
     else:
-        form = EventoForm(cancha=cancha)
+        form = EventoForm()
 
     return render(request, 'calendario_eventos.html', {
         'form': form,
@@ -316,15 +344,72 @@ def registro(request):
 #ver perfil
 @login_required
 def ver_perfil(request):
-    perfil = request.user.userprofile  # Obtenemos el perfil del usuario
+    user = request.user
+    perfil = user.userprofile  # Obtenemos el perfil del usuario
+
+    # Formulario para editar usuario y perfil
+    user_form = EditUserForm(request.POST or None, instance=user)
+    profile_form = UserProfileForm(request.POST or None, request.FILES or None, instance=perfil)
+
+    # Formulario para cambiar contraseña
+    password_form = PasswordChangeForm(user=user, data=request.POST or None)
+
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, request.FILES, instance=perfil)
-        if form.is_valid():
-            form.save()
-            return redirect('perfil')  # Redirigir a la misma página después de guardar
-    else:
-        form = UserProfileForm(instance=perfil)
-    return render(request, 'perfil.html', {'perfil': perfil, 'form': form})
+        if 'guardar_datos' in request.POST:  # Botón para guardar datos de perfil
+            if user_form.is_valid() and profile_form.is_valid():
+                user_form.save()
+                profile_form.save()
+                return redirect('perfil')
+        elif 'cambiar_clave' in request.POST:  # Botón para cambiar contraseña
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)  # Mantener la sesión activa
+                return redirect('perfil')
+
+    return render(request, 'perfil.html', {
+        'perfil': perfil,
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'password_form': password_form,
+    })
+
+#crear evento
+def crear_evento(request, reserva_id):
+    reserva = get_object_or_404(Reserva, id=reserva_id)
+    print("aqui_2")
+    # Verifica si ya existe un evento asociado a la reserva
+    if hasattr(reserva, 'evento'):
+        return redirect('detalle_evento', id=reserva.evento.id)
+    print("aqui_2")
+    if request.method == 'POST':
+        # Para solicitudes AJAX del modal
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            print(request.POST)
+
+            form = EventoForm(request.POST)
+            if form.is_valid():
+                evento = form.save(commit=False)
+                evento.reserva = reserva  # Vincula el evento a la reserva
+                evento.save()
+
+                # Responde con JSON para notificar éxito
+                return JsonResponse({'status': 'success', 'message': 'Evento creado correctamente!'})
+            else:
+                # Responde con los errores del formulario
+                return JsonResponse({'status': 'error', 'errors': form.errors})
+
+        # Alternativa para solicitudes normales POST
+        else:
+            form = EventoForm(request.POST)
+            if form.is_valid():
+                evento = form.save(commit=False)
+                evento.reserva = reserva
+                evento.save()
+                return redirect('detalle_reserva', id=reserva.id)
+
+    # Renderiza el formulario en caso de GET
+    form = EventoForm()
+    return render(request, 'crear_evento.html', {'form': form, 'reserva': reserva})
 
 #vista de inicio sesion
 class CustomLoginView(LoginView):

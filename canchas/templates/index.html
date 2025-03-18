@@ -37,28 +37,20 @@ Inicio - KickandPlay
         <h2 class="text-center text-secondary">Eventos Destacados</h2>
         <div class="row">
             {% for evento in eventos_destacados %}
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title">{{ evento.titulo }}</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><i class="bi bi-calendar-event"></i> {{ evento.fecha|date:"d/m/Y" }}</p>
-                        <p><strong>Hora:</strong> {{ evento.hora_inicio|time:"H:i" }} - {{ evento.hora_fin|time:"H:i" }}</p>
-
-                        <p><i class="bi bi-geo-alt-fill"></i> {{ evento.cancha.nombre }}</p>
-                        <p>{{ evento.descripcion|truncatechars:100 }}</p>
-                    </div>
-                    <div class="card-footer text-end">
-                        <a href="{% url 'detalle_evento' evento.id %}" class="btn btn-sm btn-primary">Ver Más</a>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ evento.titulo }}</h5>
+                            <p>{{ evento.descripcion }}</p>
+                            <p><strong>Tipo:</strong> {{ evento.get_tipo_evento_display }}</p>
+                            <p><strong>Creado:</strong> {{ evento.fecha_creacion }}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% empty %}
+                <p>No hay eventos destacados en este momento.</p>
             {% endfor %}
-        </div>
-        {% if eventos_destacados|length == 0 %}
-        <p class="text-center text-muted">No hay eventos destacados por el momento. ¡Revisa más tarde!</p>
-        {% endif %}
+        </div>        
     </div>
 
     <!-- Llamado a la Acción -->

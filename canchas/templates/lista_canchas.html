@@ -48,19 +48,6 @@
                     value="{{ request.GET.calificacion_min }}">
             </div>
 
-            <!-- Filtro: Por Comentarios -->
-            <div class="col-md-12 d-flex align-items-center">
-                <input 
-                    class="form-check-input me-2" 
-                    type="checkbox" 
-                    name="filtrar_comentarios" 
-                    id="filtrarComentarios" 
-                    {% if request.GET.filtrar_comentarios %}checked{% endif %}>
-                <label class="form-check-label" for="filtrarComentarios">
-                    Mostrar solo canchas con comentarios
-                </label>
-            </div>
-
             <!-- Botones de Filtrado -->
             <div class="col-md-6 d-grid">
                 <button type="submit" class="btn btn-success">

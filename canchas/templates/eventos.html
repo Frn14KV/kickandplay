@@ -16,25 +16,50 @@ Eventos de KickandPlay
 
     <div class="row">
         {% for evento in page_obj %}
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">{{ evento.titulo }}</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><i class="bi bi-calendar-event"></i> <strong>Fecha:</strong> {{ evento.fecha|date:"d/m/Y" }}</p>
-                        <p><i class="bi bi-clock"></i> <strong>Hora:</strong> {{ evento.hora_inicio|time:"H:i" }} - {{ evento.hora_fin|time:"H:i" }}</p>
-                        <p><i class="bi bi-geo-alt-fill"></i> <strong>Lugar:</strong> {{ evento.cancha.nombre|default:"No asignado" }}</p>
-                        <p><i class="bi bi-info-circle"></i> {{ evento.descripcion|truncatechars:100 }}</p>
-                    </div>
-                    <div class="card-footer text-end">
-                        <a href="/eventos/{{ evento.id }}" class="btn btn-sm btn-outline-primary">Más Información</a>
-                    </div>
-                </div>
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">{{ evento.titulo }}</h5>
             </div>
-        {% empty %}
-            <p class="text-center text-muted">No hay eventos disponibles en este momento.</p>
-        {% endfor %}
+            <div class="card-body">
+                <!-- Mostrar la fecha de creación del evento -->
+                <p><i class="bi bi-calendar-check"></i> <strong>Creado el:</strong> {{ evento.fecha_creacion|date:"d/m/Y H:i" }}</p>
+
+                <!-- Mostrar el estado del evento -->
+                <p><i class="bi bi-flag"></i> <strong>Estado:</strong> 
+                    {% if evento.estado == "pendiente" %}
+                        <span class="badge bg-warning text-dark">Pendiente</span>
+                    {% elif evento.estado == "confirmada" %}
+                        <span class="badge bg-success">Confirmada</span>
+                    {% elif evento.estado == "cancelada" %}
+                        <span class="badge bg-danger">Cancelada</span>
+                    {% endif %}
+                </p>
+
+                <!-- Mostrar el tipo del evento -->
+                <p><i class="bi bi-people-fill"></i> <strong>Tipo:</strong> 
+                    {% if evento.tipo_evento == "publico" %}
+                        <span class="text-success">Público</span>
+                    {% else %}
+                        <span class="text-secondary">Privado</span>
+                    {% endif %}
+                </p>
+
+                <!-- Lugar del evento -->
+                <p><i class="bi bi-geo-alt-fill"></i> <strong>Lugar:</strong> {{ evento.reserva.cancha.nombre|default:"No asignado" }}</p>
+                
+                <!-- Descripción del evento -->
+                <p><i class="bi bi-info-circle"></i> {{ evento.descripcion|truncatechars:100 }}</p>
+            </div>
+            <div class="card-footer text-end">
+                <a href="/eventos/{{ evento.id }}" class="btn btn-sm btn-outline-primary">Más Información</a>
+            </div>
+        </div>
+    </div>
+{% empty %}
+    <p class="text-center text-muted">No hay eventos disponibles en este momento.</p>
+{% endfor %}
+
     </div>
     
     <!-- Controles de Paginación -->

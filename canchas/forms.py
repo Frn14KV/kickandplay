@@ -7,54 +7,24 @@ from django.contrib.auth.forms import AuthenticationForm
 class EventoForm(forms.ModelForm):
     class Meta:
         model = Evento
-        fields = ['titulo', 'descripcion', 'fecha', 'hora_inicio', 'hora_fin', 'cancha']
+        fields = ['titulo', 'descripcion', 'tipo_evento']  # Incluye el campo tipo_evento
         widgets = {
-            'titulo': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Título del Evento',
-            }),
-            'descripcion': forms.Textarea(attrs={
-                'class': 'form-control',
-                'placeholder': 'Descripción del Evento',
-                'rows': 3,
-            }),
-            'fecha': forms.DateInput(attrs={
-                'type': 'date',
-                'class': 'form-control',
-            }),
-            'hora_inicio': forms.TimeInput(attrs={
-                'type': 'time',
-                'class': 'form-control',
-            }),
-            'hora_fin': forms.TimeInput(attrs={
-                'type': 'time',
-                'class': 'form-control',
-            }),
-            'cancha': forms.Select(attrs={
-                'class': 'form-select',
-            }),
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'tipo_evento': forms.Select(attrs={'class': 'form-control'}),  # Widget para seleccionar público o privado
         }
-
-    def clean(self):
-        cleaned_data = super().clean()
-        hora_inicio = cleaned_data.get('hora_inicio')
-        hora_fin = cleaned_data.get('hora_fin')
-        if hora_inicio and hora_fin and hora_inicio >= hora_fin:
-            raise forms.ValidationError("La hora de inicio debe ser antes que la hora de fin.")
-        return cleaned_data
-
-    def __init__(self, *args, **kwargs):
-        cancha = kwargs.pop('cancha', None)  # Recupera la cancha del contexto
-        super().__init__(*args, **kwargs)
-
-        if cancha:
-            self.fields['cancha'].initial = cancha
-            self.fields['cancha'].widget.attrs['readonly'] = True  # Alternativamente: disabled
 
 class ReservaForm(forms.ModelForm):
     class Meta:
         model = Reserva
-        fields = ['cancha', 'fecha_reserva', 'hora_inicio', 'hora_fin']
+        fields = ['cancha', 'fecha_reserva', 'hora_inicio', 'hora_fin', 'estado']
+        estado = forms.ChoiceField(
+        choices=[
+            ('pendiente', 'Pendiente'),
+            ('confirmada', 'Confirmada'),
+            ('cancelada', 'Cancelada')
+        ],)
+        initial='pendiente',
         widgets = {
             'fecha_reserva': forms.DateInput(attrs={'type': 'date'}),
             'hora_inicio': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
@@ -117,6 +87,16 @@ class UserProfileForm(forms.ModelForm):
             'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'location': forms.TextInput(attrs={'class': 'form-control'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+class EditUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
         }
 
 class CustomLoginForm(AuthenticationForm):

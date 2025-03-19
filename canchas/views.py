@@ -50,6 +50,7 @@ def home(request):
         'caracteristicas': caracteristicas,
         'page_obj': page_obj
     })
+
 #lista de canchas
 def lista_canchas(request):
     hoy = date.today()
@@ -59,8 +60,6 @@ def lista_canchas(request):
     lon_usuario = float(request.GET.get('lon', 0))
     distancia_max = request.GET.get('distancia', None)  # Obtén el valor del parámetro
     calificacion_min = request.GET.get('calificacion_min', None)
-    filtrar_comentarios = request.GET.get('filtrar_comentarios', None)  # Si se selecciona por comentarios
-    
     # Filtrar las canchas
     canchas = Canchas.objects.all()
 
@@ -71,11 +70,6 @@ def lista_canchas(request):
     # Filtro por calificación mínima (si está presente)
     if calificacion_min:
         canchas = canchas.filter(comentarios__calificacion__gte=calificacion_min).distinct()
-
-    # Agregar lógica de filtro separado por cantidad de comentarios o calificación promedio
-    if filtrar_comentarios:
-        # Ordenar por cantidad de comentarios
-        canchas = canchas.annotate(total_comentarios=Count('comentarios')).order_by('-total_comentarios')
 
     # Filtrar por distancia
     if lat_usuario and lon_usuario and distancia_max:
@@ -91,7 +85,7 @@ def lista_canchas(request):
     # Agregar la calificación promedio y ordenarlas por este criterio (por defecto)
     canchas = canchas.annotate(
         calificacion_avg=Avg('comentarios__calificacion')  # Calcula el promedio
-    ).order_by('-calificacion_avg')  # Ordena de mayor a menor promedio
+    ).order_by('calificacion_avg')  # Ordena de mayor a menor promedio
     
     # Configura el paginador: muestra 6 canchas por página
     paginator = Paginator(canchas, 6)  # Cambia el número a lo que prefieras
@@ -121,6 +115,16 @@ def mapa_canchas(request):
 #lista de eventos
 def lista_eventos(request):
     eventos = Evento.objects.all().order_by('-fecha_creacion')
+    # Filtrar por nombre de evento (si se proporciona)
+    query_nombre = request.GET.get('nombre', '')  # "nombre" será el nombre del input en el formulario
+    if query_nombre:
+        eventos = eventos.filter(titulo__icontains=query_nombre)
+
+    # Filtrar por tipo de evento (si se proporciona)
+    query_tipo = request.GET.get('tipo', '')  # "tipo" será el nombre del selector en el formulario
+    if query_tipo:
+        eventos = eventos.filter(tipo_evento=query_tipo)
+        
      # Configura el paginador: 6 eventos por página
     paginator = Paginator(eventos, 6)  # Cambia "6" al número de eventos que quieres por página
     page_number = request.GET.get('page')  # Obtén el número de página desde la URL (parámetro GET)

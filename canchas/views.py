@@ -375,19 +375,19 @@ def ver_perfil(request):
 
 #crear evento
 def crear_evento(request, reserva_id):
+    print("aquil......")
     reserva = get_object_or_404(Reserva, id=reserva_id)
-    print("aqui_2")
     # Verifica si ya existe un evento asociado a la reserva
     if hasattr(reserva, 'evento'):
-        return redirect('detalle_evento', id=reserva.evento.id)
-    print("aqui_2")
+        return redirect('listar_reservas')  # Ajusta la URL según tu configuración
+    
     if request.method == 'POST':
         # Para solicitudes AJAX del modal
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            print(request.POST)
-
             form = EventoForm(request.POST)
+            print("aquil")
             if form.is_valid():
+               
                 evento = form.save(commit=False)
                 evento.reserva = reserva  # Vincula el evento a la reserva
                 evento.save()
@@ -395,6 +395,7 @@ def crear_evento(request, reserva_id):
                 # Responde con JSON para notificar éxito
                 return JsonResponse({'status': 'success', 'message': 'Evento creado correctamente!'})
             else:
+                print("no")
                 # Responde con los errores del formulario
                 return JsonResponse({'status': 'error', 'errors': form.errors})
 
@@ -405,7 +406,7 @@ def crear_evento(request, reserva_id):
                 evento = form.save(commit=False)
                 evento.reserva = reserva
                 evento.save()
-                return redirect('detalle_reserva', id=reserva.id)
+                return redirect('listar_reservas')
 
     # Renderiza el formulario en caso de GET
     form = EventoForm()

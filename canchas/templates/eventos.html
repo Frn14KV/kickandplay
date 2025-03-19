@@ -6,65 +6,84 @@ Eventos de KickandPlay
 
 {% block content %}
 <div class="container mt-5">
+    <!-- Título principal -->
     <h1 class="text-center text-primary mb-4">Eventos de KickandPlay</h1>
     
-    <!-- Filtro de búsqueda -->
+    <!-- Barra de búsqueda -->
     <form class="search-form d-flex justify-content-center mb-4">
-        <input type="text" placeholder="Buscar eventos..." class="form-control w-50 me-2">
-        <button type="submit" class="btn btn-primary">Buscar</button>
+        <input 
+            type="text" 
+            placeholder="Buscar eventos..." 
+            class="form-control w-50 me-2" 
+            aria-label="Buscar eventos"
+        >
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-search"></i> Buscar
+        </button>
     </form>
 
+    <!-- Listado de eventos -->
     <div class="row">
         {% for evento in page_obj %}
-    <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0">{{ evento.titulo }}</h5>
-            </div>
-            <div class="card-body">
-                <!-- Mostrar la fecha de creación del evento -->
-                <p><i class="bi bi-calendar-check"></i> <strong>Creado el:</strong> {{ evento.fecha_creacion|date:"d/m/Y H:i" }}</p>
-
-                <!-- Mostrar el estado del evento -->
-                <p><i class="bi bi-flag"></i> <strong>Estado:</strong> 
-                    {% if evento.estado == "pendiente" %}
-                        <span class="badge bg-warning text-dark">Pendiente</span>
-                    {% elif evento.estado == "confirmada" %}
-                        <span class="badge bg-success">Confirmada</span>
-                    {% elif evento.estado == "cancelada" %}
-                        <span class="badge bg-danger">Cancelada</span>
-                    {% endif %}
-                </p>
-
-                <!-- Mostrar el tipo del evento -->
-                <p><i class="bi bi-people-fill"></i> <strong>Tipo:</strong> 
-                    {% if evento.tipo_evento == "publico" %}
-                        <span class="text-success">Público</span>
-                    {% else %}
-                        <span class="text-secondary">Privado</span>
-                    {% endif %}
-                </p>
-
-                <!-- Lugar del evento -->
-                <p><i class="bi bi-geo-alt-fill"></i> <strong>Lugar:</strong> {{ evento.reserva.cancha.nombre|default:"No asignado" }}</p>
-                
-                <!-- Descripción del evento -->
-                <p><i class="bi bi-info-circle"></i> {{ evento.descripcion|truncatechars:100 }}</p>
-            </div>
-            <div class="card-footer text-end">
-                <a href="/eventos/{{ evento.id }}" class="btn btn-sm btn-outline-primary">Más Información</a>
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <!-- Encabezado de la tarjeta -->
+                <div class="card-header bg-primary text-white text-center">
+                    <h5 class="card-title mb-0 text-truncate">{{ evento.titulo }}</h5>
+                </div>
+                <!-- Contenido de la tarjeta -->
+                <div class="card-body">
+                    <!-- Fecha de creación -->
+                    <p>
+                        <i class="bi bi-calendar-check"></i> 
+                        <strong>Creado el:</strong> {{ evento.fecha_creacion|date:"d/m/Y H:i" }}
+                    </p>
+                    <!-- Tipo de evento -->
+                    <p>
+                        <i class="bi bi-people-fill"></i> 
+                        <strong>Tipo:</strong> 
+                        {% if evento.tipo_evento == "publico" %}
+                            <span class="text-success">Público</span>
+                        {% else %}
+                            <span class="text-secondary">Privado</span>
+                        {% endif %}
+                    </p>
+                    <!-- Lugar del evento -->
+                    <p>
+                        <i class="bi bi-geo-alt-fill"></i> 
+                        <strong>Lugar:</strong> {{ evento.reserva.cancha.nombre|default:"No asignado" }}
+                    </p>
+                    <!-- Descripción -->
+                    <p>
+                        <i class="bi bi-info-circle"></i> 
+                        {{ evento.descripcion|truncatechars:100 }}
+                    </p>
+                </div>
+                <!-- Pie de la tarjeta -->
+                <div class="card-footer d-flex justify-content-between">
+                    <a href="/reservas/{{ evento.reserva.id }}" class="btn btn-sm btn-outline-primary">
+                        Ver Reserva
+                    </a>
+                    <a href="/eventos/{{ evento.id }}" class="btn btn-sm btn-outline-primary">
+                        Más Información
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-{% empty %}
-    <p class="text-center text-muted">No hay eventos disponibles en este momento.</p>
-{% endfor %}
-
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center">
+                <p class="text-muted">No hay eventos disponibles en este momento.</p>
+            </div>
+        </div>
+        {% endfor %}
     </div>
     
-    <!-- Controles de Paginación -->
-    <nav aria-label="Paginación de eventos">
+    
+    <!-- Controles de paginación -->
+    <nav aria-label="Paginación de eventos" class="mt-4">
         <ul class="pagination justify-content-center">
+            <!-- Botón "Primera" -->
             {% if page_obj.has_previous %}
             <li class="page-item">
                 <a class="page-link" href="?page=1" aria-label="Primera">
@@ -77,14 +96,17 @@ Eventos de KickandPlay
                 </a>
             </li>
             {% endif %}
-    
-            <!-- Mostrar números de página -->
+
+            <!-- Números de páginas -->
             {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number|add:"-3" <= num <= page_obj.number|add:"3" %}
             <li class="page-item {% if page_obj.number == num %}active{% endif %}">
                 <a class="page-link" href="?page={{ num }}">{{ num }}</a>
             </li>
+            {% endif %}
             {% endfor %}
-    
+
+            <!-- Botón "Siguiente" -->
             {% if page_obj.has_next %}
             <li class="page-item">
                 <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Siguiente">
@@ -99,6 +121,5 @@ Eventos de KickandPlay
             {% endif %}
         </ul>
     </nav>
-    
 </div>
 {% endblock %}

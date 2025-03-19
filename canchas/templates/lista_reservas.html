@@ -7,7 +7,6 @@ Mis Reservas
 {% block content %}
 <div class="container my-5">
     <h1 class="text-center text-primary mb-4">Mis Reservas</h1>
-
     <!-- Reservas Futuras -->
     <section>
         <h3 class="mt-4 text-primary"><i class="bi bi-calendar-check"></i> Reservas Futuras</h3>
@@ -193,16 +192,16 @@ Mis Reservas
 
             <!-- Cuerpo del Modal -->
             <div class="modal-body">
-                <!-- Formulario para agregar el evento -->
+                <!-- Formulario para agregar un evento -->
                 <form id="formAgregarEvento" method="post" action="">
                     {% csrf_token %}
-                    <!-- Campo oculto para reserva_id -->
-                    <input type="hidden" name="reserva_id" id="reserva_id" value="">
+                    <!-- Campo oculto para asociar reserva_id -->
+                    <input type="hidden" id="reserva_id" name="reserva_id" value="">
 
                     <!-- Campo: Título del Evento -->
                     <div class="mb-3">
                         <label for="titulo" class="form-label">Título del Evento</label>
-                        <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Ingresa el título del evento" required>
+                        <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Escribe el título del evento" required>
                     </div>
 
                     <!-- Campo: Descripción -->
@@ -220,7 +219,7 @@ Mis Reservas
                         </select>
                     </div>
 
-                    <!-- Botón de Envío -->
+                    <!-- Botón de Guardar -->
                     <button type="submit" class="btn btn-primary w-100">Guardar Evento</button>
                 </form>
             </div>
@@ -230,26 +229,34 @@ Mis Reservas
 
 
 
+
 <!-- Script para dinamizar el modal -->
 <script>
-    // Función para abrir el modal y asignar dinámicamente el reserva_id
+    /**
+     * Función para abrir el modal y asignar dinámicamente el reserva_id.
+     * @param {number} reservaId - ID de la reserva asociada al evento.
+     */
     function abrirModalAgregarEvento(reservaId) {
         // Asignar el ID de la reserva al campo oculto del formulario
-        document.getElementById('reserva_id').value = reservaId;
+        const reservaInput = document.getElementById('reserva_id');
+        reservaInput.value = reservaId;
 
-        // Actualizar la URL de la acción del formulario
+        // Actualizar la acción del formulario con la URL correcta
         const form = document.getElementById('formAgregarEvento');
         form.action = `/crear_evento/${reservaId}/`; // Ajusta esta ruta según tu configuración
     }
 
-    // Manejo del envío del formulario del modal con fetch
+    /**
+     * Manejo del envío del formulario del modal.
+     */
     document.getElementById('formAgregarEvento').addEventListener('submit', function(event) {
-        event.preventDefault(); // Evita el comportamiento predeterminado del formulario
-        
-        const form = event.target; // Obtén el formulario
-        const formData = new FormData(form); // Captura los datos del formulario
+        event.preventDefault(); // Evitar el comportamiento predeterminado del formulario
 
-        // Envía los datos al servidor utilizando fetch
+        // Capturar los datos del formulario
+        const form = event.target;
+        const formData = new FormData(form);
+
+        // Hacer la solicitud al servidor usando fetch
         fetch(form.action, {
             method: 'POST',
             headers: {
@@ -266,17 +273,17 @@ Mis Reservas
         })
         .then(data => {
             if (data.status === 'success') {
-                // Muestra un mensaje de éxito
+                // Mostrar un mensaje de éxito
                 alert('¡Evento creado correctamente!');
 
-                // Cierra el modal
+                // Cerrar el modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarEvento'));
                 modal.hide();
 
-                // Recarga la página para actualizar los datos
+                // Recargar la página para actualizar los datos
                 setTimeout(() => location.reload(), 500);
             } else if (data.status === 'error') {
-                // Muestra errores del formulario de forma amigable
+                // Mostrar errores del formulario de forma amigable
                 let errorMessages = '';
                 for (const [field, messages] of Object.entries(data.errors)) {
                     errorMessages += `${field}: ${messages.join(', ')}\n`;
@@ -285,11 +292,13 @@ Mis Reservas
             }
         })
         .catch(error => {
+            // Manejar errores en la conexión o respuesta
             console.error('Error al procesar la solicitud:', error);
             alert('Ocurrió un error inesperado. Intenta nuevamente.');
         });
     });
 </script>
+
 
 
 

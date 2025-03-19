@@ -89,4 +89,4 @@ Si tienes preguntas o comentarios, no dudes en contactarme:
 
 📨 Correo: (https://kickandplay-3b16b2f1fd11.herokuapp.com/)
 
-🌐 GitHub Profile
+🌐 GitHub https://github.com/Frn14KV

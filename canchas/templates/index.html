@@ -7,57 +7,88 @@ Inicio - KickandPlay
 {% block content %}
 <div class="container mt-5">
     <!-- Sección de Bienvenida -->
-    <div class="jumbotron text-center bg-light p-5 shadow rounded">
+    <div class="jumbotron text-center bg-light p-5 shadow rounded" data-aos="fade-in">
         <h1 class="display-4 text-primary">¡Bienvenido a KickandPlay!</h1>
         <p class="lead text-muted">Organiza partidos, reserva canchas y conéctate con amantes del fútbol como tú.</p>
-        <a href="/sobre-nosotros/" class="btn btn-primary btn-lg">Conócenos</a>
+        <a href="/sobre-nosotros/" class="btn btn-primary btn-lg" aria-label="Más información sobre KickandPlay">Conócenos</a>
     </div>
 
     <!-- Sección de Características -->
-    <div class="row mt-5 text-center">
-        <div class="col-md-4">
-            <i class="bi bi-calendar3 text-success" style="font-size: 2rem;"></i>
-            <h3>Calendario de Eventos</h3>
-            <p>Consulta y participa en los eventos más destacados de tu comunidad.</p>
-        </div>
-        <div class="col-md-4">
-            <i class="bi bi-map text-primary" style="font-size: 2rem;"></i>
-            <h3>Encuentra Canchas</h3>
-            <p>Descubre canchas cercanas y reserva fácilmente desde la plataforma.</p>
-        </div>
-        <div class="col-md-4">
-            <i class="bi bi-star-fill text-warning" style="font-size: 2rem;"></i>
-            <h3>Comentarios y Reseñas</h3>
-            <p>Consulta calificaciones y opiniones de otros usuarios para elegir mejor.</p>
-        </div>
+    <div class="row mt-5 text-center" data-aos="fade-up">
+        {% for caracteristica in caracteristicas %}
+            <div class="col-md-4" data-aos="zoom-in" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                <i class="{{ caracteristica.icono }} text-{{ caracteristica.color }}" style="font-size: 2rem;" aria-hidden="true"></i>
+                <h3>{{ caracteristica.titulo }}</h3>
+                <p>{{ caracteristica.descripcion }}</p>
+            </div>
+        {% endfor %}
     </div>
 
     <!-- Sección de Eventos Destacados -->
-    <div class="mt-5">
+    <div class="mt-5" data-aos="fade-up">
         <h2 class="text-center text-secondary">Eventos Destacados</h2>
-        <div class="row">
-            {% for evento in eventos_destacados %}
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ evento.titulo }}</h5>
-                            <p>{{ evento.descripcion }}</p>
-                            <p><strong>Tipo:</strong> {{ evento.get_tipo_evento_display }}</p>
-                            <p><strong>Creado:</strong> {{ evento.fecha_creacion }}</p>
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-                <p>No hay eventos destacados en este momento.</p>
-            {% endfor %}
-        </div>        
+        {% if page_obj %}
+            <div class="row">
+                {% for evento in page_obj %}
+                    {% include 'partials/event_card.html' %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-warning text-center" role="alert">
+                No hay eventos destacados en este momento.
+            </div>
+        {% endif %}
+
+        <!-- Controles de Paginación -->
+        <nav aria-label="Paginación de eventos">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Página anterior">
+                            &laquo; Anterior
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">&laquo; Anterior</span>
+                    </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">
+                        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Página siguiente">
+                            Siguiente &raquo;
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Siguiente &raquo;</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
     </div>
 
     <!-- Llamado a la Acción -->
-    <div class="text-center mt-5">
+    {% if user.is_authenticated %}
+    <div class="text-center mt-5" data-aos="fade-up">
+        <h2 class="text-primary">¡Hola {{ user.first_name }}!</h2>
+        <p class="text-muted">Consulta y administra tus reservas fácilmente.</p>
+        <a href="/reservas/" class="btn btn-primary btn-lg" aria-label="Ver Mis Reservas">Mis Reservas</a>
+    </div>
+    {% else %}
+    <div class="text-center mt-5" data-aos="fade-up">
         <h2 class="text-success">¡Únete a KickandPlay Hoy!</h2>
         <p class="text-muted">Regístrate ahora y comienza a disfrutar de todas nuestras funcionalidades.</p>
-        <a href="/registro/" class="btn btn-success btn-lg">Regístrate Gratis</a>
+        <a href="/registro/" class="btn btn-success btn-lg" aria-label="Registrarse en KickandPlay">Regístrate Gratis</a>
     </div>
+    {% endif %}
+
 </div>
 {% endblock %}

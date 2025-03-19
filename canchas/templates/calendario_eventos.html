@@ -1,173 +1,97 @@
 {% extends 'base.html' %}
 
 {% block title %}
-{% if cancha %}Calendario de {{ cancha.nombre }}{% else %}Calendario General{% endif %}
+    {% if cancha %}Calendario de {{ cancha.nombre }}{% else %}Calendario General{% endif %}
 {% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <!-- Título del Calendario -->
+<div class="container my-5">
+    <!-- Título -->
     <h1 class="text-center text-primary mb-4">
-        {% if cancha %}
-        Calendario de {{ cancha.nombre }}
-        {% else %}
-        Calendario General
-        {% endif %}
+        {% if cancha %}Calendario de {{ cancha.nombre }}{% else %}Calendario General{% endif %}
     </h1>
 
-    <!-- Tabla de Eventos -->
-    {% if eventos %}
-    <div class="table-responsive">
-        <table class="table table-striped table-hover align-middle">
-            <thead class="table-dark text-center">
-                <tr>
-                    <th>#</th>
-                    <th>Título</th>
-                    <th>Fecha</th>
-                    <th>Hora de Inicio</th>
-                    <th>Hora de Fin</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for evento in eventos %}
-                <tr id="evento-{{ evento.id }}">
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ evento.titulo }}</td>
-                    <td>{{ evento.fecha }}</td>
-                    <td>{{ evento.hora_inicio }}</td>
-                    <td>{{ evento.hora_fin }}</td>
-                    <td class="text-center">
-                        <!-- Botones de Acciones -->
-                        <a href="#" class="btn btn-outline-success btn-sm me-2">Reservar</a>
-                        <button type="button" class="btn btn-outline-primary btn-sm me-2" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#detallesEventoModal"
-                                onclick="cargarDetallesEvento('{{ evento.id }}')">
-                            Ver Detalles
-                        </button>
-                        <button type="button" class="btn btn-outline-warning btn-sm me-2" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#editarEventoModal"
-                                onclick="cargarDatosEvento('{{ evento.id }}')">
-                            Editar
-                        </button>
-                        <a href="{% url 'eliminar_evento' evento.id %}" 
-                           class="btn btn-outline-danger btn-sm" 
-                           onclick="return confirm('¿Estás seguro de eliminar este evento?');">
-                            Eliminar
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Vista del Calendario -->
+    <div id="calendario" class="mb-5">       
     </div>
+
+    <!-- Tabla de Reservas (opcional para complementar el calendario) -->
+    {% if reservas %}
+        <div class="table-responsive mt-4 shadow-sm p-3 bg-body rounded">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-primary">
+                    <tr class="text-center">
+                        <th>#</th>
+                        <th>Cancha</th>
+                        <th>Fecha</th>
+                        <th>Hora de Inicio</th>
+                        <th>Hora de Fin</th>
+                        <th>Usuario</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reserva in reservas %}
+                    <tr class="text-center">
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ reserva.cancha.nombre }}</td>
+                        <td>{{ reserva.fecha_reserva|date:"d/m/Y" }}</td>
+                        <td>{{ reserva.hora_inicio|time:"H:i" }}</td>
+                        <td>{{ reserva.hora_fin|time:"H:i" }}</td>
+                        <td>{{ reserva.usuario.username }}</td>
+                        <td>
+                            {% if reserva.estado == "pendiente" %}
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+                            {% elif reserva.estado == "confirmada" %}
+                                <span class="badge bg-success">Confirmada</span>
+                            {% elif reserva.estado == "cancelada" %}
+                                <span class="badge bg-danger">Cancelada</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
-    <div class="alert alert-warning text-center" role="alert">
-        No hay eventos registrados.
-    </div>
+        <div class="alert alert-warning text-center mt-4" role="alert">
+            No hay reservas registradas.
+        </div>
     {% endif %}
 </div>
 
-<!-- Modales -->
-<!-- Modal: Agregar Evento -->
-<div class="modal fade" id="agregarEventoModal" tabindex="-1" aria-labelledby="agregarEventoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="agregarEventoModalLabel">Agregar Nuevo Evento</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="post" action="{% if cancha %}{% url 'calendario_cancha' cancha.id %}{% else %}{% url 'calendario' %}{% endif %}">
-                {% csrf_token %}
-                <div class="modal-body">
-                    {{ form.as_p }}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary">Guardar Evento</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<!-- Script para FullCalendar -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendario');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth', // Vista inicial (mes)
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            locale: 'es', // Idioma en español (24 horas por defecto)
+            eventTimeFormat: { // Formato de horas
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false // Desactiva AM/PM
+            },
+            events: [
+                {% for reserva in reservas %}
+                {
+                    id: '{{ reserva.id }}',
+                    title: 'Reserva en {{ reserva.cancha.nombre }}',
+                    start: '{{ reserva.fecha_reserva|date:"Y-m-d" }}T{{ reserva.hora_inicio|time:"H:i:s" }}',
+                    end: '{{ reserva.fecha_reserva|date:"Y-m-d" }}T{{ reserva.hora_fin|time:"H:i:s" }}',
+                    url: '/reserva/detalle/{{ reserva.id }}/',
+                }
+                {% endfor %}
+            ],
 
-<!-- Modal: Editar Evento -->
-<div class="modal fade" id="editarEventoModal" tabindex="-1" aria-labelledby="editarEventoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-warning text-white">
-                <h5 class="modal-title" id="editarEventoModalLabel">Editar Evento</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="formEditarEvento" method="post" action="/evento/editar/{evento_id}/">
-                {% csrf_token %}
-                <div class="modal-body">
-                    <input type="hidden" id="evento_id" name="evento_id">
-                    <div class="mb-3">
-                        <label for="titulo" class="form-label">Título</label>
-                        <input type="text" class="form-control" id="titulo" name="titulo" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="fecha" class="form-label">Fecha</label>
-                            <input type="date" class="form-control" id="fecha" name="fecha" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="hora_inicio" class="form-label">Hora de Inicio</label>
-                            <input type="time" class="form-control" id="hora_inicio" name="hora_inicio" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="hora_fin" class="form-label">Hora de Fin</label>
-                            <input type="time" class="form-control" id="hora_fin" name="hora_fin" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="cancha" class="form-label">Cancha</label>
-                            <select id="cancha" name="cancha" class="form-select">
-                                <option value="">Seleccione una cancha</option>
-                                {% for cancha in canchas %}
-                                <option value="{{ cancha.id }}">{{ cancha.nombre }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-warning">Guardar Cambios</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Modal: Detalles del Evento -->
-<div class="modal fade" id="detallesEventoModal" tabindex="-1" aria-labelledby="detallesEventoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-info text-white">
-                <h5 class="modal-title" id="detallesEventoModalLabel">Detalles del Evento</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p><strong>Título:</strong> <span id="detalleTitulo"></span></p>
-                <p><strong>Descripción:</strong> <span id="detalleDescripcion"></span></p>
-                <p><strong>Fecha:</strong> <span id="detalleFecha"></span></p>
-                <p><strong>Hora de Inicio:</strong> <span id="detalleHoraInicio"></span></p>
-                <p><strong>Hora de Fin:</strong> <span id="detalleHoraFin"></span></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <a href="#" id="reservarBoton" class="btn btn-success">Reservar</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="/static/js/editar_evento.js"></script>
+            locale: 'es', // Idioma
+        });
+        calendar.render();
+    });
+</script>
 {% endblock %}

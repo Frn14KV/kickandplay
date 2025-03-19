@@ -19,6 +19,7 @@ Mis Reservas
                         <th>Hora de Inicio</th>
                         <th>Hora de Fin</th>
                         <th>Estado</th>
+                        <th>Evento</th> <!-- Nueva columna -->
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -40,25 +41,35 @@ Mis Reservas
                                 {% endif %}
                             </td>
                             <td>
+                                {% if reserva.evento %}
+                                    <i class="bi bi-calendar-event text-success"></i> {{ reserva.evento.titulo }}
+                                {% else %}
+                                    <i class="bi bi-exclamation-circle text-danger"></i> No hay evento
+                                {% endif %}
+                            </td>
+                            <td>
                                 <div class="d-flex justify-content-center gap-2">
                                     <a href="#" 
-                                        class="btn btn-success"
-                                        onclick="abrirModalEvento({{ reserva.id }})">
+                                        class="btn btn-success 
+                                        {% if reserva.evento %} disabled {% endif %}"
+                                        {% if not reserva.evento %} onclick="abrirModalEvento({{ reserva.id }})"{% endif %}>
                                         Crear Evento
                                     </a>
+                                    {% if reserva.evento %}
                                     <a href="#" 
                                         class="btn btn-primary"
                                         onclick="abrirModalEvento(null, {{ reserva.evento.id }}, '{{ reserva.evento.titulo }}', '{{ reserva.evento.descripcion }}', '{{ reserva.evento.tipo_evento }}')">
                                         Editar Evento
                                     </a>
-
+                                    {% endif %}
                                     <a href="{% url 'eliminar_reserva' reserva.id %}" 
-                                       class="btn btn-sm btn-outline-danger" 
+                                       class="btn btn-danger" 
                                        title="Cancelar esta reserva">
-                                        <i class="bi bi-x-circle"></i> Cancelar
+                                       <i class="bi bi-x-circle"></i> Cancelar
                                     </a>
                                 </div>
                             </td>
+                            
                         </tr>
                         {% endfor %}
                     {% else %}
@@ -115,6 +126,7 @@ Mis Reservas
                         <th>Hora de Inicio</th>
                         <th>Hora de Fin</th>
                         <th>Estado</th>
+                        <th>Evento</th> <!-- Nueva columna -->
                     </tr>
                 </thead>
                 <tbody>
@@ -132,6 +144,13 @@ Mis Reservas
                                     <span class="badge bg-success">Confirmada</span>
                                 {% elif reserva.estado == "cancelada" %}
                                     <span class="badge bg-danger">Cancelada</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if reserva.evento %}
+                                    <i class="bi bi-calendar-event text-success"></i> {{ reserva.evento.titulo }}
+                                {% else %}
+                                    <i class="bi bi-exclamation-circle text-danger"></i> No hay evento
                                 {% endif %}
                             </td>
                         </tr>

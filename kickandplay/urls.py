@@ -21,7 +21,8 @@ urlpatterns = [
     path('eventos/',                                    views.lista_eventos, name='lista_eventos'),
     path('eventos/<int:evento_id>/',                    views.detalle_evento, name='detalle_evento'),
     path('crear_evento/<int:reserva_id>/',              views.crear_evento, name='crear_evento'),
-    path('eventos/<int:evento_id>/editar/',             views.editar_evento, name='editar_evento'),
+    path('editar_evento/<int:evento_id>/',              views.editar_evento, name='editar_evento'),
+    #path('eventos/<int:evento_id>/editar/',             views.editar_evento, name='editar_evento'),
      # Otras rutas
     #path('evento/editar/<int:evento_id>/',              views.editar_evento, name='editar_evento'),
     #path('calendario/',                                    views.calendario_eventos, name='calendario_eventos'),

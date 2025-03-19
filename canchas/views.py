@@ -297,26 +297,20 @@ def obtener_evento(request, evento_id):
 #editar evento desde el calendario
 def editar_evento(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
+
     if request.method == 'POST':
-        form = EventoForm(request.POST, instance=evento, cancha=evento.cancha)
+        form = EventoForm(request.POST, instance=evento)
         if form.is_valid():
-            evento = form.save(commit=False)
-            evento.usuario = request.user  # Asegura que el usuario esté asignado
-            evento.save()
-            return JsonResponse({
-                "success": True,
-                "evento": {
-                    "titulo": evento.titulo,
-                    "fecha": str(evento.fecha),
-                    "hora_inicio": str(evento.hora_inicio),
-                    "hora_fin": str(evento.hora_fin),
-                    "descripcion": evento.descripcion
-                }
-            }) # Respuesta para AJAX
-        else:
-            form = EventoForm(instance=evento, cancha=evento.cancha)
-            return JsonResponse({"success": False, "errors": form.errors}, status=400)
-    return JsonResponse({"success": False, "message": "Método no permitido"}, status=405)
+            form.save()
+            return JsonResponse({'status': 'success', 'message': 'Evento actualizado correctamente!'})
+
+        # Si hay errores en el formulario
+        return JsonResponse({'status': 'error', 'errors': form.errors})
+
+    # Renderiza el formulario si es necesario (en caso de no ser AJAX)
+    form = EventoForm(instance=evento)
+    return render(request, 'editar_evento.html', {'form': form, 'evento': evento})
+
 
 #eliminar evento desde la cancha
 def eliminar_evento(request, evento_id):

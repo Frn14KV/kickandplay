@@ -42,17 +42,16 @@ Mis Reservas
                             <td>
                                 <div class="d-flex justify-content-center gap-2">
                                     <a href="#" 
-                                       class="btn btn-sm btn-outline-success" 
-                                       data-bs-toggle="modal" 
-                                       data-bs-target="#modalAgregarEvento" 
-                                       onclick="abrirModalAgregarEvento({{ reserva.id }})">
-                                        <i class="bi bi-plus-circle"></i> Evento
+                                        class="btn btn-success"
+                                        onclick="abrirModalEvento({{ reserva.id }})">
+                                        Crear Evento
                                     </a>
-                                    <a href="{% url 'detalle_cancha' reserva.cancha.id %}" 
-                                       class="btn btn-sm btn-outline-info" 
-                                       title="Ver detalles de la cancha">
-                                        <i class="bi bi-eye"></i> Cancha
+                                    <a href="#" 
+                                        class="btn btn-primary"
+                                        onclick="abrirModalEvento(null, {{ reserva.evento.id }}, '{{ reserva.evento.titulo }}', '{{ reserva.evento.descripcion }}', '{{ reserva.evento.tipo_evento }}')">
+                                        Editar Evento
                                     </a>
+
                                     <a href="{% url 'eliminar_reserva' reserva.id %}" 
                                        class="btn btn-sm btn-outline-danger" 
                                        title="Cancelar esta reserva">
@@ -180,22 +179,23 @@ Mis Reservas
     </section>
 </div>
 
-<!-- Modal para agregar evento -->
+<!-- Modal para Agregar o Editar Evento -->
 <div class="modal fade" id="modalAgregarEvento" tabindex="-1" aria-labelledby="modalAgregarEventoLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <!-- Encabezado del Modal -->
             <div class="modal-header">
-                <h5 class="modal-title text-primary" id="modalAgregarEventoLabel">Agregar Evento</h5>
+                <h5 class="modal-title text-primary" id="modalAgregarEventoLabel">Evento</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
             <!-- Cuerpo del Modal -->
             <div class="modal-body">
-                <!-- Formulario para agregar un evento -->
+                <!-- Formulario para Agregar o Editar Evento -->
                 <form id="formAgregarEvento" method="post" action="">
                     {% csrf_token %}
-                    <!-- Campo oculto para asociar reserva_id -->
+                    
+                    <!-- Campo oculto para reserva_id (solo usado al agregar) -->
                     <input type="hidden" id="reserva_id" name="reserva_id" value="">
 
                     <!-- Campo: Título del Evento -->
@@ -207,7 +207,7 @@ Mis Reservas
                     <!-- Campo: Descripción -->
                     <div class="mb-3">
                         <label for="descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3" placeholder="Describe el evento (opcional)"></textarea>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3" placeholder="Describe el evento"></textarea>
                     </div>
 
                     <!-- Campo: Tipo de Evento -->
@@ -220,7 +220,7 @@ Mis Reservas
                     </div>
 
                     <!-- Botón de Guardar -->
-                    <button type="submit" class="btn btn-primary w-100">Guardar Evento</button>
+                    <button type="submit" class="btn btn-primary w-100">Guardar</button>
                 </form>
             </div>
         </div>
@@ -228,29 +228,47 @@ Mis Reservas
 </div>
 
 
-
-
-<!-- Script para dinamizar el modal -->
 <script>
     /**
-     * Función para abrir el modal y asignar dinámicamente el reserva_id.
-     * @param {number} reservaId - ID de la reserva asociada al evento.
+     * Función para abrir el modal y configurar dinámicamente los datos según sea para agregar o editar.
+     * @param {number|null} reservaId - ID de la reserva asociada al evento (nulo si se edita).
+     * @param {number|null} eventoId - ID del evento que se desea editar (nulo si se crea).
+     * @param {string} titulo - Título del evento (opcional al crear, obligatorio al editar).
+     * @param {string} descripcion - Descripción del evento (opcional al crear, obligatorio al editar).
+     * @param {string} tipoEvento - Tipo del evento (público o privado).
      */
-    function abrirModalAgregarEvento(reservaId) {
-        // Asignar el ID de la reserva al campo oculto del formulario
-        const reservaInput = document.getElementById('reserva_id');
-        reservaInput.value = reservaId;
-
-        // Actualizar la acción del formulario con la URL correcta
+    function abrirModalEvento(reservaId = null, eventoId = null, titulo = '', descripcion = '', tipoEvento = 'publico') {
+        console.log('abrirModalEvento llamado con: ', { reservaId, eventoId, titulo, descripcion, tipoEvento });
         const form = document.getElementById('formAgregarEvento');
-        form.action = `/crear_evento/${reservaId}/`; // Ajusta esta ruta según tu configuración
+
+        if (eventoId) {
+            // Estamos en modo edición, actualizamos la acción del formulario con el ID del evento
+            form.action = `/editar_evento/${eventoId}/`; // Ajusta esta ruta según tu configuración
+        } else if (reservaId) {
+            // Estamos en modo creación, asociamos la reserva al evento
+            form.action = `/crear_evento/${reservaId}/`;
+            document.getElementById('reserva_id').value = reservaId;
+        } else {
+            console.error('No se proporcionaron ni reservaId ni eventoId. Imposible abrir el modal.');
+            return;
+        }
+
+        // Rellenamos los campos del modal
+        document.getElementById('titulo').value = titulo || '';
+        document.getElementById('descripcion').value = descripcion || '';
+        document.getElementById('tipo_evento').value = tipoEvento || 'publico';
+
+        // Mostramos el modal
+        const modal = new bootstrap.Modal(document.getElementById('modalAgregarEvento'));
+        modal.show();
     }
 
     /**
-     * Manejo del envío del formulario del modal.
+     * Manejo del envío del formulario del modal con fetch.
+     * Procesa tanto la creación como la edición de eventos.
      */
     document.getElementById('formAgregarEvento').addEventListener('submit', function(event) {
-        event.preventDefault(); // Evitar el comportamiento predeterminado del formulario
+        event.preventDefault(); // Evita el comportamiento predeterminado del formulario
 
         // Capturar los datos del formulario
         const form = event.target;
@@ -274,13 +292,13 @@ Mis Reservas
         .then(data => {
             if (data.status === 'success') {
                 // Mostrar un mensaje de éxito
-                alert('¡Evento creado correctamente!');
+                alert(data.message || 'Operación realizada correctamente.');
 
                 // Cerrar el modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarEvento'));
                 modal.hide();
 
-                // Recargar la página para actualizar los datos
+                // Recargar la página para reflejar los cambios
                 setTimeout(() => location.reload(), 500);
             } else if (data.status === 'error') {
                 // Mostrar errores del formulario de forma amigable
@@ -298,6 +316,7 @@ Mis Reservas
         });
     });
 </script>
+
 
 
 

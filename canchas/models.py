@@ -60,28 +60,46 @@ class Partidos(models.Model):
 
     def __str__(seft):
         return f'{seft.equipo_local} vs {seft.equipo_visitante} en {seft.cancha}'
-    
-class Evento(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)  # Relación con el usuario
-    cancha = models.ForeignKey(Canchas, on_delete=models.CASCADE, blank=True, null=True)  # Relación con la cancha
-    titulo = models.CharField(max_length=100)  # Título del evento
-    descripcion = models.TextField(blank=True, null=True)  # Descripción opcional
-    fecha = models.DateField()  # Fecha del evento
-    hora_inicio = models.TimeField()  # Hora de inicio
-    hora_fin = models.TimeField()  # Hora de fin
-
-    def __str__(self):
-        return f"{self.titulo} ({self.fecha})"
 
 class Reserva(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)  # Usuario que hace la reserva
-    cancha = models.ForeignKey(Canchas, on_delete=models.CASCADE)  # Cancha a reservar
-    fecha_reserva = models.DateField()  # Fecha de la reserva
-    hora_inicio = models.TimeField()  # Hora de inicio
-    hora_fin = models.TimeField()  # Hora de fin
+    cancha = models.ForeignKey(Canchas, on_delete=models.CASCADE)  # Cancha reservada
+    fecha_reserva = models.DateField()
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
+    estado = models.CharField(
+        max_length=50,
+        choices=[
+            ('pendiente', 'Pendiente'),
+            ('confirmada', 'Confirmada'),
+            ('cancelada', 'Cancelada'),
+        ],
+        default='pendiente',  # Valor predeterminado para evitar nulos
+    )
 
     def __str__(self):
-        return f"Reserva de {self.usuario} para {self.cancha.nombre} en {self.fecha_reserva}"
+        return f"Reserva de {self.usuario.username} en {self.cancha.nombre} el {self.fecha}"
+    
+class Evento(models.Model):
+    TIPO_EVENTO_CHOICES = [
+        ('publico', 'Público'),
+        ('privado', 'Privado'),
+    ]
+
+    reserva = models.OneToOneField(
+        Reserva,
+        on_delete=models.CASCADE,
+        related_name="evento",
+    )  # Relación uno-a-uno con Reserva
+    titulo = models.CharField(max_length=255)
+    descripcion = models.TextField()
+    tipo_evento = models.CharField(
+        max_length=10, choices=TIPO_EVENTO_CHOICES, default='publico'
+    )  # Público o privado
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.titulo} ({self.get_tipo_evento_display()})"
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

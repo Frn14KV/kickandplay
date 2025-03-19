@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Evento{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center">Crear Evento para la Reserva</h2>
+    <p class="text-center text-muted">
+        Cancha reservada: {{ reserva.cancha.nombre }}<br>
+        Fecha: {{ reserva.fecha }} | Horario: {{ reserva.hora_inicio }} - {{ reserva.hora_fin }}
+    </p>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary w-100">Crear Evento</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

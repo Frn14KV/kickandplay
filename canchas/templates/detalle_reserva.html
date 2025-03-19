@@ -20,13 +20,23 @@ Detalle de Reserva
                     <!-- Información de la Cancha -->
                     <div class="text-center mb-4">
                         <h4 class="text-secondary">{{ reserva.cancha.nombre }}</h4>
-                        <img 
-                            src="{{ reserva.cancha.imagen_url }}" 
-                            alt="Imagen de la Cancha" 
-                            class="img-fluid rounded border" 
-                            style="max-height: 250px; object-fit: cover;" 
-                            loading="lazy">
+                        {% if reserva.cancha.imagen_url %}
+                            <img 
+                                src="{{ reserva.cancha.imagen_url }}" 
+                                alt="Imagen de la Cancha" 
+                                class="img-fluid rounded border" 
+                                style="max-height: 250px; object-fit: cover;" 
+                                loading="lazy">
+                        {% else %}
+                            <img 
+                                src="https://fluofgltdazuwfgpnctl.supabase.co/storage/v1/object/public/media//k&plogo.jpg" 
+                                alt="Imagen predeterminada de la Cancha" 
+                                class="img-fluid rounded border" 
+                                style="max-height: 250px; object-fit: cover;" 
+                                loading="lazy">
+                        {% endif %}
                     </div>
+                    
 
                     <!-- Mapa Interactivo -->
                     {% if reserva.cancha.latitud and reserva.cancha.longitud %}
@@ -75,7 +85,7 @@ Detalle de Reserva
 
                     <!-- Botones de Acción -->
                     <div class="d-flex justify-content-between">
-                        <a href="{% url 'lista_reservas' %}" class="btn btn-outline-secondary">
+                        <a href="{% url 'lista_eventos' %}" class="btn btn-outline-secondary">
                             <i class="bi bi-arrow-left-circle"></i> Volver al Listado
                         </a>
                         <a href="{% url 'eliminar_reserva' reserva.id %}" 

@@ -9,7 +9,6 @@ urlpatterns = [
     path('api/token/',                                  TokenObtainPairView.as_view(), name='token_obtain_pair'), 
     path('api/token/refresh/',                          TokenRefreshView.as_view(), name='token_refresh'), 
     # Ajusta según el nombre de tu aplicación
-    path('api/', include('canchas.urls')), 
     #api
     path('admin/',                                      admin.site.urls), 
     # Ruta para la página principal
@@ -21,8 +20,10 @@ urlpatterns = [
     # Ruta para la lista de Eventos
     path('eventos/',                                    views.lista_eventos, name='lista_eventos'),
     path('eventos/<int:evento_id>/',                    views.detalle_evento, name='detalle_evento'),
+    path('crear_evento/<int:reserva_id>/',              views.crear_evento, name='crear_evento'),
+    path('eventos/<int:evento_id>/editar/',             views.editar_evento, name='editar_evento'),
      # Otras rutas
-    path('evento/editar/<int:evento_id>/',              views.editar_evento, name='editar_evento'),
+    #path('evento/editar/<int:evento_id>/',              views.editar_evento, name='editar_evento'),
     #path('calendario/',                                    views.calendario_eventos, name='calendario_eventos'),
     path('calendario/cancha/<int:cancha_id>/',          views.calendario_cp, name='calendario_cancha'),
     path('api/eventos/<int:evento_id>/',                views.obtener_evento, name='obtener_evento'),
@@ -38,8 +39,6 @@ urlpatterns = [
     path('reservas/<int:reserva_id>/',                  views.detalle_reserva, name='detalle_reserva'),
     # Otras rutas
     path('sobre-nosotros/',                             views.sobre_nosotros, name='sobre_nosotros'),
-    #path('eventos/', include('canchas.urls')), 
-    #path('canchas/', include('canchas.urls')),
     # registro en inicio de session
     path('registro/',                                   views.registro, name='registro'),
     #path('login/',                                      views.CustomLoginView.as_view(), name='login'),

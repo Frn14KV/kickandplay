@@ -27,7 +27,7 @@ Crear Reserva
                     <!-- Formulario -->
                     <form method="post">
                         {% csrf_token %}
-
+                    
                         <!-- Campo: Cancha -->
                         <div class="mb-3">
                             <label for="id_cancha" class="form-label">{{ form.cancha.label }}</label>
@@ -36,7 +36,7 @@ Crear Reserva
                             <div class="text-danger small">{{ form.cancha.errors }}</div>
                             {% endif %}
                         </div>
-
+                    
                         <!-- Campo: Fecha de Reserva -->
                         <div class="mb-3">
                             <label for="id_fecha_reserva" class="form-label">{{ form.fecha_reserva.label }}</label>
@@ -45,7 +45,7 @@ Crear Reserva
                             <div class="text-danger small">{{ form.fecha_reserva.errors }}</div>
                             {% endif %}
                         </div>
-
+                    
                         <!-- Campo: Hora de Inicio -->
                         <div class="mb-3">
                             <label for="id_hora_inicio" class="form-label">{{ form.hora_inicio.label }}</label>
@@ -54,7 +54,7 @@ Crear Reserva
                             <div class="text-danger small">{{ form.hora_inicio.errors }}</div>
                             {% endif %}
                         </div>
-
+                    
                         <!-- Campo: Hora de Fin -->
                         <div class="mb-3">
                             <label for="id_hora_fin" class="form-label">{{ form.hora_fin.label }}</label>
@@ -63,10 +63,20 @@ Crear Reserva
                             <div class="text-danger small">{{ form.hora_fin.errors }}</div>
                             {% endif %}
                         </div>
-
-                        <!-- Botón de envío -->
+                    
+                        <!-- Campo: Estado -->
+                        <div class="mb-3">
+                            <label for="id_estado" class="form-label">{{ form.estado.label }}</label>
+                            {{ form.estado|add_class:"form-select" }}
+                            {% if form.estado.errors %}
+                            <div class="text-danger small">{{ form.estado.errors }}</div>
+                            {% endif %}
+                        </div>
+                    
+                        <!-- Botón de Envío -->
                         <button type="submit" class="btn btn-primary w-100">Reservar</button>
                     </form>
+                    
                 </div>
             </div>
         </div>

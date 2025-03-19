@@ -78,7 +78,7 @@ class Reserva(models.Model):
     )
 
     def __str__(self):
-        return f"Reserva de {self.usuario.username} en {self.cancha.nombre} el {self.fecha}"
+        return f"Reserva de {self.usuario.username} en {self.cancha.nombre} el {self.fecha_reserva}"
     
 class Evento(models.Model):
     TIPO_EVENTO_CHOICES = [

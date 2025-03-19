@@ -1,0 +1,17 @@
+<div class="col-md-4">
+    <div class="card mb-4 shadow-sm border-0" role="article" aria-labelledby="evento-{{ evento.id }}" data-aos="zoom-in" data-aos-delay="100">
+        <div class="card-header bg-primary text-white">
+            <h5 id="evento-{{ evento.id }}" class="card-title mb-0">{{ evento.titulo }}</h5>
+        </div>
+        <div class="card-body">
+            <p class="card-text text-muted">{{ evento.descripcion|truncatechars:100 }}</p>
+            <ul class="list-unstyled">
+                <li><i class="bi bi-tag text-success"></i> <strong>Tipo:</strong> {{ evento.get_tipo_evento_display }}</li>
+                <li><i class="bi bi-clock text-info"></i> <strong>Creado:</strong> {{ evento.fecha_creacion|date:"d M Y" }}</li>
+            </ul>
+        </div>
+        <div class="card-footer bg-light text-center">
+            <a href="/evento/{{ evento.id }}/" class="btn btn-outline-primary btn-sm">Ver Detalles</a>
+        </div>
+    </div>
+</div>

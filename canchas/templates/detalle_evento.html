@@ -29,7 +29,6 @@ Detalle del Evento - {{ evento.titulo }}
                 <i class="bi bi-geo-alt-fill"></i> 
                 <strong>Ubicación:</strong> {{ evento.reserva.cancha.nombre|default:"Ubicación no asignada" }}
             </p>
-
             <!-- Tipo de evento -->
             <p>
                 <i class="bi bi-tag"></i> 
@@ -40,15 +39,13 @@ Detalle del Evento - {{ evento.titulo }}
                     <span class="text-secondary">Privado</span>
                 {% endif %}
             </p>
-
             <!-- Descripción del evento -->
             {% if evento.descripcion %}
-            <h3 class="mt-4">Descripción</h3>
-            <p>{{ evento.descripcion|linebreaks }}</p>
+                <h3 class="mt-4">Descripción</h3>
+                <p>{{ evento.descripcion|linebreaks }}</p>
             {% else %}
-            <p class="text-muted">No se proporcionó una descripción para este evento.</p>
+                <p class="text-muted">No se proporcionó una descripción para este evento.</p>
             {% endif %}
-
             <!-- Mapa interactivo si hay coordenadas de la cancha -->
             {% if evento.reserva.cancha.latitud and evento.reserva.cancha.longitud %}
             <h3 class="mt-4">Ubicación en el Mapa</h3>
@@ -75,9 +72,11 @@ Detalle del Evento - {{ evento.titulo }}
             <a href="{% url 'lista_eventos' %}" class="btn btn-secondary me-2">
                 <i class="bi bi-arrow-left-circle"></i> Regresar a la Lista
             </a>
+            {% if request.user.is_authenticated %}
             <a href="#" class="btn btn-primary">
                 <i class="bi bi-check-circle"></i> Registrar Asistencia
             </a>
+            {% endif %}
         </div>
     </div>
 </div>

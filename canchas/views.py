@@ -28,7 +28,8 @@ from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.db.models import Q
 from django.utils.timezone import now  # Usamos `now` para manejar fechas dinámicas
-
+from rest_framework import generics
+from .serializers import ReservaSerializer, EventoSerializer
 
 #metodos de web
 #home
@@ -284,10 +285,9 @@ def obtener_evento(request, evento_id):
     data = {
         "titulo": evento.titulo,
         "descripcion": evento.descripcion,
-        "fecha": evento.fecha,
-        "hora_inicio": evento.hora_inicio,
-        "hora_fin": evento.hora_fin,
-        "cancha": evento.cancha.id,  
+        "fecha_creacion": evento.fecha_creacion,
+        "reserva": evento.reserva.id,  
+        "tipo_evento":evento.tipo_evento,
     }
     return JsonResponse(data)
 
@@ -481,3 +481,23 @@ class ListaEventosView(APIView):
         data = {"eventos": [evento.titulo for evento in eventos]}  # Serializar datos básicos
         return Response(data)  # Responder con los datos en formato JSON
 
+
+# Listar y crear reservas
+class ReservaListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Reserva.objects.all()
+    serializer_class = ReservaSerializer
+
+# Recuperar, actualizar y eliminar reservas
+class ReservaDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Reserva.objects.all()
+    serializer_class = ReservaSerializer
+
+# Listar y crear eventos
+class EventoListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Evento.objects.all()
+    serializer_class = EventoSerializer
+
+# Recuperar, actualizar y eliminar eventos
+class EventoDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Evento.objects.all()
+    serializer_class = EventoSerializer

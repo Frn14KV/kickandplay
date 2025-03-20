@@ -4,6 +4,7 @@ from django.contrib import admin
 from canchas import views
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.urls import path
 urlpatterns = [
     #api
     path('api/token/',                                  TokenObtainPairView.as_view(), name='token_obtain_pair'), 
@@ -47,5 +48,14 @@ urlpatterns = [
     path('perfil/',                                     views.ver_perfil, name='perfil'),
     path('login/',                                      views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/',                                     views.LogoutView.as_view(next_page='/'), name='logout'),
-   
+    
+    # Endpoints para Reservas
+    path('api/reservas/',                               views.ReservaListCreateAPIView.as_view(), name='api_reservas_list_create'),
+    path('api/reservas/<int:pk>/',                      views.ReservaDetailAPIView.as_view(), name='api_reserva_detail'),
+
+    # Endpoints para Eventos
+    path('api/eventos/',                                views.EventoListCreateAPIView.as_view(), name='api_eventos_list_create'),
+    path('api/eventos/<int:pk>/',                       views.EventoDetailAPIView.as_view(), name='api_evento_detail'),
+
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -28,10 +28,13 @@ from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.db.models import Q
 from django.utils.timezone import now  # Usamos `now` para manejar fechas dinámicas
+from rest_framework import generics
+from .serializers import ReservaSerializer, EventoSerializer
 
-
-#metodos de web
-#home
+#----------------------------------------#
+#--------------------metodos de web
+#--------Publico
+#----home
 def home(request):
     caracteristicas = [
         {"icono": "bi bi-calendar3", "color": "success", "titulo": "Calendario de Eventos", "descripcion": "Consulta y participa en los eventos más destacados de tu comunidad."},
@@ -50,7 +53,34 @@ def home(request):
         'caracteristicas': caracteristicas,
         'page_obj': page_obj
     })
-#lista de canchas
+
+#----lista de eventos
+def lista_eventos(request):
+    eventos = Evento.objects.all().order_by('-fecha_creacion')
+    # Filtrar por nombre de evento (si se proporciona)
+    query_nombre = request.GET.get('nombre', '')  # "nombre" será el nombre del input en el formulario
+    if query_nombre:
+        eventos = eventos.filter(titulo__icontains=query_nombre)
+
+    # Filtrar por tipo de evento (si se proporciona)
+    query_tipo = request.GET.get('tipo', '')  # "tipo" será el nombre del selector en el formulario
+    if query_tipo:
+        eventos = eventos.filter(tipo_evento=query_tipo)
+        
+     # Configura el paginador: 6 eventos por página
+    paginator = Paginator(eventos, 6)  # Cambia "6" al número de eventos que quieres por página
+    page_number = request.GET.get('page')  # Obtén el número de página desde la URL (parámetro GET)
+    page_obj = paginator.get_page(page_number)  # Obtén los eventos para la página actual
+
+    # Envía la página actual al template
+    return render(request, 'eventos.html', {'page_obj': page_obj})
+
+#detalle evento
+def detalle_evento(request, evento_id):
+    evento = get_object_or_404(Evento, id=evento_id)
+    return render(request, 'detalle_evento.html', {'evento': evento})
+
+#-----lista de canchas
 def lista_canchas(request):
     hoy = date.today()
     # Obtén los parámetros de búsqueda desde el formulario o la URL
@@ -59,8 +89,6 @@ def lista_canchas(request):
     lon_usuario = float(request.GET.get('lon', 0))
     distancia_max = request.GET.get('distancia', None)  # Obtén el valor del parámetro
     calificacion_min = request.GET.get('calificacion_min', None)
-    filtrar_comentarios = request.GET.get('filtrar_comentarios', None)  # Si se selecciona por comentarios
-    
     # Filtrar las canchas
     canchas = Canchas.objects.all()
 
@@ -71,11 +99,6 @@ def lista_canchas(request):
     # Filtro por calificación mínima (si está presente)
     if calificacion_min:
         canchas = canchas.filter(comentarios__calificacion__gte=calificacion_min).distinct()
-
-    # Agregar lógica de filtro separado por cantidad de comentarios o calificación promedio
-    if filtrar_comentarios:
-        # Ordenar por cantidad de comentarios
-        canchas = canchas.annotate(total_comentarios=Count('comentarios')).order_by('-total_comentarios')
 
     # Filtrar por distancia
     if lat_usuario and lon_usuario and distancia_max:
@@ -91,7 +114,7 @@ def lista_canchas(request):
     # Agregar la calificación promedio y ordenarlas por este criterio (por defecto)
     canchas = canchas.annotate(
         calificacion_avg=Avg('comentarios__calificacion')  # Calcula el promedio
-    ).order_by('-calificacion_avg')  # Ordena de mayor a menor promedio
+    ).order_by('calificacion_avg')  # Ordena de mayor a menor promedio
     
     # Configura el paginador: muestra 6 canchas por página
     paginator = Paginator(canchas, 6)  # Cambia el número a lo que prefieras
@@ -113,30 +136,31 @@ def detalle_cancha(request, cancha_id):
         'comentarios': comentarios,
     })
 
+#sobre nosotros
+def sobre_nosotros(request):
+    return render(request, 'sobre_nosotros.html')
+
 #mapa de las canchas
 def mapa_canchas(request):
     canchas = Canchas.objects.values('id', 'nombre', 'direccion', 'latitud', 'longitud', 'imagen_url')
     return render(request, 'mapa.html', {'canchas': list(canchas)})
 
-#lista de eventos
-def lista_eventos(request):
-    eventos = Evento.objects.all().order_by('-fecha_creacion')
-     # Configura el paginador: 6 eventos por página
-    paginator = Paginator(eventos, 6)  # Cambia "6" al número de eventos que quieres por página
-    page_number = request.GET.get('page')  # Obtén el número de página desde la URL (parámetro GET)
-    page_obj = paginator.get_page(page_number)  # Obtén los eventos para la página actual
+#calendario
+def calendario_cp(request, cancha_id):
+    cancha = get_object_or_404(Canchas, id=cancha_id)
+    reservas = Reserva.objects.filter(cancha=cancha).order_by('fecha_reserva', 'hora_inicio')
 
-    # Envía la página actual al template
-    return render(request, 'eventos.html', {'page_obj': page_obj})
+    # Validar formato
+    for reserva in reservas:
+        print(f"Validando reserva {reserva.id}: {reserva.fecha_reserva}T{reserva.hora_inicio} - {reserva.hora_fin}")
 
-#detalle evento
-def detalle_evento(request, evento_id):
-    evento = get_object_or_404(Evento, id=evento_id)
-    return render(request, 'detalle_evento.html', {'evento': evento})
+    return render(request, 'calendario_eventos.html', {
+        'cancha': cancha,
+        'reservas': reservas
+    })
 
-#sobre nosotros
-def sobre_nosotros(request):
-    return render(request, 'sobre_nosotros.html')
+#----------------------------------------#
+#--------Restringido
 
 #crear reserva
 @login_required
@@ -184,11 +208,13 @@ def reservar_cancha(request, cancha_id):
     return render(request, 'crear_reserva.html', {'cancha': cancha, 'form': form})
 
 #confirmacion de reserva
+@login_required
 def confirmacion_reserva(request, reserva_id):
     reserva = get_object_or_404(Reserva, id=reserva_id)
     return render(request, 'confirmacion_reserva.html', {'reserva': reserva})
 
 #lista reservas
+@login_required
 def lista_reservas(request):
     # Fechas actuales para comparar
     hoy = now().date()
@@ -256,23 +282,10 @@ def dejar_comentario(request, cancha_id):
     return redirect('detalle_cancha', cancha_id=cancha.id)
 
 #detalle reserva
+@login_required
 def detalle_reserva(request, reserva_id):
     reserva = get_object_or_404(Reserva, id=reserva_id, usuario=request.user)
     return render(request, 'detalle_reserva.html', {'reserva': reserva})
-
-#calendario
-def calendario_cp(request, cancha_id):
-    cancha = get_object_or_404(Canchas, id=cancha_id)
-    reservas = Reserva.objects.filter(cancha=cancha).order_by('fecha_reserva', 'hora_inicio')
-
-    # Validar formato
-    for reserva in reservas:
-        print(f"Validando reserva {reserva.id}: {reserva.fecha_reserva}T{reserva.hora_inicio} - {reserva.hora_fin}")
-
-    return render(request, 'calendario_eventos.html', {
-        'cancha': cancha,
-        'reservas': reservas
-    })
 
 #obtener evento
 def obtener_evento(request, evento_id):
@@ -280,14 +293,14 @@ def obtener_evento(request, evento_id):
     data = {
         "titulo": evento.titulo,
         "descripcion": evento.descripcion,
-        "fecha": evento.fecha,
-        "hora_inicio": evento.hora_inicio,
-        "hora_fin": evento.hora_fin,
-        "cancha": evento.cancha.id,  
+        "fecha_creacion": evento.fecha_creacion,
+        "reserva": evento.reserva.id,  
+        "tipo_evento":evento.tipo_evento,
     }
     return JsonResponse(data)
 
-#editar evento desde el calendario
+#editar evento
+@login_required
 def editar_evento(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
 
@@ -305,6 +318,7 @@ def editar_evento(request, evento_id):
     return render(request, 'editar_evento.html', {'form': form, 'evento': evento})
 
 #eliminar evento desde la cancha
+@login_required
 def eliminar_evento(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
     cancha_id = evento.cancha.id
@@ -360,6 +374,7 @@ def ver_perfil(request):
     })
 
 #crear evento
+@login_required
 def crear_evento(request, reserva_id):
     print("aquil......")
     reserva = get_object_or_404(Reserva, id=reserva_id)
@@ -398,6 +413,7 @@ def crear_evento(request, reserva_id):
     form = EventoForm()
     return render(request, 'crear_evento.html', {'form': form, 'reserva': reserva})
 
+#--------Funciones Generales 
 #vista de inicio sesion
 class CustomLoginView(LoginView):
     template_name = 'login.html'
@@ -477,3 +493,23 @@ class ListaEventosView(APIView):
         data = {"eventos": [evento.titulo for evento in eventos]}  # Serializar datos básicos
         return Response(data)  # Responder con los datos en formato JSON
 
+
+# Listar y crear reservas
+class ReservaListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Reserva.objects.all()
+    serializer_class = ReservaSerializer
+
+# Recuperar, actualizar y eliminar reservas
+class ReservaDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Reserva.objects.all()
+    serializer_class = ReservaSerializer
+
+# Listar y crear eventos
+class EventoListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Evento.objects.all()
+    serializer_class = EventoSerializer
+
+# Recuperar, actualizar y eliminar eventos
+class EventoDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Evento.objects.all()
+    serializer_class = EventoSerializer

@@ -84,7 +84,9 @@
                     title: 'Reserva en {{ reserva.cancha.nombre }}',
                     start: '{{ reserva.fecha_reserva|date:"Y-m-d" }}T{{ reserva.hora_inicio|time:"H:i:s" }}',
                     end: '{{ reserva.fecha_reserva|date:"Y-m-d" }}T{{ reserva.hora_fin|time:"H:i:s" }}',
-                    url: '/reserva/detalle/{{ reserva.id }}/',
+                    {% if request.user.is_authenticated %}
+                    url: '/reservas/{{ reserva.id }}/',
+                    {% endif %}
                 }
                 {% endfor %}
             ],

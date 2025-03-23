@@ -15,7 +15,7 @@ router.register('comentarios', ComentarioViewSet)
 #router.register('eventos',ListaEventosView)
 
 urlpatterns = [
-    path('api', include(router.urls)),
+    path('', include(router.urls)),
     # Rutas de canchas
     #path('canchas/', views.lista_canchas, name='lista_canchas'),
 

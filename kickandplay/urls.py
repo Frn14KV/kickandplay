@@ -12,6 +12,8 @@ urlpatterns = [
     # Ajusta según el nombre de tu aplicación
     #api
     path('admin/',                                      admin.site.urls), 
+    path('api/',                                         include('canchas.urls')),  
+    # Reemplaza 'tu_aplicacion' con el nombre de tu app
     # Ruta para la página principal
     path('',                                            views.home, name='home'), 
     # Ruta para la lista de canchas
@@ -25,7 +27,7 @@ urlpatterns = [
     path('editar_evento/<int:evento_id>/',              views.editar_evento, name='editar_evento'),
     path('api/eventos/<int:evento_id>/',                views.obtener_evento, name='obtener_evento'),
     #path('eventos/<int:evento_id>/editar/',             views.editar_evento, name='editar_evento'),
-     # Otras rutas
+        # Otras rutas
     #path('evento/editar/<int:evento_id>/',              views.editar_evento, name='editar_evento'),
     #path('calendario/',                                    views.calendario_eventos, name='calendario_eventos'),
     path('calendario/cancha/<int:cancha_id>/',          views.calendario_cp, name='calendario_cancha'),

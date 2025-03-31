@@ -30,6 +30,12 @@ from django.db.models import Q
 from django.utils.timezone import now  # Usamos `now` para manejar fechas dinámicas
 from rest_framework import generics
 from .serializers import ReservaSerializer, EventoSerializer
+from rest_framework.decorators import api_view
+from django.contrib.auth.models import User
+from .serializers import UserSerializer
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+
 
 #----------------------------------------#
 #--------------------metodos de web
@@ -161,6 +167,35 @@ def calendario_cp(request, cancha_id):
 
 #----------------------------------------#
 #--------Restringido
+
+
+@api_view(['GET', 'POST'])  # Permitir GET y POST
+def obtener_informacion_usuario(request):
+    try:
+        # Manejo de solicitud GET
+        if request.method == 'GET':
+            username = request.query_params.get('username')  # Obtener el username desde la URL
+            if not username:
+                return Response({"error": "El parámetro 'username' es requerido"}, status=400)
+
+        # Manejo de solicitud POST
+        elif request.method == 'POST':
+            username = request.data.get('username')  # Obtener el username desde el body
+            if not username:
+                return Response({"error": "El campo 'username' es requerido"}, status=400)
+
+        # Buscar al usuario por username
+        usuario = User.objects.filter(username=username).first()
+        if not usuario:
+            return Response({"error": "Usuario no encontrado"}, status=404)
+
+        # Serializar y devolver los datos del usuario junto con el perfil
+        serializer = UserSerializer(usuario)
+        return Response(serializer.data, status=200)
+
+    except Exception as e:
+        # Manejo de cualquier excepción inesperada
+        return Response({"error": str(e)}, status=500)
 
 #crear reserva
 @login_required

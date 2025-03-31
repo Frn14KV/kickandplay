@@ -6,7 +6,7 @@
 from django.urls import path, include
 from . import views
 from rest_framework.routers import DefaultRouter
-from .views import CanchaViewSet, EquipoViewSet, PartidoViewSet, ComentarioViewSet, ListaEventosView
+from .views import CanchaViewSet, EquipoViewSet, PartidoViewSet, ComentarioViewSet, ListaEventosView, obtener_informacion_usuario
 router = DefaultRouter()
 router.register(r'canchas', CanchaViewSet, basename='cancha')
 router.register('equipos', EquipoViewSet)
@@ -16,6 +16,8 @@ router.register('comentarios', ComentarioViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('obtener_usuario/', obtener_informacion_usuario, name='obtener_usuario'),
+
     # Rutas de canchas
     #path('canchas/', views.lista_canchas, name='lista_canchas'),
 

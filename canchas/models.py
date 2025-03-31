@@ -10,7 +10,7 @@ class UserProfile(models.Model):
     """
     Extiende el modelo User para agregar información adicional del usuario.
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
     bio = models.TextField(blank=True, null=True)
     profile_image = models.ImageField(upload_to='profiles/', blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)

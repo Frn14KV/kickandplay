@@ -1,7 +1,20 @@
 from rest_framework import serializers
 from .models import Canchas, Equipos, Partidos, Comentarios, Evento, Reserva
 from django.contrib.auth.models import User
+from .models import UserProfile
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['bio', 'profile_image', 'location', 'phone_number']
+
+class UserSerializer(serializers.ModelSerializer):
+    user_profile = UserProfileSerializer()  # Cambiado de "perfil" a "user_profile"
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'user_profile']
+        
 # -----------------------------------------------
 # SERIALIZADOR PARA RESERVAS
 # -----------------------------------------------

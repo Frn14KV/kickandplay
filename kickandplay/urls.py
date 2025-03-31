@@ -12,7 +12,8 @@ urlpatterns = [
     # Ajusta según el nombre de tu aplicación
     #api
     path('admin/',                                      admin.site.urls), 
-    path('api/',                                         include('canchas.urls')),  
+    path('api/',                                        include('canchas.urls')), 
+    path('obtener_usuario/',                            views.obtener_informacion_usuario, name='obtener_usuario'),
     # Reemplaza 'tu_aplicacion' con el nombre de tu app
     # Ruta para la página principal
     path('',                                            views.home, name='home'), 

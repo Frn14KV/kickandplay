@@ -12,4 +12,4 @@ def crear_perfil_usuario(sender, instance, created, **kwargs):
 # Guardar automáticamente el perfil del usuario cuando se guarda el usuario
 @receiver(post_save, sender=User)
 def guardar_perfil_usuario(sender, instance, **kwargs):
-    instance.userprofile.save()
+    instance.user_profile.save()

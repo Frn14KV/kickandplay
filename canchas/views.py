@@ -30,12 +30,12 @@ from django.db.models import Q
 from django.utils.timezone import now  # Usamos `now` para manejar fechas dinámicas
 from rest_framework import generics
 from .serializers import ReservaSerializer, EventoSerializer
-from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from .serializers import UserSerializer
-from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 #----------------------------------------#
 #--------------------metodos de web
@@ -196,6 +196,29 @@ def obtener_informacion_usuario(request):
     except Exception as e:
         # Manejo de cualquier excepción inesperada
         return Response({"error": str(e)}, status=500)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])  # Requiere autenticación
+def actualizar_usuario(request):
+    try:
+        user = request.user
+        data = request.data
+
+        # Actualizar datos básicos
+        user.first_name = data.get('first_name', user.first_name)
+        user.last_name = data.get('last_name', user.last_name)
+        user.save()
+
+        # Actualizar UserProfile si existe
+        profile = user.user_profile
+        profile.bio = data.get('bio', profile.bio)
+        profile.phone_number = data.get('phone_number', profile.phone_number)
+        profile.location = data.get('location', profile.location)
+        profile.save()
+
+        return Response({"message": "Información actualizada exitosamente."}, status=200)
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)
 
 #crear reserva
 @login_required

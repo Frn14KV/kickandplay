@@ -380,7 +380,7 @@ def registro(request):
 @login_required
 def ver_perfil(request):
     user = request.user
-    perfil = user.userprofile  # Obtenemos el perfil del usuario
+    perfil = user.user_profile  # Obtenemos el perfil del usuario
 
     # Formulario para editar usuario y perfil
     user_form = EditUserForm(request.POST or None, instance=user)

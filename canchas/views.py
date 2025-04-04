@@ -216,7 +216,7 @@ def actualizar_usuario(request):
         profile.location = data.get('location', profile.location)
         profile.save()
 
-        return Response({"message": "Información actualizada exitosamente."}, status=200)
+        return Response({ "message": "Información actualizada exitosamente.", "user": {"first_name": user.first_name,"last_name": user.last_name,"user_profile": {"bio": profile.bio,"phone_number": profile.phone_number,"location": profile.location,}}}, status=200)
     except Exception as e:
         return Response({"error": str(e)}, status=400)
 

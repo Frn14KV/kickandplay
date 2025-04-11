@@ -17,12 +17,11 @@ from django.db.models import Count, Avg
 from .forms import ReservaForm, EventoForm, ComentarioForm
 from django.contrib import messages
 from django.contrib.auth import login
-from .forms import RegistroForm 
+from .forms import RegistroForm, CustomLoginForm
 from django.contrib.auth.views import LoginView, LogoutView
 from .models import UserProfile
 from .forms import UserProfileForm, EditUserForm
 from django.urls import reverse_lazy
-from .forms import CustomLoginForm
 from django.core.paginator import Paginator
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
@@ -35,7 +34,10 @@ from .serializers import UserSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+import json
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.forms import UserCreationForm
+from rest_framework_simplejwt.tokens import RefreshToken
 
 #----------------------------------------#
 #--------------------metodos de web
@@ -398,6 +400,46 @@ def registro(request):
     else:
         form = RegistroForm()
     return render(request, 'registro.html', {'form': form})
+
+#registro usuarios
+@csrf_exempt
+def registro_usuario(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            email = data.get('email')
+            password1 = data.get('password1')
+            password2 = data.get('password2')
+
+            if not username or not email or not password1 or not password2:
+                return JsonResponse({"message": "Todos los campos son obligatorios."}, status=400)
+
+            if password1 != password2:
+                return JsonResponse({"message": "Las contraseñas no coinciden."}, status=400)
+
+            if User.objects.filter(username=username).exists():
+                return JsonResponse({"message": "El nombre de usuario ya está registrado."}, status=400)
+
+            if User.objects.filter(email=email).exists():
+                return JsonResponse({"message": "El correo electrónico ya está registrado."}, status=400)
+
+            user = User.objects.create_user(username=username, email=email, password=password1)
+            user.save()
+
+            # Generar el token JWT para el usuario registrado
+            refresh = RefreshToken.for_user(user)
+
+            return JsonResponse({
+                "message": "Usuario registrado exitosamente.",
+                "access_token": str(refresh.access_token),
+                "refresh_token": str(refresh)
+            }, status=201)
+        except Exception as e:
+            return JsonResponse({"message": str(e)}, status=500)
+    else:
+        return JsonResponse({"message": "Método no permitido."}, status=405)
+
 
 #ver perfil
 @login_required

@@ -15,6 +15,7 @@ class UserProfile(models.Model):
     profile_image = models.ImageField(upload_to='profiles/', blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
+    is_owner = models.BooleanField(default=False)  # Identifica si es dueño de cancha
 
     def __str__(self):
         return self.user.username

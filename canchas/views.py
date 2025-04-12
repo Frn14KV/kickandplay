@@ -38,6 +38,16 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.forms import UserCreationForm
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.shortcuts import render
+
+from django.http import HttpResponseForbidden
+
+def dueño_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.user_profile.is_owner:
+            return HttpResponseForbidden("Acceso denegado.")
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
 
 #----------------------------------------#
 #--------------------metodos de web
@@ -613,3 +623,34 @@ class EventoListCreateAPIView(generics.ListCreateAPIView):
 class EventoDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Evento.objects.all()
     serializer_class = EventoSerializer
+
+
+@login_required
+@dueño_required
+def panel_dueño(request):
+    if not request.user.user_profile.is_owner:
+        return render(request, '403.html')  # Mostrar un error si no es dueño
+
+    canchas = Canchas.objects.filter(dueño=request.user)  # Obtener las canchas del dueño
+    reservas = Reserva.objects.filter(cancha__dueño=request.user, estado='Pendiente')  # Reservas pendientes
+
+    context = {
+        'canchas': canchas,
+        'reservas': reservas,
+    }
+    return render(request, 'panel_dueño.html', context)
+
+
+@login_required
+def aprobar_reserva(request, reserva_id):
+    reserva = get_object_or_404(Reserva, id=reserva_id, cancha__dueño=request.user)
+    reserva.estado = 'Aprobada'
+    reserva.save()
+    return redirect('panel_dueño')
+
+@login_required
+def rechazar_reserva(request, reserva_id):
+    reserva = get_object_or_404(Reserva, id=reserva_id, cancha__dueño=request.user)
+    reserva.estado = 'Rechazada'
+    reserva.save()
+    return redirect('panel_dueño')

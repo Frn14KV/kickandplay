@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel del Dueño - Kick&Play{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-4 mb-4">Panel de Administración</h1>
+
+    <!-- Mostrar las canchas administradas -->
+    <h2 class="mb-3">Mis Canchas</h2>
+    {% if canchas %}
+        <div class="row">
+            {% for cancha in canchas %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ cancha.nombre }}</h5>
+                        <p class="card-text">
+                            Dirección: {{ cancha.direccion }}<br>
+                            Capacidad: {{ cancha.capacidad }} personas
+                        </p>
+                        <a href="{% url 'detalle_cancha' cancha.id %}" class="btn btn-primary">Ver Detalles</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No tienes canchas registradas.</p>
+    {% endif %}
+
+    <!-- Mostrar reservas pendientes -->
+    <h2 class="mt-5 mb-3">Reservas Pendientes</h2>
+    {% if reservas %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Cancha</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in reservas %}
+                <tr>
+                    <td>{{ reserva.cancha.nombre }}</td>
+                    <td>{{ reserva.fecha }}</td>
+                    <td>{{ reserva.hora }}</td>
+                    <td>{{ reserva.estado }}</td>
+                    <td>
+                        <form method="post" action="{% url 'aprobar_reserva' reserva.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm">Aprobar</button>
+                        </form>
+                        <form method="post" action="{% url 'rechazar_reserva' reserva.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Rechazar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay reservas pendientes.</p>
+    {% endif %}
+</div>
+{% endblock %}

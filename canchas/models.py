@@ -15,6 +15,7 @@ class UserProfile(models.Model):
     profile_image = models.ImageField(upload_to='profiles/', blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
+    is_owner = models.BooleanField(default=False)  # Identifica si es dueño de cancha
 
     def __str__(self):
         return self.user.username
@@ -44,6 +45,12 @@ class Canchas(models.Model):
     imagen_url = models.URLField(blank=True, null=True)
     latitud = models.FloatField(null=True, blank=True)
     longitud = models.FloatField(null=True, blank=True)
+    dueño = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='canchas'
+    )
+
 
     def save(self, *args, **kwargs):
         """

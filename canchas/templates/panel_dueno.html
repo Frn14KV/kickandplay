@@ -6,7 +6,6 @@
 <div class="container">
     <h1 class="mt-4 mb-4">Panel de Administración</h1>
 
-    <!-- Mostrar las canchas administradas -->
     <h2 class="mb-3">Mis Canchas</h2>
     {% if canchas %}
         <div class="row">
@@ -20,6 +19,7 @@
                             Capacidad: {{ cancha.capacidad }} personas
                         </p>
                         <a href="{% url 'detalle_cancha' cancha.id %}" class="btn btn-primary">Ver Detalles</a>
+                        <a href="{% url 'editar_cancha' cancha.id %}" class="btn btn-warning">Editar Cancha</a> <!-- Botón de Editar -->
                     </div>
                 </div>
             </div>
@@ -29,16 +29,17 @@
         <p>No tienes canchas registradas.</p>
     {% endif %}
 
-    <!-- Mostrar reservas pendientes -->
+    <!-- Sección de Reservas Pendientes -->
     <h2 class="mt-5 mb-3">Reservas Pendientes</h2>
     {% if reservas %}
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Cancha</th>
+                    <th>Usuario</th>
                     <th>Fecha</th>
-                    <th>Hora</th>
-                    <th>Estado</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
                     <th>Acción</th>
                 </tr>
             </thead>
@@ -46,9 +47,10 @@
                 {% for reserva in reservas %}
                 <tr>
                     <td>{{ reserva.cancha.nombre }}</td>
-                    <td>{{ reserva.fecha_reserva }}</td>
-                    <td>{{ reserva.hora_inicio }}</td>
-                    <td>{{ reserva.estado }}</td>
+                    <td>{{ reserva.usuario.username }}</td>
+                    <td>{{ reserva.fecha_reserva|date:"d M Y" }}</td>
+                    <td>{{ reserva.hora_inicio|time:"H:i" }}</td>
+                    <td>{{ reserva.hora_fin|time:"H:i" }}</td>
                     <td>
                         <form method="post" action="{% url 'aprobar_reserva' reserva.id %}" style="display:inline;">
                             {% csrf_token %}
@@ -64,7 +66,81 @@
             </tbody>
         </table>
     {% else %}
-        <p>No hay reservas pendientes.</p>
+        <p>No hay reservas pendientes a partir de la fecha actual.</p>
+    {% endif %}
+
+
+    <h2 class="mt-5 mb-3">Reservas Confirmadas o Canceladas</h2>
+    {% if reservas_confirmadas_canceladas %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Cancha</th>
+                    <th>Usuario</th>
+                    <th>Fecha</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in reservas_confirmadas_canceladas %}
+                <tr>
+                    <td>{{ reserva.cancha.nombre }}</td>
+                    <td>{{ reserva.usuario.username }}</td>
+                    <td>{{ reserva.fecha_reserva|date:"d M Y" }}</td>
+                    <td>{{ reserva.hora_inicio|time:"H:i" }}</td>
+                    <td>{{ reserva.hora_fin|time:"H:i" }}</td>
+                    <td>
+                        {% if reserva.estado == "confirmada" %}
+                            <span class="badge bg-success">{{ reserva.estado }}</span>
+                        {% elif reserva.estado == "cancelada" %}
+                            <span class="badge bg-danger">{{ reserva.estado }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay reservas confirmadas o canceladas a partir de la fecha actual.</p>
+    {% endif %}
+
+    <!-- Sección de Historial de Reservas -->
+    <h2 class="mt-5 mb-3">Historial de Reservas</h2>
+    {% if historial %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Cancha</th>
+                    <th>Usuario</th>
+                    <th>Fecha</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in historial %}
+                <tr>
+                    <td>{{ reserva.cancha.nombre }}</td>
+                    <td>{{ reserva.usuario.username }}</td>
+                    <td>{{ reserva.fecha_reserva|date:"d M Y" }}</td>
+                    <td>{{ reserva.hora_inicio|time:"H:i" }}</td>
+                    <td>{{ reserva.hora_fin|time:"H:i" }}</td>
+                    <td>
+                        {% if reserva.estado == "confirmada" %}
+                            <span class="badge bg-success">{{ reserva.estado }}</span>
+                        {% elif reserva.estado == "cancelada" %}
+                            <span class="badge bg-danger">{{ reserva.estado }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay historial de reservas.</p>
     {% endif %}
 </div>
 {% endblock %}

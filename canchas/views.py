@@ -38,9 +38,10 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.forms import UserCreationForm
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.shortcuts import render
-
 from django.http import HttpResponseForbidden
+from django.utils import timezone  # Para manejar la fecha y hora actual
+from datetime import timedelta
+from .forms import CanchaForm
 
 def dueño_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
@@ -628,29 +629,77 @@ class EventoDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 @login_required
 @dueño_required
 def panel_dueno(request):
+    """
+    Panel del dueño de canchas: muestra canchas registradas, reservas pendientes 
+    y un historial de reservas confirmadas/canceladas hasta el día anterior.
+    """
+    # Verifica que el usuario tenga el rol de dueño
     if not request.user.user_profile.is_owner:
-        return render(request, '403.html')  # Mostrar un error si no es dueño
+        return render(request, '403.html')  # Redirige si el usuario no es dueño
 
-    canchas = Canchas.objects.filter(dueño=request.user)  # Obtener las canchas del dueño
-    reservas = Reserva.objects.filter(cancha__dueño=request.user, estado='pendiente')  # Reservas pendientes
+    # 1. Obtener todas las canchas administradas por el dueño
+    canchas = Canchas.objects.filter(dueño=request.user)
 
-    context = {
-        'canchas': canchas,
-        'reservas': reservas,
-    }
-    return render(request, 'panel_dueno.html', context)
+     # 2. Reservas pendientes (a partir de la fecha actual hacia el futuro)
+    fecha_actual = timezone.now().date()  # Fecha de hoy
+    reservas_pendientes = Reserva.objects.filter(
+        cancha__dueño=request.user,
+        estado='pendiente',
+        fecha_reserva__gte=fecha_actual  # Solo reservas futuras o de hoy
+    ).order_by('fecha_reserva', 'hora_inicio')  # Orden ascendente por fecha y hora
+    
+    # 3. Reservas confirmadas o canceladas a partir de la fecha actual
+    reservas_confirmadas_canceladas = Reserva.objects.filter(
+        cancha__dueño=request.user,
+        estado__in=['confirmada', 'cancelada'],  # Confirmadas o canceladas
+        fecha_reserva__gte=fecha_actual  # Solo futuras o actuales
+    ).order_by('fecha_reserva', 'hora_inicio')
+
+    # 4. Historial de reservas (confirmadas/canceladas hasta un día antes)
+    fecha_actual = timezone.now().date()
+    fecha_filtro = fecha_actual - timedelta(days=1)
+    historial_reservas = Reserva.objects.filter(
+        cancha__dueño=request.user,
+        estado__in=['confirmada','pendiente', 'cancelada'],  # Solo confirmadas o canceladas
+        fecha_reserva__lte=fecha_filtro
+    ).order_by('-fecha_reserva', '-hora_inicio')
+
+    return render(request, 'panel_dueno.html', {
+        'canchas': canchas,  # Canchas administradas por el dueño
+        'reservas': reservas_pendientes,  # Reservas pendientes futuras
+        'reservas_confirmadas_canceladas': reservas_confirmadas_canceladas,  # Confirmadas/Canceladas futuras
+        'historial': historial_reservas  # Historial de reservas
+
+    })
+
+
+@login_required
+def editar_cancha(request, cancha_id):
+    # Obtener la cancha específica
+    cancha = get_object_or_404(Canchas, id=cancha_id, dueño=request.user)
+
+    if request.method == 'POST':
+        form = CanchaForm(request.POST, instance=cancha)
+        if form.is_valid():
+            form.save()
+            return redirect('panel_dueno')  # Redirige al panel del dueño después de guardar
+    else:
+        form = CanchaForm(instance=cancha)
+
+    return render(request, 'editar_cancha.html', {'form': form, 'cancha': cancha})
 
 
 @login_required
 def aprobar_reserva(request, reserva_id):
     reserva = get_object_or_404(Reserva, id=reserva_id, cancha__dueño=request.user)
-    reserva.estado = 'Aprobada'
+    print("aqui")
+    reserva.estado = 'confirmada'
     reserva.save()
     return redirect('panel_dueno')
 
 @login_required
 def rechazar_reserva(request, reserva_id):
     reserva = get_object_or_404(Reserva, id=reserva_id, cancha__dueño=request.user)
-    reserva.estado = 'Rechazada'
+    reserva.estado = 'cancelada'
     reserva.save()
     return redirect('panel_dueno')

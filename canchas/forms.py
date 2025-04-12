@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from .models import Evento, Reserva, Comentarios, UserProfile
+from .models import Canchas
 
 # -----------------------------------------------
 # FORMULARIOS PARA EVENTOS Y RESERVAS
@@ -156,3 +157,18 @@ class CustomLoginForm(AuthenticationForm):
             field.widget.attrs['placeholder'] = field.label
             # Personaliza la etiqueta de cada campo
             field.label_tag = lambda: f'<label class="form-label" for="id_{field_name}">{field.label}</label>'
+
+
+class CanchaForm(forms.ModelForm):
+    class Meta:
+        model = Canchas
+        fields = ['nombre', 'direccion', 'capacidad', 'imagen_url', 'latitud', 'longitud']  # Campos editables
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Deshabilitamos el campo 'dueño' en el formulario
+        self.fields['dueño'] = forms.CharField(
+            initial=self.instance.dueño.username,  # Mostramos el nombre del dueño
+            disabled=True,
+            label="Dueño"
+        )

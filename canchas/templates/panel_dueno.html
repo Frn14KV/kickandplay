@@ -46,8 +46,8 @@
                 {% for reserva in reservas %}
                 <tr>
                     <td>{{ reserva.cancha.nombre }}</td>
-                    <td>{{ reserva.fecha }}</td>
-                    <td>{{ reserva.hora }}</td>
+                    <td>{{ reserva.fecha_reserva }}</td>
+                    <td>{{ reserva.hora_inicio }}</td>
                     <td>{{ reserva.estado }}</td>
                     <td>
                         <form method="post" action="{% url 'aprobar_reserva' reserva.id %}" style="display:inline;">

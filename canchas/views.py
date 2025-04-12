@@ -632,7 +632,7 @@ def panel_dueno(request):
         return render(request, '403.html')  # Mostrar un error si no es dueño
 
     canchas = Canchas.objects.filter(dueño=request.user)  # Obtener las canchas del dueño
-    reservas = Reserva.objects.filter(cancha__dueño=request.user, estado='Pendiente')  # Reservas pendientes
+    reservas = Reserva.objects.filter(cancha__dueño=request.user, estado='pendiente')  # Reservas pendientes
 
     context = {
         'canchas': canchas,

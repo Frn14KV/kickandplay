@@ -45,6 +45,12 @@ class Canchas(models.Model):
     imagen_url = models.URLField(blank=True, null=True)
     latitud = models.FloatField(null=True, blank=True)
     longitud = models.FloatField(null=True, blank=True)
+    dueño = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='canchas'
+    )
+
 
     def save(self, *args, **kwargs):
         """

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Cancha - {{ cancha.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Editar Cancha</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        <a href="{% url 'panel_dueno' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

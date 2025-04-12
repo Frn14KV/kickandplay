@@ -61,7 +61,7 @@ urlpatterns = [
     path('api/eventos/<int:pk>/',                       views.EventoDetailAPIView.as_view(), name='api_evento_detail'),
 
     #dueno
-    path('panel-dueno/',                                views.panel_dueño, name='panel_dueno'),
+    path('panel-dueno/',                                views.panel_dueno, name='panel_dueno'),
     path('aprobar-reserva/<int:reserva_id>/',           views.aprobar_reserva, name='aprobar_reserva'),
     path('rechazar-reserva/<int:reserva_id>/',          views.rechazar_reserva, name='rechazar_reserva'),
     path('detalle-cancha/<int:cancha_id>/',             views.detalle_cancha, name='detalle_cancha'),

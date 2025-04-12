@@ -627,7 +627,7 @@ class EventoDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 @login_required
 @dueño_required
-def panel_dueño(request):
+def panel_dueno(request):
     if not request.user.user_profile.is_owner:
         return render(request, '403.html')  # Mostrar un error si no es dueño
 
@@ -638,7 +638,7 @@ def panel_dueño(request):
         'canchas': canchas,
         'reservas': reservas,
     }
-    return render(request, 'panel_dueño.html', context)
+    return render(request, 'panel_dueno.html', context)
 
 
 @login_required
@@ -646,11 +646,11 @@ def aprobar_reserva(request, reserva_id):
     reserva = get_object_or_404(Reserva, id=reserva_id, cancha__dueño=request.user)
     reserva.estado = 'Aprobada'
     reserva.save()
-    return redirect('panel_dueño')
+    return redirect('panel_dueno')
 
 @login_required
 def rechazar_reserva(request, reserva_id):
     reserva = get_object_or_404(Reserva, id=reserva_id, cancha__dueño=request.user)
     reserva.estado = 'Rechazada'
     reserva.save()
-    return redirect('panel_dueño')
+    return redirect('panel_dueno')

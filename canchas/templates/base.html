@@ -31,43 +31,20 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <!-- Enlaces principales -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="/mapa/">Mapa</a>
-                    </li>
-                    <!-- Mostrar "Mis Reservas" solo si el usuario ha iniciado sesión -->
-                    {% if request.user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/reservas/">Mis Reservas</a>
-                    </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/canchas/">Canchas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/eventos/">Eventos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/sobre-nosotros/">Sobre Nosotros</a>
-                    </li>
-                
-                    <!-- Dropdown dinámico basado en el estado del usuario -->
-                    {% if user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Mi Cuenta
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="{% url 'perfil' %}">Perfil</a></li>
-                                <li>
-                                    <form method="POST" action="{% url 'logout' %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="dropdown-item">Cerrar Sesión</button>
-                                    </form>
-                                </li>
-                            </ul>
+                    <!-- Enlaces generales (solo para usuarios no autenticados) -->
+                    {% if not user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/mapa/">Mapa</a>
                         </li>
-                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/canchas/">Canchas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/eventos/">Eventos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/sobre-nosotros/">Sobre Nosotros</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a>
                         </li>
@@ -75,12 +52,75 @@
                             <a class="nav-link" href="{% url 'registro' %}">Registrarse</a>
                         </li>
                     {% endif %}
-                </ul>
-                
+                    <!-- Enlaces específicos para usuarios autenticados -->
+                    {% if user.is_authenticated %}
+                        {% if request.user.user_profile.is_owner %}
+                            <!-- Opciones Exclusivas para Dueños -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'panel_dueno' %}">Panel</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'canchas' %}">Mis Canchas</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="reservasDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Reservas
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{% url 'lista_reservas' %}">Pendientes</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'lista_reservas' %}">Gestionadas</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Mi Cuenta
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{% url 'perfil' %}">Perfil</a></li>
+                                    <li>
+                                        <form method="post" action="{% url 'logout' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="dropdown-item">Cerrar Sesión</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% else %}
+                        <!-- Opciones generales para usuarios autenticados -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="/mapa/">Mapa</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/reservas/">Reservas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/canchas/">Canchas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/eventos/">Eventos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/sobre-nosotros/">Sobre Nosotros</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Mi Cuenta
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'perfil' %}">Perfil</a></li>
+                                <li>
+                                    <form method="post" action="{% url 'logout' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">Cerrar Sesión</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                        {% endif %} 
+                    {% endif %} 
             </div>
         </div>
     </nav>
-
     <!-- Main Content -->
     <div class="container my-5">
         {% block content %}

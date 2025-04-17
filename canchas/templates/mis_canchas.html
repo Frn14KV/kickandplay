@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis Canchas{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4 text-center">⚽ Mis Canchas ⚽</h1>
+
+    <!-- Botón para agregar una nueva cancha -->
+    <div class="text-center mb-4">
+        <a href="{% url 'agregar_cancha' %}" class="btn btn-success btn-lg">
+            <i class="bi bi-plus-circle"></i> Agregar Cancha
+        </a>
+    </div>
+
+    <!-- Listado de canchas con paginación -->
+    {% if page_obj %}
+        <div class="row justify-content-center">
+            {% for cancha in page_obj %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <!-- Imagen de la cancha -->
+                    {% if cancha.imagen_url %}
+                    <img src="{{ cancha.imagen_url }}" class="card-img-top" alt="Imagen de {{ cancha.nombre }}">
+                    {% else %}
+                    <img src="https://fluofgltdazuwfgpnctl.supabase.co/storage/v1/object/public/media//k&plogo.jpg" class="card-img-top" alt="Imagen por defecto">
+                    {% endif %}
+
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">{{ cancha.nombre }}</h5>
+                        <p class="card-text">
+                            <strong>Dirección:</strong> {{ cancha.direccion }}<br>
+                            <strong>Capacidad:</strong> {{ cancha.capacidad }} personas
+                        </p>
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'editar_cancha' cancha.id %}" class="btn btn-warning btn-sm">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
+                            <a href="{% url 'detalle_cancha' cancha.id %}" class="btn btn-info btn-sm">
+                                <i class="bi bi-eye"></i> Ver Detalles
+                            </a>
+                            <a href="{% url 'eliminar_cancha' cancha.id %}" class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Controles de paginación -->
+        <div class="mt-4 d-flex justify-content-center">
+            <nav>
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    {% else %}
+        <!-- Mensaje para el caso de no tener canchas registradas -->
+        <div class="text-center">
+            <p class="text-muted">No tienes canchas registradas.</p>
+            <p>Haz clic en <strong>"Agregar Cancha"</strong> para crear una nueva.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -162,13 +162,6 @@ class CustomLoginForm(AuthenticationForm):
 class CanchaForm(forms.ModelForm):
     class Meta:
         model = Canchas
-        fields = ['nombre', 'direccion', 'capacidad', 'imagen_url', 'latitud', 'longitud']  # Campos editables
+        fields = ['nombre', 'direccion', 'capacidad', 'imagen_url']  # Campos editables
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Deshabilitamos el campo 'dueño' en el formulario
-        self.fields['dueño'] = forms.CharField(
-            initial=self.instance.dueño.username,  # Mostramos el nombre del dueño
-            disabled=True,
-            label="Dueño"
-        )
+   

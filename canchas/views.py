@@ -703,3 +703,89 @@ def rechazar_reserva(request, reserva_id):
     reserva.estado = 'cancelada'
     reserva.save()
     return redirect('panel_dueno')
+
+
+@login_required
+def mis_canchas(request):
+    """
+    Página para listar todas las canchas del dueño con paginación.
+    """
+    if not request.user.user_profile.is_owner:
+        return render(request, '403.html')
+
+    canchas = Canchas.objects.filter(dueño=request.user)
+    paginator = Paginator(canchas, 6)  # Muestra 6 canchas por página
+
+    # Obtén el número de página actual
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'mis_canchas.html', {'page_obj': page_obj})
+
+
+@login_required
+def agregar_cancha(request):
+    """
+    Página para agregar una nueva cancha.
+    """
+    if not request.user.user_profile.is_owner:
+        return render(request, '403.html')  # Redirige si el usuario no es dueño
+
+    if request.method == 'POST':
+        form = CanchaForm(request.POST)
+        if form.is_valid():
+            cancha = form.save(commit=False)
+            cancha.dueño = request.user
+
+            # Usa tu función personalizada para calcular latitud y longitud
+            lat, lon = obtener_coordenadas(cancha.direccion)
+            print(lat)
+            print(lon)
+            cancha.latitud = lat
+            cancha.longitud = lon
+
+            cancha.save()
+            return redirect('mis_canchas')  # Redirige al listado de canchas
+    else:
+        form = CanchaForm()
+
+    return render(request, 'agregar_cancha.html', {'form': form})
+
+@login_required
+def editar_cancha(request, cancha_id):
+    """
+    Página para editar los datos de una cancha específica.
+    """
+    cancha = get_object_or_404(Canchas, id=cancha_id, dueño=request.user)
+
+    if request.method == 'POST':
+        form = CanchaForm(request.POST, instance=cancha)
+        if form.is_valid():
+            cancha = form.save(commit=False)
+            print(cancha.direccion)
+            # Usa tu función personalizada para actualizar las coordenadas
+            lat, lon = obtener_coordenadas(cancha.direccion)
+            print(lat)
+            print(lon)
+            cancha.latitud = lat
+            cancha.longitud = lon
+
+            cancha.save()
+            return redirect('mis_canchas')  # Redirige al listado de canchas
+    else:
+        form = CanchaForm(instance=cancha)
+
+    return render(request, 'editar_cancha.html', {'form': form, 'cancha': cancha})
+
+@login_required
+def eliminar_cancha(request, cancha_id):
+    """
+    Vista para eliminar una cancha existente.
+    """
+    cancha = get_object_or_404(Canchas, id=cancha_id, dueño=request.user)  # Solo el dueño puede eliminar su cancha
+
+    if request.method == 'POST':
+        cancha.delete()
+        return redirect('mis_canchas')  # Redirige al listado después de eliminar
+
+    return render(request, 'eliminar_cancha.html', {'cancha': cancha})

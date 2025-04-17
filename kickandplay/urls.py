@@ -66,6 +66,11 @@ urlpatterns = [
     path('rechazar-reserva/<int:reserva_id>/',          views.rechazar_reserva, name='rechazar_reserva'),
     path('detalle-cancha/<int:cancha_id>/',             views.detalle_cancha, name='detalle_cancha'),
     path('editar-cancha/<int:cancha_id>/',              views.editar_cancha, name='editar_cancha'),
+    path('mis-canchas/',                                views.mis_canchas, name='mis_canchas'),  # Listado de canchas
+    path('agregar-cancha/',                             views.agregar_cancha, name='agregar_cancha'),  # Agregar nueva cancha
+    path('editar-cancha/<int:cancha_id>/',              views.editar_cancha, name='editar_cancha'),  # Editar cancha
+    path('eliminar-cancha/<int:cancha_id>/',            views.eliminar_cancha, name='eliminar_cancha'),  # Eliminar cancha
+
 
 
 

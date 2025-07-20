@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Encabezado -->
+    <div class="text-center mb-4">
+        <h1 class="text-primary fw-bold">Inicia Sesión</h1>
+        <p class="lead text-muted">Accede a tu cuenta con tu nombre de usuario y contraseña.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+            <div class="card shadow-lg">
+                <!-- Cabecera -->
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">Acceso de Usuario</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Mensajes de error -->
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <strong>Ha ocurrido un error:</strong>
+                            <ul>
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <!-- Formulario -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Nombre de Usuario</label>
+                            {{ form.username }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_password" class="form-label">Contraseña</label>
+                            {{ form.password }}
+                        </div>
+                        
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Iniciar Sesión</button>
+                    </form>
+                </div>
+                <div class="card-footer text-center bg-light">
+                    <p class="text-muted mb-1">¿Olvidaste tu contraseña?</p>
+                    <a href="#" class="text-primary">Recupérala aquí</a>
+                    <hr class="my-2">
+                    <p class="mb-0">¿No tienes cuenta? <a href="{% url 'registro' %}" class="text-primary fw-bold">Regístrate aquí</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

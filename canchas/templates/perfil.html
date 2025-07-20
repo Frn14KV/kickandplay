@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Perfil - {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">Perfil de {{ user.username }}</h1>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h5 class="mb-0">Información del Usuario</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Nombre Completo:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Biografía:</strong> {{ perfil.bio }}</p>
+                    <p><strong>Teléfono:</strong> {{ perfil.phone_number }}</p>
+                    <p><strong>Ubicación:</strong> {{ perfil.location }}</p>
+                    {% if perfil.profile_image %}
+                        <div class="text-center mt-3">
+                            <img src="{{ perfil.profile_image.url }}" 
+                                 alt="Imagen de Perfil" 
+                                 class="img-fluid rounded-circle shadow" 
+                                 style="max-width: 150px;">
+                        </div>
+                    {% else %}
+                        <p><strong>Imagen de Perfil:</strong> No disponible</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-center">
+                    <!-- Botón para abrir el modal de Editar Información -->
+                    <button type="button" class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#editarInformacionModal">
+                        Editar Información
+                    </button>
+                    <!-- Botón para abrir el modal de Cambiar Contraseña -->
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#cambiarClaveModal">
+                        Cambiar Contraseña
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Información -->
+<div class="modal fade" id="editarInformacionModal" tabindex="-1" aria-labelledby="editarInformacionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title" id="editarInformacionModalLabel">Editar Información</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ user_form.as_p }}
+                    {{ profile_form.as_p }}
+                    <div class="text-end">
+                        <button type="submit" name="guardar_datos" class="btn btn-success">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Cambiar Contraseña -->
+<div class="modal fade" id="cambiarClaveModal" tabindex="-1" aria-labelledby="cambiarClaveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title" id="cambiarClaveModalLabel">Cambiar Contraseña</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ password_form.as_p }}
+                    <div class="text-end">
+                        <button type="submit" name="cambiar_clave" class="btn btn-danger">Cambiar Contraseña</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

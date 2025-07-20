@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if cancha %}Calendario de {{ cancha.nombre }}{% else %}Calendario General{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Título -->
+    <h1 class="text-center text-primary mb-4">
+        {% if cancha %}Calendario de {{ cancha.nombre }}{% else %}Calendario General{% endif %}
+    </h1>
+
+    <!-- Vista del Calendario -->
+    <div id="calendario" class="mb-5">       
+    </div>
+
+    <!-- Tabla de Reservas (opcional para complementar el calendario) -->
+    {% if reservas %}
+        <div class="table-responsive mt-4 shadow-sm p-3 bg-body rounded">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-primary">
+                    <tr class="text-center">
+                        <th>#</th>
+                        <th>Cancha</th>
+                        <th>Fecha</th>
+                        <th>Hora de Inicio</th>
+                        <th>Hora de Fin</th>
+                        <th>Usuario</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reserva in reservas %}
+                    <tr class="text-center">
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ reserva.cancha.nombre }}</td>
+                        <td>{{ reserva.fecha_reserva|date:"d/m/Y" }}</td>
+                        <td>{{ reserva.hora_inicio|time:"H:i" }}</td>
+                        <td>{{ reserva.hora_fin|time:"H:i" }}</td>
+                        <td>{{ reserva.usuario.username }}</td>
+                        <td>
+                            {% if reserva.estado == "pendiente" %}
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+                            {% elif reserva.estado == "confirmada" %}
+                                <span class="badge bg-success">Confirmada</span>
+                            {% elif reserva.estado == "cancelada" %}
+                                <span class="badge bg-danger">Cancelada</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center mt-4" role="alert">
+            No hay reservas registradas.
+        </div>
+    {% endif %}
+</div>
+
+<!-- Script para FullCalendar -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendario');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth', // Vista inicial (mes)
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            locale: 'es', // Idioma en español (24 horas por defecto)
+            eventTimeFormat: { // Formato de horas
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false // Desactiva AM/PM
+            },
+            events: [
+                {% for reserva in reservas %}
+                {
+                    id: '{{ reserva.id }}',
+                    title: 'Reserva en {{ reserva.cancha.nombre }}',
+                    start: '{{ reserva.fecha_reserva|date:"Y-m-d" }}T{{ reserva.hora_inicio|time:"H:i:s" }}',
+                    end: '{{ reserva.fecha_reserva|date:"Y-m-d" }}T{{ reserva.hora_fin|time:"H:i:s" }}',
+                    {% if request.user.is_authenticated %}
+                    url: '/reservas/{{ reserva.id }}/',
+                    {% endif %}
+                }
+                {% endfor %}
+            ],
+
+            locale: 'es', // Idioma
+        });
+        calendar.render();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Mis Reservas
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center text-primary mb-4">Mis Reservas</h1>
+    <!-- Reservas Futuras -->
+    <section>
+        <h3 class="mt-4 text-primary"><i class="bi bi-calendar-check"></i> Reservas Futuras</h3>
+        <div class="table-responsive mt-3 shadow-sm p-3 bg-body rounded">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-primary">
+                    <tr class="text-center">
+                        <th>Cancha</th>
+                        <th>Fecha</th>
+                        <th>Hora de Inicio</th>
+                        <th>Hora de Fin</th>
+                        <th>Estado</th>
+                        <th>Evento</th> <!-- Nueva columna -->
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if reservas_futuras %}
+                        {% for reserva in reservas_futuras %}
+                        <tr class="text-center">
+                            <td><strong>{{ reserva.cancha.nombre }}</strong></td>
+                            <td>{{ reserva.fecha_reserva|date:"d/m/Y" }}</td>
+                            <td>{{ reserva.hora_inicio|time:"H:i" }}</td>
+                            <td>{{ reserva.hora_fin|time:"H:i" }}</td>
+                            <td>
+                                {% if reserva.estado == "pendiente" %}
+                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                {% elif reserva.estado == "confirmada" %}
+                                    <span class="badge bg-success">Confirmada</span>
+                                {% elif reserva.estado == "cancelada" %}
+                                    <span class="badge bg-danger">Cancelada</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if reserva.evento %}
+                                    <i class="bi bi-calendar-event text-success"></i> {{ reserva.evento.titulo }}
+                                {% else %}
+                                    <i class="bi bi-exclamation-circle text-danger"></i> No hay evento
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a href="#" 
+                                        class="btn btn-success 
+                                        {% if reserva.evento %} disabled {% endif %}"
+                                        {% if not reserva.evento %} onclick="abrirModalEvento({{ reserva.id }})"{% endif %}>
+                                        Crear Evento
+                                    </a>
+                                    {% if reserva.evento %}
+                                    <a href="#" 
+                                        class="btn btn-primary"
+                                        onclick="abrirModalEvento(null, {{ reserva.evento.id }}, '{{ reserva.evento.titulo }}', '{{ reserva.evento.descripcion }}', '{{ reserva.evento.tipo_evento }}')">
+                                        Editar Evento
+                                    </a>
+                                    {% endif %}
+                                    <a href="{% url 'eliminar_reserva' reserva.id %}" 
+                                       class="btn btn-danger" 
+                                       title="Cancelar esta reserva">
+                                       <i class="bi bi-x-circle"></i> Cancelar
+                                    </a>
+                                </div>
+                            </td>
+                            
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No tienes reservas futuras.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            <!-- Paginación -->
+            <div class="d-flex justify-content-center">
+                {% if reservas_futuras.has_other_pages %}
+                    <ul class="pagination">
+                        {% if reservas_futuras.has_previous %}
+                            <li class="page-item">
+                                <a href="?page_futuras={{ reservas_futuras.previous_page_number }}" class="page-link">Anterior</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                        {% endif %}
+
+                        {% for num in reservas_futuras.paginator.page_range %}
+                            {% if reservas_futuras.number == num %}
+                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a href="?page_futuras={{ num }}" class="page-link">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if reservas_futuras.has_next %}
+                            <li class="page-item">
+                                <a href="?page_futuras={{ reservas_futuras.next_page_number }}" class="page-link">Siguiente</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Reservas Pasadas -->
+    <section>
+        <h3 class="mt-5 text-secondary"><i class="bi bi-clock-history"></i> Reservas Pasadas</h3>
+        <div class="table-responsive mt-3 shadow-sm p-3 bg-body rounded">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-secondary">
+                    <tr class="text-center">
+                        <th>Cancha</th>
+                        <th>Fecha</th>
+                        <th>Hora de Inicio</th>
+                        <th>Hora de Fin</th>
+                        <th>Estado</th>
+                        <th>Evento</th> <!-- Nueva columna -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if reservas_pasadas %}
+                        {% for reserva in reservas_pasadas %}
+                        <tr class="text-center">
+                            <td><strong>{{ reserva.cancha.nombre }}</strong></td>
+                            <td>{{ reserva.fecha_reserva|date:"d/m/Y" }}</td>
+                            <td>{{ reserva.hora_inicio|time:"H:i" }}</td>
+                            <td>{{ reserva.hora_fin|time:"H:i" }}</td>
+                            <td>
+                                {% if reserva.estado == "pendiente" %}
+                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                {% elif reserva.estado == "confirmada" %}
+                                    <span class="badge bg-success">Confirmada</span>
+                                {% elif reserva.estado == "cancelada" %}
+                                    <span class="badge bg-danger">Cancelada</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if reserva.evento %}
+                                    <i class="bi bi-calendar-event text-success"></i> {{ reserva.evento.titulo }}
+                                {% else %}
+                                    <i class="bi bi-exclamation-circle text-danger"></i> No hay evento
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No tienes reservas pasadas.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            <!-- Paginación -->
+            <div class="d-flex justify-content-center">
+                {% if reservas_pasadas.has_other_pages %}
+                    <ul class="pagination">
+                        {% if reservas_pasadas.has_previous %}
+                            <li class="page-item">
+                                <a href="?page_pasadas={{ reservas_pasadas.previous_page_number }}" class="page-link">Anterior</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                        {% endif %}
+
+                        {% for num in reservas_pasadas.paginator.page_range %}
+                            {% if reservas_pasadas.number == num %}
+                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a href="?page_pasadas={{ num }}" class="page-link">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if reservas_pasadas.has_next %}
+                            <li class="page-item">
+                                <a href="?page_pasadas={{ reservas_pasadas.next_page_number }}" class="page-link">Siguiente</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Modal para Agregar o Editar Evento -->
+<div class="modal fade" id="modalAgregarEvento" tabindex="-1" aria-labelledby="modalAgregarEventoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Encabezado del Modal -->
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" id="modalAgregarEventoLabel">Evento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <!-- Cuerpo del Modal -->
+            <div class="modal-body">
+                <!-- Formulario para Agregar o Editar Evento -->
+                <form id="formAgregarEvento" method="post" action="">
+                    {% csrf_token %}
+                    
+                    <!-- Campo oculto para reserva_id (solo usado al agregar) -->
+                    <input type="hidden" id="reserva_id" name="reserva_id" value="">
+
+                    <!-- Campo: Título del Evento -->
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label">Título del Evento</label>
+                        <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Escribe el título del evento" required>
+                    </div>
+
+                    <!-- Campo: Descripción -->
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3" placeholder="Describe el evento"></textarea>
+                    </div>
+
+                    <!-- Campo: Tipo de Evento -->
+                    <div class="mb-3">
+                        <label for="tipo_evento" class="form-label">Tipo de Evento</label>
+                        <select class="form-select" id="tipo_evento" name="tipo_evento" required>
+                            <option value="publico">Público</option>
+                            <option value="privado">Privado</option>
+                        </select>
+                    </div>
+
+                    <!-- Botón de Guardar -->
+                    <button type="submit" class="btn btn-primary w-100">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    /**
+     * Función para abrir el modal y configurar dinámicamente los datos según sea para agregar o editar.
+     * @param {number|null} reservaId - ID de la reserva asociada al evento (nulo si se edita).
+     * @param {number|null} eventoId - ID del evento que se desea editar (nulo si se crea).
+     * @param {string} titulo - Título del evento (opcional al crear, obligatorio al editar).
+     * @param {string} descripcion - Descripción del evento (opcional al crear, obligatorio al editar).
+     * @param {string} tipoEvento - Tipo del evento (público o privado).
+     */
+    function abrirModalEvento(reservaId = null, eventoId = null, titulo = '', descripcion = '', tipoEvento = 'publico') {
+        console.log('abrirModalEvento llamado con: ', { reservaId, eventoId, titulo, descripcion, tipoEvento });
+        const form = document.getElementById('formAgregarEvento');
+
+        if (eventoId) {
+            // Estamos en modo edición, actualizamos la acción del formulario con el ID del evento
+            form.action = `/editar_evento/${eventoId}/`; // Ajusta esta ruta según tu configuración
+        } else if (reservaId) {
+            // Estamos en modo creación, asociamos la reserva al evento
+            form.action = `/crear_evento/${reservaId}/`;
+            document.getElementById('reserva_id').value = reservaId;
+        } else {
+            console.error('No se proporcionaron ni reservaId ni eventoId. Imposible abrir el modal.');
+            return;
+        }
+
+        // Rellenamos los campos del modal
+        document.getElementById('titulo').value = titulo || '';
+        document.getElementById('descripcion').value = descripcion || '';
+        document.getElementById('tipo_evento').value = tipoEvento || 'publico';
+
+        // Mostramos el modal
+        const modal = new bootstrap.Modal(document.getElementById('modalAgregarEvento'));
+        modal.show();
+    }
+
+    /**
+     * Manejo del envío del formulario del modal con fetch.
+     * Procesa tanto la creación como la edición de eventos.
+     */
+    document.getElementById('formAgregarEvento').addEventListener('submit', function(event) {
+        event.preventDefault(); // Evita el comportamiento predeterminado del formulario
+
+        // Capturar los datos del formulario
+        const form = event.target;
+        const formData = new FormData(form);
+
+        // Hacer la solicitud al servidor usando fetch
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest', // Marca la solicitud como AJAX
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value // Token CSRF
+            },
+            body: formData,
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la solicitud al servidor');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                // Mostrar un mensaje de éxito
+                alert(data.message || 'Operación realizada correctamente.');
+
+                // Cerrar el modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarEvento'));
+                modal.hide();
+
+                // Recargar la página para reflejar los cambios
+                setTimeout(() => location.reload(), 500);
+            } else if (data.status === 'error') {
+                // Mostrar errores del formulario de forma amigable
+                let errorMessages = '';
+                for (const [field, messages] of Object.entries(data.errors)) {
+                    errorMessages += `${field}: ${messages.join(', ')}\n`;
+                }
+                alert('Error al guardar:\n' + errorMessages);
+            }
+        })
+        .catch(error => {
+            // Manejar errores en la conexión o respuesta
+            console.error('Error al procesar la solicitud:', error);
+            alert('Ocurrió un error inesperado. Intenta nuevamente.');
+        });
+    });
+</script>
+
+
+
+
+
+{% endblock %}

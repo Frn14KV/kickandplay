@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sobre Nosotros - KickandPlay{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Título Principal -->
+    <div class="text-center mb-5">
+        <h1 class="text-primary fw-bold">Sobre Nosotros</h1>
+        <p class="lead text-muted">Conecta a las personas a través de la pasión por el fútbol.</p>
+    </div>
+
+    <!-- Sección: Misión -->
+    <section class="mb-5">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <img 
+                    src="{% static 'images/mision.png' %}" 
+                    alt="Nuestra misión" 
+                    class="img-fluid rounded shadow"
+                >
+            </div>
+            <div class="col-md-6">
+                <h2 class="text-success">Nuestra Misión</h2>
+                <p>
+                    En <strong>KickandPlay</strong>, nuestra misión es construir una comunidad unida a través del deporte.
+                    Nos esforzamos por ofrecer una plataforma en la que los jugadores puedan organizar partidos,
+                    reservar canchas y compartir su amor por el fútbol.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Visión -->
+    <section class="mb-5">
+        <div class="row align-items-center">
+            <div class="col-md-6 order-md-2">
+                <img 
+                    src="{% static 'images/vision.png' %}" 
+                    alt="Nuestra visión" 
+                    class="img-fluid rounded shadow"
+                >
+            </div>
+            <div class="col-md-6 order-md-1">
+                <h2 class="text-warning">Nuestra Visión</h2>
+                <p>
+                    Queremos ser el lugar favorito de los futbolistas de cualquier nivel. Un espacio donde todos
+                    puedan encontrar su cancha ideal, conectarse con otros jugadores y disfrutar del deporte rey.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Valores -->
+    <section class="mb-5">
+        <h2 class="text-center text-info">Nuestros Valores</h2>
+        <div class="row text-center">
+            <!-- Valor: Pasión -->
+            <div class="col-md-4">
+                <i class="bi bi-heart-fill text-danger" style="font-size: 2rem;"></i>
+                <h4>Pasión</h4>
+                <p>Amamos el fútbol y queremos que más personas disfruten del juego.</p>
+            </div>
+            <!-- Valor: Comunidad -->
+            <div class="col-md-4">
+                <i class="bi bi-people-fill text-primary" style="font-size: 2rem;"></i>
+                <h4>Comunidad</h4>
+                <p>Conectamos a los jugadores en una red sólida y participativa.</p>
+            </div>
+            <!-- Valor: Crecimiento -->
+            <div class="col-md-4">
+                <i class="bi bi-graph-up-arrow text-success" style="font-size: 2rem;"></i>
+                <h4>Crecimiento</h4>
+                <p>Nos esforzamos por mejorar continuamente y agregar valor a nuestra plataforma.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Equipo -->
+    <section>
+        <h2 class="text-center text-primary">Nuestro Equipo</h2>
+        <p class="text-center text-muted">Conoce a las mentes detrás de KickandPlay.</p>
+        <div class="row justify-content-center">
+            <!-- Miembro 1 -->
+            <div class="col-md-4 text-center mb-4">
+                <img 
+                    src="{% static 'images/team1.jpeg' %}" 
+                    alt="Christian Flores" 
+                    class="img-fluid rounded-circle shadow mb-3" 
+                    style="width: 150px; height: 150px;"
+                >
+                <h5>Christian Flores</h5>
+                <p class="text-muted">Fundador &amp; CEO</p>
+            </div>
+            <!-- Miembro 2 -->
+            <div class="col-md-4 text-center mb-4">
+                <img 
+                    src="{% static 'images/team1.jpeg' %}" 
+                    alt="Franklin Villavicencio" 
+                    class="img-fluid rounded-circle shadow mb-3" 
+                    style="width: 150px; height: 150px;"
+                >
+                <h5>Franklin Villavicencio</h5>
+                <p class="text-muted">Fundador &amp; CEO</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

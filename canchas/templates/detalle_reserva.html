@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Detalle de Reserva
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Tarjeta de Detalles de la Reserva -->
+            <div class="card shadow-lg">
+                <!-- Encabezado -->
+                <div class="card-header bg-primary text-white text-center">
+                    <h3 class="mb-0">Detalle de Reserva</h3>
+                </div>
+
+                <!-- Cuerpo de la Tarjeta -->
+                <div class="card-body">
+                    <!-- Información de la Cancha -->
+                    <div class="text-center mb-4">
+                        <h4 class="text-secondary">{{ reserva.cancha.nombre }}</h4>
+                        {% if reserva.cancha.imagen_url %}
+                            <img 
+                                src="{{ reserva.cancha.imagen_url }}" 
+                                alt="Imagen de la Cancha" 
+                                class="img-fluid rounded border" 
+                                style="max-height: 250px; object-fit: cover;" 
+                                loading="lazy">
+                        {% else %}
+                            <img 
+                                src="https://fluofgltdazuwfgpnctl.supabase.co/storage/v1/object/public/media//k&plogo.jpg" 
+                                alt="Imagen predeterminada de la Cancha" 
+                                class="img-fluid rounded border" 
+                                style="max-height: 250px; object-fit: cover;" 
+                                loading="lazy">
+                        {% endif %}
+                    </div>
+                    
+
+                    <!-- Mapa Interactivo -->
+                    {% if reserva.cancha.latitud and reserva.cancha.longitud %}
+                        <div class="mb-4">
+                            <h4 class="text-center text-info">Ubicación en el Mapa</h4>
+                            <div id="map" class="rounded border" style="height: 400px;"></div>
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    // Inicializar el mapa
+                                    var map = L.map('map').setView([{{ reserva.cancha.latitud }}, {{ reserva.cancha.longitud }}], 15);
+
+                                    // Añadir la capa de mapas
+                                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                        maxZoom: 19,
+                                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                    }).addTo(map);
+
+                                    // Añadir un marcador con un popup
+                                    L.marker([{{ reserva.cancha.latitud }}, {{ reserva.cancha.longitud }}])
+                                        .addTo(map)
+                                        .bindPopup(`<strong>{{ reserva.cancha.nombre }}</strong><br>{{ reserva.cancha.direccion }}`)
+                                        .openPopup();
+                                });
+                            </script>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning text-center">
+                            No se pudo cargar el mapa porque no hay coordenadas disponibles para esta cancha.
+                        </div>
+                    {% endif %}
+
+                    <!-- Detalles de la Reserva -->
+                    <dl class="row mb-4">
+                        <dt class="col-sm-5 text-end">Fecha de la Reserva:</dt>
+                        <dd class="col-sm-7">{{ reserva.fecha_reserva }}</dd>
+
+                        <dt class="col-sm-5 text-end">Hora de Inicio:</dt>
+                        <dd class="col-sm-7">{{ reserva.hora_inicio }}</dd>
+
+                        <dt class="col-sm-5 text-end">Hora de Fin:</dt>
+                        <dd class="col-sm-7">{{ reserva.hora_fin }}</dd>
+
+                        <dt class="col-sm-5 text-end">Usuario:</dt>
+                        <dd class="col-sm-7">{{ reserva.usuario.username }}</dd>
+                    </dl>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'lista_eventos' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left-circle"></i> Volver al Listado
+                        </a>
+                        <a href="{% url 'eliminar_reserva' reserva.id %}" 
+                           class="btn btn-outline-danger" 
+                           onclick="return confirm('¿Estás seguro de que deseas eliminar esta reserva?');">
+                            <i class="bi bi-trash3"></i> Eliminar Reserva
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

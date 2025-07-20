@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Eventos de KickandPlay
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Título principal -->
+    <h1 class="text-center text-primary mb-4">Eventos de KickandPlay</h1>
+    
+    <!-- Barra de búsqueda -->
+    <form method="get" class="search-form d-flex justify-content-between mb-4">
+        <!-- Campo para buscar por nombre -->
+        <input 
+            type="text" 
+            name="nombre" 
+            placeholder="Buscar por nombre..." 
+            class="form-control w-50 me-2" 
+            aria-label="Buscar eventos" 
+            value="{{ request.GET.nombre|default_if_none:'' }}"
+        >
+        
+        <!-- Selector para filtrar por tipo de evento -->
+        <select name="tipo" class="form-select w-25 me-2">
+            <option value="" {% if not request.GET.tipo %}selected{% endif %}>Todos los Tipos</option>
+            <option value="publico" {% if request.GET.tipo == "publico" %}selected{% endif %}>Público</option>
+            <option value="privado" {% if request.GET.tipo == "privado" %}selected{% endif %}>Privado</option>
+        </select>
+
+        <!-- Botón de búsqueda -->
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-search"></i> Buscar
+        </button>
+        <a href="{% url 'lista_eventos' %}" class="btn btn-secondary">
+            <i class="bi bi-x-circle"></i> Limpiar
+        </a>
+    </form>
+
+    <!-- Listado de eventos -->
+    <div class="row">
+        {% for evento in page_obj %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <!-- Encabezado de la tarjeta -->
+                <div class="card-header bg-primary text-white text-center">
+                    <h5 class="card-title mb-0 text-truncate">{{ evento.titulo }}</h5>
+                </div>
+                <!-- Contenido de la tarjeta -->
+                <div class="card-body">
+                    <!-- Fecha de creación -->
+                    <p>
+                        <i class="bi bi-calendar-check"></i> 
+                        <strong>Creado el:</strong> {{ evento.fecha_creacion|date:"d/m/Y H:i" }}
+                    </p>
+                    <!-- Tipo de evento -->
+                    <p>
+                        <i class="bi bi-people-fill"></i> 
+                        <strong>Tipo:</strong> 
+                        {% if evento.tipo_evento == "publico" %}
+                            <span class="text-success">Público</span>
+                        {% else %}
+                            <span class="text-secondary">Privado</span>
+                        {% endif %}
+                    </p>
+                    <!-- Lugar del evento -->
+                    <p>
+                        <i class="bi bi-geo-alt-fill"></i> 
+                        <strong>Lugar:</strong> {{ evento.reserva.cancha.nombre|default:"No asignado" }}
+                    </p>
+                    <!-- Descripción -->
+                    <p>
+                        <i class="bi bi-info-circle"></i> 
+                        {{ evento.descripcion|truncatechars:100 }}
+                    </p>
+                </div>
+                <!-- Pie de la tarjeta -->
+                <div class="card-footer d-flex justify-content-between">
+                    {% if request.user.is_authenticated %}
+                    <a href="/reservas/{{ evento.reserva.id }}" class="btn btn-sm btn-outline-primary">
+                        Ver Reserva
+                    </a>
+                    {% endif %}
+                    <a href="/eventos/{{ evento.id }}" class="btn btn-sm btn-outline-primary">
+                        Más Información
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center">
+                <p class="text-muted">No hay eventos disponibles con los criterios de búsqueda.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Controles de paginación -->
+    <nav aria-label="Paginación de eventos" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <!-- Botón "Primera" -->
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1&nombre={{ request.GET.nombre }}&tipo={{ request.GET.tipo }}" aria-label="Primera">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&nombre={{ request.GET.nombre }}&tipo={{ request.GET.tipo }}" aria-label="Anterior">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+
+            <!-- Números de páginas -->
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number|add:"-3" <= num <= page_obj.number|add:"3" %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}&nombre={{ request.GET.nombre }}&tipo={{ request.GET.tipo }}">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            <!-- Botón "Siguiente" -->
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}&nombre={{ request.GET.nombre }}&tipo={{ request.GET.tipo }}" aria-label="Siguiente">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&nombre={{ request.GET.nombre }}&tipo={{ request.GET.tipo }}" aria-label="Última">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}

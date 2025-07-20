@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,8 +27,10 @@ SECRET_KEY = 'django-insecure-!5ww7t4*k-u__j*47-09ose4z0rbknv*c3l5g8o-5!u=f7md&r
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+#DEBUG = False
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', '192.168.12.91']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,7 +42,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework', 
+    'canchas', 
+    'corsheaders', 
+    'django_filters'
 ]
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -47,7 +61,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ROOT_URLCONF = 'kickandplay.urls'
 
@@ -72,13 +90,48 @@ WSGI_APPLICATION = 'kickandplay.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+DATABASES = {
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+}
+
+
+DATABASES = {
+    'default': dj_database_url.config
+    (
+        default='postgres://postgres:Frn14K9542@db.fluofgltdazuwfgpnctl.supabase.co:5432/kickandplay'
+    )
+}
+
+'''
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.fluofgltdazuwfgpnctl',
+        'PASSWORD': 'Frn14K9542FkV',
+        'HOST': 'aws-0-us-west-1.pooler.supabase.com',
+        'PORT': '6543',
+        'OPTIONS': {
+            'sslmode': 'require',
+            #'target_session_attrs': 'read-write',  # Configura para forzar el modo activo
+        },
+    }
+}
+
+# Ruta para redirigir después de iniciar sesión exitosamente
+LOGIN_REDIRECT_URL = '/'  # Cambia '/' por la ruta que desees
+
+# Ruta para redirigir después de cerrar sesión
+LOGOUT_REDIRECT_URL = '/home/'  # Cambia '/login/' si es necesario
 
 
 # Password validation
@@ -99,6 +152,25 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# restframework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
+'''
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': 
+    ('rest_framework_simplejwt.authentication.JWTAuthentication',), 
+    'DEFAULT_PERMISSION_CLASSES': 
+    ('rest_framework.permissions.IsAuthenticated',)}
+'''
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -111,13 +183,65 @@ USE_I18N = True
 
 USE_TZ = True
 
+# email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USER_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'kickplay33@gmail.com'
+EMAIL_HOST_PASSWORD = 'Frn14K9542'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+#STATIC_URL = 'static/'
+#STATICFILES_DIRS = [
+#    os.path.join(BASE_DIR, 'static'),
+#]
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',  # Flutter Web local
+    'http://localhost:8080',  # Otro entorno local
+    'https://kickandplay-3b16b2f1fd11.herokuapp.com'  # URL de tu servidor en producción
+]
+
+'''
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
+'''
+
+SUPABASE_URL = "https://kickandplay.supabase.co"  # URL de tu proyecto Supabase
+SUPABASE_KEY =  os.getenv('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsdW9mZ2x0ZGF6dXdmZ3BuY3RsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MDU5OTQ5NSwiZXhwIjoyMDU2MTc1NDk1fQ.5rmBvfZ09whQ-K8FM7NhnGqAUGDpealIlL9jBjD8j24')  # Clave API de Supabase (Service Role Key)
+SUPABASE_BUCKET = "media"  # Nombre del bucket

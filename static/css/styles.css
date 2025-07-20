@@ -1,0 +1,248 @@
+/* ----- Estilos Globales ----- */
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: #6c757d;
+}
+
+h1, h2, h3 {
+    font-weight: bold;
+}
+
+/* ----- Navbar ----- */
+
+nav {
+    background-color: #007bff;
+}
+
+nav a {
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* ----- Footer ----- */
+footer {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    margin-top: 20px;
+}
+
+/* ----- Estilos de Títulos ----- */
+h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+/* ----- Estilos de Tarjetas ----- */
+.card {
+    border-radius: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+    font-size: 1.2rem;
+    font-weight: bold;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 2px solid #004085;
+}
+
+.card-footer {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #ddd;
+}
+
+.card-title {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* ----- Botones ----- */
+.btn-primary {
+    background-color: #0069d9;
+    border-color: #0069d9;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.btn-outline-primary {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-outline-secondary {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    color: #fff;
+}
+
+.btn-outline-danger:hover {
+    background-color: #f5c6cb;
+    color: #721c24;
+}
+
+/* Estilo botón redondeado */
+.btn-rounded {
+    border-radius: 50px;
+}
+
+/* ----- Imágenes ----- */
+.card-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+img.img-fluid {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ----- Estilos de Comentarios ----- */
+.comments-section {
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    padding-top: 15px;
+}
+
+.comment {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.comment-body p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.stars i {
+    font-size: 1.2rem;
+    color: #ffc107;
+}
+
+/* ----- Estilos de Galerías ----- */
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.gallery img {
+    width: 100px;
+    height: auto;
+    border-radius: 5px;
+}
+
+/* ----- Estilos de Mapas ----- */
+#map {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid #ddd;
+    border-radius: 10px;
+}
+
+.leaflet-popup-content img {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 8px;
+    border-radius: 5px;
+}
+
+/* ----- Formulario y Búsquedas ----- */
+.form-label {
+    font-weight: bold;
+    color: #495057;
+}
+
+button.btn-success:hover {
+    background-color: #218838;
+    color: #fff;
+}
+
+a.btn-outline-danger:hover {
+    background-color: #f5c6cb;
+    color: #721c24;
+}
+
+/* ----- Modales ----- */
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ----- Jumbotron (Index) ----- */
+.jumbotron {
+    border-radius: 15px;
+}
+
+/* ----- Estilos de Detalle de Reserva ----- */
+dt {
+    font-weight: bold;
+    color: #495057;
+}
+
+.alert-warning {
+    background-color: #fff4cc;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+/* ----- Estilos de imagnes con lazy ----- */
+img[loading="lazy"] {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+/* ----- Estilos d=para eliminar margenes ----- */
+html, body {
+    margin: 0;
+    padding: 0;
+}

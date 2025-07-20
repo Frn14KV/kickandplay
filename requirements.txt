@@ -45,7 +45,6 @@ platformdirs==4.2.2
 postgrest==0.19.3
 prompt_toolkit==3.0.50
 propcache==0.3.0
-psycopg2==2.9.10
 psycopg2-binary==2.9.10
 pydantic==2.10.6
 pydantic_core==2.27.2

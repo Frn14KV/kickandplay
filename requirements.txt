@@ -17,6 +17,7 @@ realtime==2.4.1
 storage3==0.11.3
 postgrest==0.19.3
 supafunc==0.9.3
+dj-database-url
 
 # Async + HTTP clients
 httpx==0.28.1
@@ -65,3 +66,4 @@ typing_extensions==4.12.2
 pydantic==2.10.6
 pydantic_core==2.27.2
 StrEnum==0.4.15
+

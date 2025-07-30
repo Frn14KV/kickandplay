@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: kickandplay-web
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "./start.sh"
+    repo: https://github.com/Frn14KV/KickAndPlay
+    branch: nueva-rama
+    plan: free
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        sync: false  # Evita exponerlo en GitHub
+      - key: DATABASE_URL
+        sync: false
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "kickandplay.onrender.com,localhost,127.0.0.1"
+      - key: EMAIL_HOST_USER
+        value: "kickplay33@gmail.com"
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false  # Comentado para futura integración

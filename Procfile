@@ -1,2 +1,1 @@
-web: gunicorn kickandplay.wsgi
-
+web: ./start.sh

@@ -17,7 +17,6 @@ realtime==2.4.1
 storage3==0.11.3
 postgrest==0.19.3
 supafunc==0.9.3
-dj-database-url
 
 # Async + HTTP clients
 httpx==0.28.1

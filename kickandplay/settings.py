@@ -8,10 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # 🔐 Seguridad
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
-
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
-
-#ALLOWED_HOSTS = ["render.com", "localhost", "127.0.0.1"]
 
 # 🧩 Aplicaciones
 INSTALLED_APPS = [
@@ -67,13 +64,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'kickandplay.wsgi.application'
 
-# 🐘 Base de datos Render
+# 🐘 Base de datos Supabase
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL'),
-        conn_max_age=600,
-        ssl_require=True
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.fluofgltdazuwfgpnctl',
+        'PASSWORD': 'Frn14K9542FkV',
+        'HOST': 'aws-0-us-west-1.pooler.supabase.com',
+        'PORT': '6543',
+        'OPTIONS': {
+            'sslmode': 'require',
+            #'target_session_attrs': 'read-write',  # Configura para forzar el modo activo
+        },
+    }
 }
 
 # 🔐 Login/Logout
@@ -132,9 +136,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://kickandplay.onrender.com'
 ]
 
-# 🪣 Supabase (comentado para futura integración)
-"""
+# 🪣 Supabase Storage (opcional)
 SUPABASE_URL = "https://kickandplay.supabase.co"
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
 SUPABASE_BUCKET = "media"
-"""

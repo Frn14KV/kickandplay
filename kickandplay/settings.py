@@ -121,7 +121,10 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # 📁 Archivos estáticos y media
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [BASE_DIR / "static"]  # ✅ para desarrollo
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # ✅ para producción
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
